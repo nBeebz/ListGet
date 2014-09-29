@@ -21,7 +21,7 @@
     <string name="title_add_friend">Add Friends to List</string>
     <string name="example_friend1">Chi En</string>
     <string name="example_friend2">Jason</string>
-    <string name="example_friend3">D'arcy</string>
+    <string name="example_friend3">D\'arcy</string>
     <string name="title_activity_settings">Settings</string>
 
 </resources>

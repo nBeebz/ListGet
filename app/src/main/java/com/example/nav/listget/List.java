@@ -37,7 +37,7 @@ public class List extends Activity {
     }
 
     public void viewList(View v){
-        Intent intent = new Intent(this, Item.class);
+        Intent intent = new Intent(this, ItemActivity.class);
         startActivity(intent);
     }
     

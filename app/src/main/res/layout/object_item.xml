@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="64dip"
+    android:gravity="center_vertical"
+    android:ignoreGravity="@+id/icon"
+    android:orientation="horizontal" >
+
+    <com.example.nav.listget.CheckableLinearLayout
+        android:id="@+id/LinearLayout"
+        android:layout_width="wrap_content"
+        android:layout_height="64dip"
+        android:gravity="center_vertical"
+        android:ignoreGravity="@+id/icon" >
+
+        <CheckedTextView
+            android:id="@+id/text"
+            android:layout_width="wrap_content"
+            android:layout_height="67dp"
+            android:checkMark="@drawable/icon_check_off"
+            android:gravity="center_vertical"
+            android:paddingLeft="10dip"
+            android:paddingRight="10dip"
+            android:textAppearance="?android:attr/textAppearanceMedium" />
+
+        <TextView
+            android:id="@+id/position"
+            android:layout_width="wrap_content"
+            android:layout_height="64dip"
+            android:singleLine="true"
+            android:visibility="gone" />
+
+    </com.example.nav.listget.CheckableLinearLayout>
+
+    <TextView
+        android:id="@+id/circle"
+        android:layout_width="wrap_content"
+        android:layout_height="64dip"
+        android:ellipsize="marquee"
+        android:gravity="center_vertical"
+        android:paddingLeft="10dip"
+        android:paddingRight="0dip"
+        android:singleLine="true"
+        android:text="●"
+        android:textAppearance="?android:attr/textAppearanceMedium" />
+
+    <TextView
+        android:id="@+id/text1"
+        android:layout_width="0dip"
+        android:layout_height="64dip"
+        android:layout_weight="1"
+        android:ellipsize="marquee"
+        android:gravity="center_vertical"
+        android:paddingLeft="10dip"
+        android:paddingRight="0dip"
+        android:singleLine="true"
+        android:textAppearance="?android:attr/textAppearanceMedium" />
+
+</LinearLayout>

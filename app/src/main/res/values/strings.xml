@@ -23,5 +23,6 @@
     <string name="example_friend2">Jason</string>
     <string name="example_friend3">D\'arcy</string>
     <string name="title_activity_settings">Settings</string>
+    <string name="add_item">add item</string>
 
 </resources>

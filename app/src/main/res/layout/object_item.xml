@@ -6,7 +6,7 @@
     android:ignoreGravity="@+id/icon"
     android:orientation="horizontal" >
 
-    <com.example.nav.listget.CheckableLinearLayout
+    <com.example.nav.listget.Activities.CheckableLinearLayout
         android:id="@+id/LinearLayout"
         android:layout_width="wrap_content"
         android:layout_height="64dip"
@@ -30,7 +30,7 @@
             android:singleLine="true"
             android:visibility="gone" />
 
-    </com.example.nav.listget.CheckableLinearLayout>
+    </com.example.nav.listget.Activities.CheckableLinearLayout>
 
     <TextView
         android:id="@+id/circle"
@@ -55,5 +55,11 @@
         android:paddingRight="0dip"
         android:singleLine="true"
         android:textAppearance="?android:attr/textAppearanceMedium" />
+
+    <ImageView
+        android:id="@+id/drag_handle"
+        android:layout_width="wrap_content"
+        android:layout_height="fill_parent"
+        android:src="@drawable/grabber" />
 
 </LinearLayout>

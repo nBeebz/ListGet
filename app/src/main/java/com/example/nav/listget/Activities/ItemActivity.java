@@ -1,4 +1,4 @@
-package com.example.nav.listget;
+package com.example.nav.listget.Activities;
 
 import android.app.Activity;
 import android.app.ListActivity;
@@ -6,6 +6,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.view.KeyEvent;
 import android.view.Menu;
@@ -14,9 +15,18 @@ import android.view.View;
 import android.view.WindowManager.LayoutParams;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
+
+import com.example.nav.listget.Adapters.ItemAdapter;
+import com.example.nav.listget.DBHelper;
+import com.example.nav.listget.DragSort.DragSortController;
+import com.example.nav.listget.DragSort.DragSortListView;
+import com.example.nav.listget.R;
+import com.example.nav.listget.parcelable.ItemObject;
+import com.example.nav.listget.parcelable.ListObject;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,6 +35,7 @@ import java.util.List;
 public class ItemActivity extends ListActivity {
 
     static ItemAdapter adapter;
+    private DragSortController mController;
     Bundle bundle = new Bundle();
 
     Activity act = this;
@@ -110,7 +121,41 @@ public class ItemActivity extends ListActivity {
         }
         c.close();
         db.close();
-        resetList();
+
+        if (savedInstanceState == null) {
+            resetList();
+            DragSortListView mDslv = (DragSortListView) getListView();
+            mController = buildController(mDslv);
+            mDslv.setFloatViewManager(mController);
+            mDslv.setOnTouchListener(mController);
+            mDslv.setDragEnabled(true);
+            mDslv.setOnItemClickListener(new listViewListener());
+            mDslv.getCheckedItemPosition();
+            mDslv.setDropListener(onDrop);
+            mDslv.setRemoveListener(onRemove);
+        } else {
+            resetList();
+        }
+    }
+
+    public class listViewListener implements AdapterView.OnItemClickListener {
+        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+            DragSortListView listView = (DragSortListView) parent;
+            ItemObject selectedTask = (ItemObject) listView.getItemAtPosition(position);
+            //listener.onMove(selectedTask, selectedCat);
+                    /*
+					if(editF==null){
+						editF = new EditFragment();
+					}
+					Bundle bundle = new Bundle();
+					bundle.putSerializable("task", selectedTask);
+					bundle.putSerializable("category", selectedCat);
+					editF.setArguments(bundle);
+					fragmentTransaction = getFragmentManager().beginTransaction().replace(R.id.content, editF);
+					fragmentTransaction.addToBackStack(null);
+					fragmentTransaction.commit(); */
+        }
+
     }
 
     /**
@@ -323,5 +368,46 @@ public class ItemActivity extends ListActivity {
         cv.put("filter", filter);
         db.update("SelectedCategories", cv, "categoryId = " + selectedCat.getCategoryId(), null);
     }
+
+    /*drag & drop stuff*/
+    private DragSortListView.DropListener onDrop = new DragSortListView.DropListener() {
+        @Override
+        public void drop(int from, int to) {
+            DragSortListView list = (DragSortListView) getListView();
+            ItemObject item = adapter.getItem(from);
+            adapter.remove(item);
+            adapter.insert(item, to);
+            list.moveCheckState(from, to);
+        }
+    };
+
+    private DragSortListView.RemoveListener onRemove = new DragSortListView.RemoveListener() {
+        @Override
+        public void remove(int which) {
+            DragSortListView list = (DragSortListView) getListView();
+            ItemObject item = adapter.getItem(which);
+            adapter.remove(item);
+            list.removeCheckState(which);
+        }
+    };
+
+    public DragSortController getController() {
+        return mController;
+    }
+
+    private DragSortController buildController(DragSortListView dslv) {
+        DragSortController controller = new DragSortController(dslv);
+        controller.setDragHandleId(R.id.drag_handle);
+        //controller.setClickRemoveId(R.id.click_remove);
+        controller.setBackgroundColor(Color.GRAY);
+        controller.setRemoveEnabled(false);
+        controller.setSortEnabled(true);
+        controller.setDragInitMode(DragSortController.ON_DOWN);
+        controller.setRemoveMode(DragSortController.CLICK_REMOVE);
+        controller.setDragInitMode(DragSortController.ON_LONG_PRESS);
+        return controller;
+    }
+	/*drag & drop stuff done*/
+
 
 }

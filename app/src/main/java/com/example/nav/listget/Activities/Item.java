@@ -1,24 +1,28 @@
-package com.example.nav.listget;
+package com.example.nav.listget.Activities;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+
+import com.example.nav.listget.R;
 
 
-public class EditItem extends Activity {
+public class Item extends Activity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_edit_item);
+        setContentView(R.layout.activity_item);
     }
 
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.edit__item, menu);
+        getMenuInflater().inflate(R.menu.item, menu);
         return true;
     }
 
@@ -32,5 +36,16 @@ public class EditItem extends Activity {
             return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    public void viewItem(View v){
+        Intent intent = new Intent(this, EditItem.class);
+        startActivity(intent);
+
+    }
+
+    public void viewAddFriend(View v){
+        Intent intent = new Intent(this, AddFriend.class);
+        startActivity(intent);
     }
 }

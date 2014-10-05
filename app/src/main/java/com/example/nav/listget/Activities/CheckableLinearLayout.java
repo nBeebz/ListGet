@@ -1,10 +1,12 @@
-package com.example.nav.listget;
+package com.example.nav.listget.Activities;
 
 import android.content.Context;
 import android.util.AttributeSet;
 import android.widget.Checkable;
 import android.widget.CheckedTextView;
 import android.widget.LinearLayout;
+
+import com.example.nav.listget.R;
 
 public class CheckableLinearLayout extends LinearLayout implements Checkable {
 

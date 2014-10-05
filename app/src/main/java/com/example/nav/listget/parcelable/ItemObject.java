@@ -1,4 +1,4 @@
-package com.example.nav.listget;
+package com.example.nav.listget.parcelable;
 
 import java.io.Serializable;
 

@@ -1,26 +1,26 @@
-package com.example.nav.listget;
+package com.example.nav.listget.Activities;
 
 import android.app.Activity;
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
+
+import com.example.nav.listget.R;
 
 
-public class Login extends Activity {
+public class AddFriend extends Activity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_login);
+        setContentView(R.layout.activity_add_friend);
     }
 
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.login, menu);
+        getMenuInflater().inflate(R.menu.add_friend, menu);
         return true;
     }
 
@@ -34,10 +34,5 @@ public class Login extends Activity {
             return true;
         }
         return super.onOptionsItemSelected(item);
-    }
-
-    public void login(View v){
-        Intent log = new Intent(this, List.class);
-        startActivity(log);
     }
 }

@@ -1,26 +1,26 @@
-package com.example.nav.listget;
+package com.example.nav.listget.Activities;
 
 import android.app.Activity;
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
+
+import com.example.nav.listget.R;
 
 
-public class List extends Activity {
+public class Settings extends Activity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_list);
+        setContentView(R.layout.activity_settings);
     }
 
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.list, menu);
+        getMenuInflater().inflate(R.menu.settings, menu);
         return true;
     }
 
@@ -35,10 +35,4 @@ public class List extends Activity {
         }
         return super.onOptionsItemSelected(item);
     }
-
-    public void viewList(View v){
-        Intent intent = new Intent(this, ItemActivity.class);
-        startActivity(intent);
-    }
-    
 }

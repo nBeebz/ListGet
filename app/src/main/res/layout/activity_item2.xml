@@ -10,7 +10,7 @@
         android:layout_width="fill_parent"
         android:layout_height="50dip"
         android:layout_margin="15dp"
-        android:hint="@string/add_item"
+        android:hint="@string/action_add_item"
         android:imeOptions="actionDone"
         android:inputType="text"
         android:selectAllOnFocus="true"

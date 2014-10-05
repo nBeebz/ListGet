@@ -1,0 +1,36 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
+
+    <com.example.nav.listget.DragSort.DragSortListView
+        xmlns:dslv="http://schemas.android.com/apk/com.example.todo"
+        android:id="@android:id/list"
+        android:layout_width="fill_parent"
+        android:layout_height="0dp"
+        android:layout_margin="3dp"
+        android:layout_weight="1"
+        android:dividerHeight="2dp"
+        android:padding="3dp" />
+
+    <LinearLayout
+        android:id="@+id/LinearLayout"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:orientation="horizontal" >
+
+        <TextView
+            android:id="@+id/edit_cat"
+            android:layout_width="wrap_content"
+            android:layout_height="64dip"
+            android:gravity="center"
+            android:paddingLeft="9dip"
+            android:paddingRight="9dip"
+            android:singleLine="true"
+            android:text="@string/action_add_list"
+            android:textAppearance="?android:attr/textAppearanceMedium" />
+    </LinearLayout>
+
+</LinearLayout>

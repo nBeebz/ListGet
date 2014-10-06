@@ -4,39 +4,20 @@
 
     <application
         android:allowBackup="true"
-        android:debuggable="true"
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
+
         <activity
-            android:name=".Activities.Login"
-            android:label="@string/app_name" >
+            android:name=".Activities.List"
+            android:label="@string/title_activity_list" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity
-            android:name=".Activities.List"
-            android:label="@string/title_activity_list" >
-        </activity>
-        <activity
-            android:name=".Activities.Item"
-            android:label="@string/title_activity_item" >
-        </activity>
-        <activity
-            android:name=".Activities.EditItem"
-            android:label="@string/title_activity_edit__item" >
-        </activity>
-        <activity
-            android:name=".Activities.AddFriend"
-            android:label="@string/title_activity_add_friend" >
-        </activity>
-        <activity
-            android:name=".Activities.Settings"
-            android:label="@string/title_activity_settings" >
-        </activity>
+
         <activity
             android:name=".Activities.ItemActivity"
             android:label="@string/title_activity_item" >

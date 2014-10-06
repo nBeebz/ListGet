@@ -2,6 +2,7 @@ package com.example.nav.listget.parcelable;
 
 import java.io.Serializable;
 
+/* Storing items for a list */
 public class ListObject implements Serializable {
     private int categoryId;
     private String category;

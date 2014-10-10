@@ -16,12 +16,12 @@
         <CheckedTextView
             android:id="@+id/text"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="67dp"
+            android:checkMark="@drawable/icon_check_off"
             android:gravity="center_vertical"
             android:paddingLeft="10dip"
             android:paddingRight="10dip"
-            android:textAppearance="?android:attr/textAppearanceMedium"
-            android:onClick="onCheckClicked"/>
+            android:textAppearance="?android:attr/textAppearanceMedium" />
 
         <TextView
             android:id="@+id/position"
@@ -29,8 +29,20 @@
             android:layout_height="64dip"
             android:singleLine="true"
             android:visibility="gone" />
+
     </com.example.nav.listget.Activities.CheckableLinearLayout>
 
+    <TextView
+        android:id="@+id/circle"
+        android:layout_width="wrap_content"
+        android:layout_height="64dip"
+        android:ellipsize="marquee"
+        android:gravity="center_vertical"
+        android:paddingLeft="10dip"
+        android:paddingRight="0dip"
+        android:singleLine="true"
+        android:text="●"
+        android:textAppearance="?android:attr/textAppearanceMedium" />
 
     <TextView
         android:id="@+id/text1"
@@ -40,9 +52,14 @@
         android:ellipsize="marquee"
         android:gravity="center_vertical"
         android:paddingLeft="10dip"
-        android:paddingRight="10dip"
+        android:paddingRight="0dip"
         android:singleLine="true"
         android:textAppearance="?android:attr/textAppearanceMedium" />
 
+    <ImageView
+        android:id="@+id/drag_handle"
+        android:layout_width="wrap_content"
+        android:layout_height="fill_parent"
+        android:src="@drawable/grabber" />
 
 </LinearLayout>

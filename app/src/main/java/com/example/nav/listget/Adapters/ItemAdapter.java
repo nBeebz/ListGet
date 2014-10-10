@@ -31,7 +31,7 @@ public class ItemAdapter extends ArrayAdapter<ItemObject> {
 	 */
 
     public ItemAdapter(Context context, List<ItemObject> objects) {
-        super(context, R.layout.object_item, objects);
+        super(context, R.layout.adapter_item, objects);
         layoutInflater_ = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
     }
@@ -42,7 +42,7 @@ public class ItemAdapter extends ArrayAdapter<ItemObject> {
         ViewHolder holder;
         ItemObject item = (ItemObject) getItem(position);
         if (row == null) {
-            row = layoutInflater_.inflate(R.layout.object_item, parent, false);
+            row = layoutInflater_.inflate(R.layout.adapter_item, parent, false);
             holder = new ViewHolder();
             holder.checkbox = (CheckableLinearLayout) row.findViewById(R.id.LinearLayout);
             holder.textPos = (TextView) holder.checkbox.getChildAt(1);

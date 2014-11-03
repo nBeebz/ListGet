@@ -42,7 +42,7 @@ public class List extends ListActivity {
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_list2);
+        setContentView(R.layout.activity_list);
 
         //if(btn==null){
         btn = (LinearLayout) findViewById(R.id.LinearLayout);

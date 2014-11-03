@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.ListActivity;
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
@@ -17,6 +18,7 @@ import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -97,9 +99,18 @@ public class ItemActivity extends ListActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_item2);
+        setContentView(R.layout.activity_item);
 
         this.getWindow().setSoftInputMode(LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
+        ImageView setting = (ImageView)findViewById(R.id.icon_set);
+        setting.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(getBaseContext(), EditListActivity.class);
+                intent.putExtra("list", selectedCat);
+                startActivity(intent);
+            }
+        });
 
         //set edittext field
         inputItem = (EditText) findViewById(R.id.addItem);
@@ -141,19 +152,12 @@ public class ItemActivity extends ListActivity {
     public class listViewListener implements AdapterView.OnItemClickListener {
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
             DragSortListView listView = (DragSortListView) parent;
-            ItemObject selectedTask = (ItemObject) listView.getItemAtPosition(position);
+            ItemObject selectedItem = (ItemObject) listView.getItemAtPosition(position);
             //listener.onMove(selectedTask, selectedCat);
-                    /*
-					if(editF==null){
-						editF = new EditFragment();
-					}
-					Bundle bundle = new Bundle();
-					bundle.putSerializable("task", selectedTask);
-					bundle.putSerializable("category", selectedCat);
-					editF.setArguments(bundle);
-					fragmentTransaction = getFragmentManager().beginTransaction().replace(R.id.content, editF);
-					fragmentTransaction.addToBackStack(null);
-					fragmentTransaction.commit(); */
+            Intent intent = new Intent(getBaseContext(), EditItemActivity.class);
+            intent.putExtra("item", selectedItem);
+            intent.putExtra("list", selectedCat);
+            startActivity(intent);
         }
 
     }
@@ -347,6 +351,12 @@ public class ItemActivity extends ListActivity {
         super.onPause();
         //save item positions to the database
         saveOrder();
+    }
+
+    @Override
+    public void onStart(){
+        super.onStart();
+        resetList();
     }
 
     public void saveOrder() {

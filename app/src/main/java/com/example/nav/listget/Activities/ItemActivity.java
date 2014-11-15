@@ -26,6 +26,7 @@ import com.example.nav.listget.Adapters.ItemAdapter;
 import com.example.nav.listget.DBHelper;
 import com.example.nav.listget.DragSort.DragSortController;
 import com.example.nav.listget.DragSort.DragSortListView;
+import com.example.nav.listget.Interfaces.Display;
 import com.example.nav.listget.R;
 import com.example.nav.listget.parcelable.ItemObject;
 import com.example.nav.listget.parcelable.ListObject;
@@ -34,7 +35,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-public class ItemActivity extends ListActivity {
+public class ItemActivity extends ListActivity implements Display{
 
     static ItemAdapter adapter;
     private DragSortController mController;
@@ -419,5 +420,9 @@ public class ItemActivity extends ListActivity {
     }
 	/*drag & drop stuff done*/
 
+    public void setDisplayList( String result )
+    {
+
+    }
 
 }

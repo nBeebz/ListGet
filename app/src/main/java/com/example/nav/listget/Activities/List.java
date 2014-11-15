@@ -84,7 +84,7 @@ public class List extends ListActivity {
         //objects.add(new ListObject(-3, "AllItems",-1,number));
         while (isEof) {
             number = getNumber("select count(itemId) from items where categoryId =" + c.getInt(0) + ";", db);
-            objects.add(new ListObject(c.getInt(0), c.getString(1), c.getInt(2), number));
+            objects.add(new ListObject(c.getInt(0), c.getString(1), number));
             isEof = c.moveToNext();
             listsize++;
         }

@@ -333,9 +333,9 @@ public class ItemActivity extends ListActivity {
         while (isEof) {
             color = (Cursor) db.rawQuery("select * from categories where categoryId=" + c.getInt(2) + ";", null);
             if (color.moveToFirst()) {
-                objects.add(new ItemObject(c.getInt(c.getColumnIndex("itemId")), c.getString(c.getColumnIndex("item")), true, color.getInt(color.getColumnIndex("color")), c.getInt(c.getColumnIndex("checked"))));
+                objects.add(new ItemObject(c.getInt(c.getColumnIndex("itemId")), c.getString(c.getColumnIndex("item")), true, c.getInt(c.getColumnIndex("checked"))));
             } else {
-                objects.add(new ItemObject(c.getInt(c.getColumnIndex("itemId")), c.getString(c.getColumnIndex("item")), true, 0, c.getInt(c.getColumnIndex("checked"))));
+                objects.add(new ItemObject(c.getInt(c.getColumnIndex("itemId")), c.getString(c.getColumnIndex("item")), true, c.getInt(c.getColumnIndex("checked"))));
             }
             listsize++;
             isEof = c.moveToNext();
@@ -367,7 +367,7 @@ public class ItemActivity extends ListActivity {
             ItemObject selectedItem = (ItemObject) listView.getItemAtPosition(position);
             ContentValues cv = new ContentValues();
             cv.put("importance", position);
-            if (selectedItem.getChecked() == 1) {
+            if (selectedItem.getChecked() != 0) {
                 cv.put("checked", 1);
             } else {
                 cv.put("checked", 0);

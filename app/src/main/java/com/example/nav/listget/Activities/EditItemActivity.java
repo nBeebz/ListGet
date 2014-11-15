@@ -39,7 +39,7 @@ public class EditItemActivity extends Activity {
         textMemo = (EditText)findViewById(R.id.memo);
         textMemo.setOnFocusChangeListener(focusChangeListener);
         setButtons();
-        Intent intent = getIntent();;
+        Intent intent = getIntent();
         selectedItem = ((ItemObject) intent.getExtras().getSerializable("item")).getItemId();
         selectedCat = ((ListObject) intent.getExtras().getSerializable("list")).getCategoryId();
 
@@ -148,14 +148,10 @@ public class EditItemActivity extends Activity {
     public ContentValues getDataFromFields(){
         ContentValues cv = new ContentValues();
         String inputTask = (String)itemName.getText().toString();
-        //String inputDue = textDue.getText().toString();
-        //String inputAlert = textAlert.getText().toString();
         String inputMemo = textMemo.getText().toString();
 
         if(!(inputTask.equals(""))){
             cv.put("item", inputTask );
-            //cv.put("due", inputDue );
-            //cv.put("alert", inputAlert );
             cv.put("memo", inputMemo );
         }
         return cv;

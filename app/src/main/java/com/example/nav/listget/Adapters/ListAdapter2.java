@@ -2,7 +2,6 @@ package com.example.nav.listget.Adapters;
 
 import android.content.Context;
 import android.text.Html;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -52,7 +51,7 @@ public class ListAdapter2 extends ArrayAdapter<ListObject> {
 
     public class onCheckClicked implements View.OnClickListener {
         public void onClick(View v) {
-            Log.d("yaaaay", "editimg clicked");
+           // Log.d("yaaaay", "editimg clicked");
             /*
             LinearLayout row = (LinearLayout) v.getParent();
 

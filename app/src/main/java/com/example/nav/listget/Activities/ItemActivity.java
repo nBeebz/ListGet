@@ -45,13 +45,33 @@ public class ItemActivity extends ListActivity {
     int listsize = 0;
     ListObject selectedCat = null;
 
+    // filter 0 = allItems, 1=unCheckedItems, 2=checkedItems
+    int filter = -3;
 
+    int number; //number of items
     List<ItemObject> objects;
     EditText inputItem = null;
     TextView filterText;
 
     public ItemActivity() {
     }
+
+    private OnMoveEditListener listener = null;
+
+    public interface OnMoveEditListener {
+        public void onMove(ItemObject selectedItem, ListObject selectedCat);
+    }
+
+    public void setOnMoveListener(OnMoveEditListener listener) {
+        this.listener = listener;
+    }
+
+    private String[] filterTitles = {
+            "All",
+            "unChecked",
+            "Checked"
+    };
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -99,10 +119,19 @@ public class ItemActivity extends ListActivity {
 
         filterText = (TextView) findViewById(R.id.textView2);
 
-        Intent intent = getIntent();
-
-        selectedCat = ((ListObject) intent.getExtras().getSerializable("list"));
-        listsize = intent.getExtras().getInt("listsize");
+        DBHelper helper = new DBHelper(this);
+        SQLiteDatabase db = helper.getReadableDatabase();
+        Cursor c = (Cursor) db.rawQuery("select * from SelectedCategories;", null);
+        if (c.moveToFirst()) {
+            selectedCat = new ListObject(c.getInt(0), c.getString(1));
+            filter = c.getInt(2);
+            number = c.getInt(3);
+        } else {
+            selectedCat = new ListObject(-2, filterTitles[2]);
+            filter = -2;
+        }
+        c.close();
+        db.close();
 
         if (savedInstanceState == null) {
             resetList();
@@ -162,6 +191,7 @@ public class ItemActivity extends ListActivity {
                     SQLiteDatabase db = helper.getReadableDatabase();
 
                     updateItem(db);
+                    updateNumItem(db);
 
                     saveOrder();
                     resetList();
@@ -178,10 +208,19 @@ public class ItemActivity extends ListActivity {
             ContentValues cv = new ContentValues();
             cv.put("Item", inputItem.getText().toString());
             cv.put("categoryId", selectedCat.getCategoryId());
+            if (filter == 2)
+                cv.put("checked", 1);
             db.insert("Items", null, cv);
 
         }
 
+        private void updateNumItem(SQLiteDatabase db) {
+            ContentValues cv = new ContentValues();
+            number++;
+            cv.put("number", number);
+            db.update("SelectedCategories", cv, "categoryId = " + selectedCat.getCategoryId(), null);
+
+        }
     }
 
 
@@ -206,19 +245,18 @@ public class ItemActivity extends ListActivity {
         listsize = 0;
         boolean dataInside = false;
 
+        //カテゴリに合わせたquery用のstringを取得
+        if (filter == 0) {//show unchecked items when user choose all task
             String sql = getQueryString(1);
             boolean notChecked = addToObjectsWithString(sql, db);
             sql = getQueryString(2);
             boolean checked = addToObjectsWithString(sql, db);
             if (notChecked || checked)
                 dataInside = true;
-        if(selectedCat != null){
-            Cursor c = (Cursor) db.rawQuery("select * from categories where categoryId == "+ selectedCat.getCategoryId(), null);
-            c.moveToFirst();
-            String newCategoryName = c.getString(c.getColumnIndex("category"));
-            selectedCat.setCategory(newCategoryName);
+        } else {
+            String sql = getQueryString(filter);
+            dataInside = addToObjectsWithString(sql, db);
         }
-
         db.close();
         adapter = new ItemAdapter(this, objects);
         setListAdapter(adapter);
@@ -291,8 +329,14 @@ public class ItemActivity extends ListActivity {
      */
     private void addToObjects(Cursor c, SQLiteDatabase db) {
         Boolean isEof = c.moveToFirst();
+        Cursor color;
         while (isEof) {
-            objects.add(new ItemObject(c.getInt(c.getColumnIndex("itemId")), c.getString(c.getColumnIndex("item")), true, c.getInt(c.getColumnIndex("checked"))));
+            color = (Cursor) db.rawQuery("select * from categories where categoryId=" + c.getInt(2) + ";", null);
+            if (color.moveToFirst()) {
+                objects.add(new ItemObject(c.getInt(c.getColumnIndex("itemId")), c.getString(c.getColumnIndex("item")), true, c.getInt(c.getColumnIndex("checked"))));
+            } else {
+                objects.add(new ItemObject(c.getInt(c.getColumnIndex("itemId")), c.getString(c.getColumnIndex("item")), true, c.getInt(c.getColumnIndex("checked"))));
+            }
             listsize++;
             isEof = c.moveToNext();
         }
@@ -312,7 +356,6 @@ public class ItemActivity extends ListActivity {
     @Override
     public void onStart(){
         super.onStart();
-
         resetList();
     }
 
@@ -331,6 +374,9 @@ public class ItemActivity extends ListActivity {
             }
             db.update("Items", cv, "ItemId = " + selectedItem.getItemId(), null);
         }
+        ContentValues cv = new ContentValues();
+        cv.put("filter", filter);
+        db.update("SelectedCategories", cv, "categoryId = " + selectedCat.getCategoryId(), null);
     }
 
     /*drag & drop stuff*/
@@ -372,4 +418,6 @@ public class ItemActivity extends ListActivity {
         return controller;
     }
 	/*drag & drop stuff done*/
+
+
 }

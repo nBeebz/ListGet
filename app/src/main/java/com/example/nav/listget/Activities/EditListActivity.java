@@ -67,15 +67,19 @@ public class EditListActivity extends Activity {
                     selectedCat.setCategory(editText.getText().toString());
                     cv.put("category", selectedCat.getCategory() );
                     db.update("categories", cv, "categoryId = "+selectedCat.getCategoryId(), null);
+                    db.close();
+                    finish();
+                    break;
 
-                case R.id.delete:
+                case R.id.b_delete:
                     db.delete("categories", "categoryId = " + selectedCat.getCategoryId(), null);
+                    Intent intent = new Intent(getBaseContext(), List.class);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                    startActivity(intent);
                     break;
                 default:
                     break;
             }
-            db.close();
-            finish();
         }
     }
     public void setButtons(){
@@ -84,44 +88,6 @@ public class EditListActivity extends Activity {
         btn3.setOnClickListener(listener);
         Button btn4 = (Button)findViewById(R.id.b_delete);
         btn4.setOnClickListener(listener);
-    }
-
-    /**
-     * 保存ボタン用listener（アップデート）
-     */
-    private void updateButton(){
-        Button b_save = (Button) findViewById(R.id.b_save);
-        b_save.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if(!(editText.getText().toString().equals(""))){
-                    selectedCat.setCategory(editText.getText().toString());
-
-                    DBHelper helper = new DBHelper(getBaseContext());
-                    SQLiteDatabase db = helper.getReadableDatabase();
-                    ContentValues cv = new ContentValues();
-                    cv.put("category", selectedCat.getCategory() );
-                    db.update("categories", cv, "categoryId = "+selectedCat.getCategoryId(), null);
-                    db.close();
-                }
-            }
-        });
-    }
-    /**
-     * delete button
-     */
-    private void deleteButton(){
-        Button b_delete = (Button) findViewById(R.id.b_delete);
-        b_delete.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                DBHelper helper = new DBHelper(getBaseContext());
-                SQLiteDatabase db = helper.getReadableDatabase();
-                db.delete("categories", "categoryId = " + selectedCat.getCategoryId(), null);
-                db.close();
-            }
-        });
-
     }
 
 }

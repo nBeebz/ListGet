@@ -121,32 +121,15 @@ public class List extends ListActivity {
                 //get selected item
                 ListView listView = (ListView) parent;
                 ListObject selectedCat = (ListObject) listView.getItemAtPosition(position);
-                saveCatInDatabase(selectedCat);
+                //saveCatInDatabase(selectedCat);
                 Intent itemActivity = new Intent(act, ItemActivity.class);
+                itemActivity.putExtra("list", selectedCat);
+                itemActivity.putExtra("listsize",selectedCat.getNumTask());
                 startActivity(itemActivity);
             }
         });
         listCat.setDropListener(onDrop);
         listCat.setRemoveListener(onRemove);
-    }
-
-    /**
-     * 選ばれたカテゴリを SelectedLabels テーブルに保存
-     *
-     * @param selectedCat カテゴリを
-     */
-
-    private void saveCatInDatabase(ListObject selectedCat) {
-        ContentValues cv = new ContentValues();
-        cv.put("categoryId", selectedCat.getCategoryId());
-        cv.put("category", selectedCat.getCategory());
-        //cv.put("color", selectedCat.getColor());
-        cv.put("number", selectedCat.getNumTask());
-
-        DBHelper helper = new DBHelper(this);
-        SQLiteDatabase db = helper.getReadableDatabase();
-        db.delete("SelectedCategories", null, null);
-        db.insert("SelectedCategories", null, cv);
     }
 
     /*drag & drop stuff*/
@@ -200,4 +183,10 @@ public class List extends ListActivity {
             db.update("categories", cv, "categoryId = " + selectedCat.getCategoryId(), null);
         }
     }
+    @Override
+    public void onStart() {
+        super.onStart();
+        createList();
+    }
+
 }

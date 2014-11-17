@@ -31,7 +31,7 @@
             android:label="@string/title_activity_edit_item" >
         </activity>
         <activity
-            android:name="com.example.nav.listget.Contact_pickers"
+            android:name="com.example.nav.listget.Activities.ContactPicker"
             android:label="@string/title_activity_contact_pickers" >
         </activity>
     </application>

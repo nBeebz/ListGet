@@ -78,7 +78,7 @@ public class ItemActivity extends ListActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.list, menu);
+        getMenuInflater().inflate(R.menu.item, menu);
         return true;
     }
 
@@ -87,19 +87,18 @@ public class ItemActivity extends ListActivity {
         switch (item.getItemId())
         {
             case R.id.share:
-                Intent contact_select = new Intent(getBaseContext(), ContactPicker.class);
-                contact_select.putExtra("list", selectedCat);
-                startActivity(contact_select);
                 return true;
 
             case R.id.from_contacts:
-                Toast.makeText(getBaseContext(), "From Contacts", Toast.LENGTH_LONG).show();
+                Intent contact_select = new Intent(getBaseContext(), ContactPicker.class);
+                contact_select.putExtra("item", selectedCat);
+                startActivity(contact_select);
                 return true;
 
             case R.id.edit:
-                Intent intent = new Intent(getBaseContext(), EditListActivity.class);
-                intent.putExtra("list", selectedCat);
-                startActivity(intent);
+                Intent edit_list = new Intent(getBaseContext(), EditListActivity.class);
+                edit_list.putExtra("list", selectedCat);
+                startActivity(edit_list);
 
                 return true;
 

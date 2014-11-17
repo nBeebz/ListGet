@@ -26,7 +26,7 @@ import com.example.nav.listget.Adapters.ItemAdapter;
 import com.example.nav.listget.DBHelper;
 import com.example.nav.listget.DragSort.DragSortController;
 import com.example.nav.listget.DragSort.DragSortListView;
-import com.example.nav.listget.Interfaces.Display;
+import com.example.nav.listget.Interfaces.MongoInterface;
 import com.example.nav.listget.R;
 import com.example.nav.listget.parcelable.ItemObject;
 import com.example.nav.listget.parcelable.ListObject;
@@ -35,7 +35,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-public class ItemActivity extends ListActivity implements Display{
+public class ItemActivity extends ListActivity implements MongoInterface {
 
     static ItemAdapter adapter;
     private DragSortController mController;
@@ -196,8 +196,6 @@ public class ItemActivity extends ListActivity implements Display{
             ContentValues cv = new ContentValues();
             cv.put("Item", inputItem.getText().toString());
             cv.put("categoryId", selectedCat.getCategoryId());
-            if (filter == 2)
-                cv.put("checked", 1);
             db.insert("Items", null, cv);
 
         }
@@ -400,7 +398,7 @@ public class ItemActivity extends ListActivity implements Display{
     }
 	/*drag & drop stuff done*/
 
-    public void setDisplayList( String result )
+    public void processResult( String result )
     {
 
     }

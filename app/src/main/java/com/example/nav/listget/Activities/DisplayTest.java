@@ -24,7 +24,7 @@ public class DisplayTest extends Activity implements MongoInterface {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_display_test);
         m = new Mongo( this );
-        m.get( "users", 1 );
+        //m.get( "users", 1 );
     }
 
 
@@ -64,7 +64,7 @@ public class DisplayTest extends Activity implements MongoInterface {
     }
 
 
-    public void setDisplayList( String result )
+    public void processResult( String result )
     {
         try
         {

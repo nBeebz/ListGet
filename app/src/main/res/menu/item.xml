@@ -5,4 +5,23 @@
         android:title="@string/action_settings"
         android:orderInCategory="100"
         android:showAsAction="never" />
+    <item android:id="@+id/share"
+        android:title="Share"
+        android:orderInCategory="2"
+        android:showAsAction="collapseActionView">
+        <menu>
+            <item android:id="@+id/from_contacts"
+                android:title="Select from Contacts"
+                android:orderInCategory="1"
+                android:showAsAction="collapseActionView" />
+            <item android:id="@+id/item2"
+                android:title="Favorites"
+                android:orderInCategory="2"
+                android:showAsAction="collapseActionView" />
+        </menu>
+    </item>
+    <item android:id="@+id/edit"
+        android:title="Edit"
+        android:orderInCategory="3"
+        android:showAsAction="collapseActionView"/>
 </menu>

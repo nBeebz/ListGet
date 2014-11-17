@@ -14,9 +14,9 @@ import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.nav.listget.AccessObject;
 import com.example.nav.listget.Adapters.ItemAdapter;
@@ -44,47 +44,48 @@ public class ItemActivity extends ListActivity implements MongoInterface {
     int listsize = 0;
     ListObject selectedCat = null;
 
-      List<ItemObject> objects;
+    List<ItemObject> objects;
     EditText inputItem = null;
     TextView filterText;
 
     public ItemActivity() {
     }
 
-    private OnMoveEditListener listener = null;
-
-    public interface OnMoveEditListener {
-        public void onMove(ItemObject selectedItem, ListObject selectedCat);
-    }
-
-    public void setOnMoveListener(OnMoveEditListener listener) {
-        this.listener = listener;
-    }
-
-    private String[] filterTitles = {
-            "All",
-            "unChecked",
-            "Checked"
-    };
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.list, menu);
+        getMenuInflater().inflate(R.menu.item, menu);
         return true;
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-        if (id == R.id.action_settings) {
-            return true;
+    public boolean onOptionsItemSelected(MenuItem item)
+    {
+        switch (item.getItemId())
+        {
+            case R.id.share:
+                Toast.makeText(getBaseContext(), "Share", Toast.LENGTH_LONG).show();
+                return true;
+
+            case R.id.from_contacts:
+                Toast.makeText(getBaseContext(), "From Contacts", Toast.LENGTH_LONG).show();
+                return true;
+
+            case R.id.action_settings:
+                Intent intent = new Intent(getBaseContext(), EditListActivity.class);
+                intent.putExtra("list", selectedCat);
+                startActivity(intent);
+
+                return true;
+
+            case R.id.item2:
+                Toast.makeText(getBaseContext(), "item2", Toast.LENGTH_LONG).show();
+                return true;
+
+            default:
+                return super.onOptionsItemSelected(item);
         }
-        return super.onOptionsItemSelected(item);
     }
 
 
@@ -100,15 +101,6 @@ public class ItemActivity extends ListActivity implements MongoInterface {
         datasource.open();
 
         this.getWindow().setSoftInputMode(LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
-        ImageView setting = (ImageView)findViewById(R.id.icon_set);
-        setting.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(getBaseContext(), EditListActivity.class);
-                intent.putExtra("list", selectedCat);
-                startActivity(intent);
-            }
-        });
 
         //set edittext field
         inputItem = (EditText) findViewById(R.id.addItem);
@@ -230,7 +222,7 @@ public class ItemActivity extends ListActivity implements MongoInterface {
     public void saveOrder() {
         ListView listView = (ListView) getListView();
         datasource.saveOrderOfItemList(listView, listsize);
-       }
+    }
     /**
      * save the order
      */

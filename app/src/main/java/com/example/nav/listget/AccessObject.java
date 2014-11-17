@@ -147,10 +147,10 @@ public class AccessObject {
             c = (Cursor) database.rawQuery("select * from items where importance < 0 and checked != 0 order by importance asc;", null);
             addToItemObjectArrayList(c, objects);
             */
-            c = (Cursor) database.rawQuery("select * from items where importance >-1 order by importance asc;", null);
+            c = (Cursor) database.rawQuery("select * from items where importance >-1 and categoryId == "+listId+" order by importance asc;", null);
             addToItemObjectArrayList(c, objects);
 
-            c = (Cursor) database.rawQuery("select * from items where importance < 0;", null);
+            c = (Cursor) database.rawQuery("select * from items where importance < 0 AND categoryId == "+listId+";", null);
             addToItemObjectArrayList(c, objects);
 
         }

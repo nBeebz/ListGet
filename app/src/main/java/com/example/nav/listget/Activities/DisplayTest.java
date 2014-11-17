@@ -23,8 +23,6 @@ public class DisplayTest extends Activity implements MongoInterface {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_display_test);
-        m = new Mongo( this );
-        m.get( "users", 1 );
     }
 
 
@@ -64,15 +62,5 @@ public class DisplayTest extends Activity implements MongoInterface {
     }
 
 
-    public void setDisplayList( String result )
-    {
-        try
-        {
-            arr = new JSONArray(result);
-        }
-        catch (Exception e)
-        {
-            e.printStackTrace();
-        }
-    }
+    public void processResult( String result ){}
 }

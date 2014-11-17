@@ -1,6 +1,7 @@
 package com.example.nav.listget.Activities;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -38,7 +39,7 @@ public class Login extends Activity implements MongoInterface {
     }
 
     public void register( View v ){}
-    public void login( View v ){}
+    public void login( View v ){ startActivity( new Intent( this, List.class ) );}
 
     public void processResult( String result ){}
 }

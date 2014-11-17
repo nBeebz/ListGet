@@ -121,10 +121,11 @@ public class List extends ListActivity {
                 //get selected item
                 ListView listView = (ListView) parent;
                 ListObject selectedCat = (ListObject) listView.getItemAtPosition(position);
-                //saveCatInDatabase(selectedCat);
+               // saveCatInDatabase(selectedCat);
                 Intent itemActivity = new Intent(act, ItemActivity.class);
                 itemActivity.putExtra("list", selectedCat);
                 itemActivity.putExtra("listsize",selectedCat.getNumTask());
+
                 startActivity(itemActivity);
             }
         });
@@ -132,6 +133,7 @@ public class List extends ListActivity {
         listCat.setRemoveListener(onRemove);
     }
 
+    
     /*drag & drop stuff*/
     private DragSortListView.DropListener onDrop = new DragSortListView.DropListener() {
         @Override
@@ -188,5 +190,4 @@ public class List extends ListActivity {
         super.onStart();
         createList();
     }
-
 }

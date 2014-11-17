@@ -26,6 +26,7 @@ import com.example.nav.listget.Adapters.ItemAdapter;
 import com.example.nav.listget.DBHelper;
 import com.example.nav.listget.DragSort.DragSortController;
 import com.example.nav.listget.DragSort.DragSortListView;
+import com.example.nav.listget.Interfaces.Display;
 import com.example.nav.listget.R;
 import com.example.nav.listget.parcelable.ItemObject;
 import com.example.nav.listget.parcelable.ListObject;
@@ -34,7 +35,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-public class ItemActivity extends ListActivity {
+public class ItemActivity extends ListActivity implements Display{
 
     static ItemAdapter adapter;
     private DragSortController mController;
@@ -45,7 +46,7 @@ public class ItemActivity extends ListActivity {
     int listsize = 0;
     ListObject selectedCat = null;
 
-    List<ItemObject> objects;
+      List<ItemObject> objects;
     EditText inputItem = null;
     TextView filterText;
 
@@ -118,6 +119,7 @@ public class ItemActivity extends ListActivity {
         Intent intent = getIntent();
         selectedCat = ((ListObject) intent.getExtras().getSerializable("list"));
         listsize = intent.getExtras().getInt("listsize");
+
 
         if (savedInstanceState == null) {
             resetList();
@@ -194,11 +196,13 @@ public class ItemActivity extends ListActivity {
             ContentValues cv = new ContentValues();
             cv.put("Item", inputItem.getText().toString());
             cv.put("categoryId", selectedCat.getCategoryId());
+            if (filter == 2)
+                cv.put("checked", 1);
             db.insert("Items", null, cv);
 
         }
 
-        /*private void updateNumItem(SQLiteDatabase db) {
+       /* private void updateNumItem(SQLiteDatabase db) {
             ContentValues cv = new ContentValues();
             number++;
             cv.put("number", number);
@@ -230,7 +234,6 @@ public class ItemActivity extends ListActivity {
         boolean dataInside = false;
 
         //カテゴリに合わせたquery用のstringを取得
-
             String sql = getQueryString(1);
             boolean notChecked = addToObjectsWithString(sql, db);
             sql = getQueryString(2);
@@ -257,6 +260,7 @@ public class ItemActivity extends ListActivity {
         boolean dataInside = c.moveToFirst();
         //if there are items inside
         if (dataInside) {
+
             // get items with importance
             c = (Cursor) db.rawQuery("select * from items where importance >-1 " + sql + " order by importance asc;", null);
             addToObjects(c, db);
@@ -313,9 +317,10 @@ public class ItemActivity extends ListActivity {
      */
     private void addToObjects(Cursor c, SQLiteDatabase db) {
         Boolean isEof = c.moveToFirst();
+        Cursor color;
         while (isEof) {
-            objects.add(new ItemObject(c.getInt(c.getColumnIndex("itemId")), c.getString(c.getColumnIndex("item")), true, c.getInt(c.getColumnIndex("checked"))));
-
+                objects.add(new ItemObject(c.getInt(c.getColumnIndex("itemId")), c.getString(c.getColumnIndex("item")), true, c.getInt(c.getColumnIndex("checked"))));
+          
             listsize++;
             isEof = c.moveToNext();
         }
@@ -353,8 +358,7 @@ public class ItemActivity extends ListActivity {
             }
             db.update("Items", cv, "ItemId = " + selectedItem.getItemId(), null);
         }
-
-    }
+       }
 
     /*drag & drop stuff*/
     private DragSortListView.DropListener onDrop = new DragSortListView.DropListener() {
@@ -396,5 +400,9 @@ public class ItemActivity extends ListActivity {
     }
 	/*drag & drop stuff done*/
 
+    public void setDisplayList( String result )
+    {
+
+    }
 
 }

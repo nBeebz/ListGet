@@ -2,10 +2,7 @@ package com.example.nav.listget.Activities;
 
 import android.app.Activity;
 import android.app.ListActivity;
-import android.content.ContentValues;
 import android.content.Intent;
-import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.view.View;
@@ -14,13 +11,16 @@ import android.widget.AdapterView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 
+import com.example.nav.listget.AccessObject;
 import com.example.nav.listget.Adapters.ListAdapter2;
-import com.example.nav.listget.DBHelper;
 import com.example.nav.listget.DragSort.DragSortController;
 import com.example.nav.listget.DragSort.DragSortListView;
 import com.example.nav.listget.MyDialogFragment;
 import com.example.nav.listget.R;
 import com.example.nav.listget.parcelable.ListObject;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 
@@ -30,6 +30,8 @@ public class List extends ListActivity {
 
     ListAdapter2 adapterCat = null;
     private DragSortController mController;
+    private AccessObject datasource;
+
 
     LinearLayout btn;
 
@@ -43,6 +45,9 @@ public class List extends ListActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_list);
+
+        datasource = new AccessObject(this);
+        datasource.open();
 
         //if(btn==null){
         btn = (LinearLayout) findViewById(R.id.LinearLayout);
@@ -71,41 +76,14 @@ public class List extends ListActivity {
 
 
     private void setAdapterForCatList() {
-        ArrayList<ListObject> objects = new ArrayList<ListObject>();
-        listsize = 0;
-
-        //open database
-        DBHelper helper = new DBHelper(this);
-        SQLiteDatabase db = helper.getReadableDatabase();
-        //カテゴリlistView
-        Cursor c = (Cursor) db.rawQuery("select * from categories order by importance desc;", null);
-        boolean isEof = c.moveToFirst();
-        int number = getNumber("select count(itemId) from items;", db);
-        //objects.add(new ListObject(-3, "AllItems",-1,number));
-        while (isEof) {
-            number = getNumber("select count(itemId) from items where categoryId =" + c.getInt(0) + ";", db);
-            objects.add(new ListObject(c.getInt(0), c.getString(1), number));
-            isEof = c.moveToNext();
-            listsize++;
-        }
-        number = getNumber("select count(itemId) from items where not exists (select categoryId from categories where items.categoryId = categories.categoryId) ;", db);
-        c.close();
-        db.close();
-
+        ArrayList<ListObject> objects = datasource.getLists();
+        listsize = objects.size();
         // set adapter
         listCat = (DragSortListView) getListView();
         adapterCat = new ListAdapter2(act, objects);
         listCat.setAdapter(adapterCat);
     }
 
-    public int getNumber(String st, SQLiteDatabase db) {
-        int number = 0;
-        Cursor num = (Cursor) db.rawQuery(st, null);
-        if (num.moveToFirst()) {
-            number = num.getInt(0);
-        }
-        return number;
-    }
 
     private void createList() {
         listCat = (DragSortListView) getListView();
@@ -172,22 +150,39 @@ public class List extends ListActivity {
 
     @Override
     public void onPause() {
-        super.onPause();
         //save task positions to the database
-        DBHelper helper = new DBHelper(this);
-        SQLiteDatabase db = helper.getReadableDatabase();
         ListView listView = (ListView) getListView();
         int importance = listsize;
-        for (int position = 0; position < listsize; position++) {
-            ListObject selectedCat = (ListObject) listView.getItemAtPosition(position);
-            ContentValues cv = new ContentValues();
-            cv.put("importance", importance--);
-            db.update("categories", cv, "categoryId = " + selectedCat.getCategoryId(), null);
-        }
+        datasource.saveLists(importance, listView);
+        datasource.close();
+        super.onPause();
+
     }
     @Override
-    public void onStart() {
-        super.onStart();
+    protected void onResume()
+    {
+        datasource.open();
         createList();
+        super.onResume();
+    }
+
+
+    public void processResult( String result )
+    {
+        JSONArray arr;
+        JSONObject obj;
+        ArrayList<ListObject> lists = new ArrayList<ListObject>();
+
+        try {
+            arr = new JSONArray(result);
+            for( int i=0; i<arr.length(); ++i )
+            {
+                lists.add( ListObject.parseJSON( arr.getJSONObject(i) ));
+            }
+        }
+        catch (Exception e){ e.printStackTrace(); }
+
+        //DO SOMETHING WITH THE LISTS
+
     }
 }

@@ -1,12 +1,8 @@
 package com.example.nav.listget.Activities;
 
-import android.app.Activity;
 import android.app.ListActivity;
-import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
-import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.view.KeyEvent;
@@ -22,14 +18,17 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.example.nav.listget.AccessObject;
 import com.example.nav.listget.Adapters.ItemAdapter;
-import com.example.nav.listget.DBHelper;
 import com.example.nav.listget.DragSort.DragSortController;
 import com.example.nav.listget.DragSort.DragSortListView;
 import com.example.nav.listget.Interfaces.MongoInterface;
 import com.example.nav.listget.R;
 import com.example.nav.listget.parcelable.ItemObject;
 import com.example.nav.listget.parcelable.ListObject;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -39,9 +38,8 @@ public class ItemActivity extends ListActivity implements MongoInterface {
 
     static ItemAdapter adapter;
     private DragSortController mController;
-    Bundle bundle = new Bundle();
+    private AccessObject datasource;
 
-    Activity act = this;
 
     int listsize = 0;
     ListObject selectedCat = null;
@@ -97,6 +95,9 @@ public class ItemActivity extends ListActivity implements MongoInterface {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_item);
+
+        datasource = new AccessObject(this);
+        datasource.open();
 
         this.getWindow().setSoftInputMode(LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
         ImageView setting = (ImageView)findViewById(R.id.icon_set);
@@ -175,38 +176,15 @@ public class ItemActivity extends ListActivity implements MongoInterface {
                 InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
                 imm.hideSoftInputFromWindow(v.getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
                 if (!(inputItem.getText().toString().equals(""))) {
-                    DBHelper helper = new DBHelper(act);
-                    SQLiteDatabase db = helper.getReadableDatabase();
-
-                    updateItem(db);
-                    //updateNumItem(db);
-
+                    datasource.insertAnItem(inputItem.getText().toString(),selectedCat.getCategoryId());
                     saveOrder();
                     resetList();
-
-                    db.close();
                 }
                 inputItem.setText("");
                 return true;
             }
             return false;
         }
-
-        private void updateItem(SQLiteDatabase db) {
-            ContentValues cv = new ContentValues();
-            cv.put("Item", inputItem.getText().toString());
-            cv.put("categoryId", selectedCat.getCategoryId());
-            db.insert("Items", null, cv);
-
-        }
-
-       /* private void updateNumItem(SQLiteDatabase db) {
-            ContentValues cv = new ContentValues();
-            number++;
-            cv.put("number", number);
-            db.update("SelectedCategories", cv, "categoryId = " + selectedCat.getCategoryId(), null);
-
-        }*/
     }
 
 
@@ -224,80 +202,21 @@ public class ItemActivity extends ListActivity implements MongoInterface {
      * reset, recreate listView and filterText
      */
     private void resetList() {
-        DBHelper helper = new DBHelper(this);
-        SQLiteDatabase db = helper.getReadableDatabase();
-
         objects = new ArrayList<ItemObject>();
-        listsize = 0;
-        boolean dataInside = false;
-
-        //カテゴリに合わせたquery用のstringを取得
-            String sql = getQueryString(1);
-            boolean notChecked = addToObjectsWithString(sql, db);
-            sql = getQueryString(2);
-            boolean checked = addToObjectsWithString(sql, db);
-            if (notChecked || checked)
-                dataInside = true;
         if(selectedCat != null) {
-            Cursor c = (Cursor) db.rawQuery("select * from categories where categoryId == " + selectedCat.getCategoryId() + ";", null);
-            c.moveToFirst();
-            selectedCat.setCategory(c.getString(c.getColumnIndex("category")));
+            objects = datasource.getItems(selectedCat.getCategoryId());
+            listsize = objects.size();
+            String newName = datasource.getListNameById(selectedCat.getCategoryId());
+            selectedCat.setCategory(newName);
         }
-        db.close();
         adapter = new ItemAdapter(this, objects);
         setListAdapter(adapter);
-        if (!dataInside)
+        if (listsize<1)
             setEmptyText("NoItems");
         filterText.setText(getFilterString());
     }
 
 
-    private boolean addToObjectsWithString(String sql, SQLiteDatabase db) {
-        //category
-        Cursor c = (Cursor) db.rawQuery("select * from items where importance >-100 " + sql + ";", null);
-        boolean dataInside = c.moveToFirst();
-        //if there are items inside
-        if (dataInside) {
-
-            // get items with importance
-            c = (Cursor) db.rawQuery("select * from items where importance >-1 " + sql + " order by importance asc;", null);
-            addToObjects(c, db);
-
-            //get items without importance
-            c = (Cursor) db.rawQuery("select * from items where importance <0 " + sql + ";", null);
-            addToObjects(c, db);
-        }
-        c.close();
-        return dataInside;
-    }
-
-
-    /**
-     * Return cuery string depends on category and filter
-     *
-     * @param filter1
-     * @return sql for query
-     */
-    public String getQueryString(int filter1) {
-        String sql = "";
-        if (selectedCat != null) {
-            if (selectedCat.getCategoryId() > -1) {
-                if (selectedCat.getCategory().equals("undefined")) {
-                    sql = " and not exists (select categoryId from categories where items.categoryId = categories.categoryId) ";
-                } else {
-                    sql = " and categoryId == " + selectedCat.getCategoryId() + " ";
-                }
-            }
-            // all task = 0, unChecked=1, checked=2
-            if (filter1 == 0) {
-            } else if (filter1 == 1) {
-                sql += " and checked != 1 ";
-            } else if (filter1 == 2) {
-                sql += " and checked == 1 ";
-            }
-        }
-        return sql;
-    }
 
     /**
      * When there is no task, show the text
@@ -307,56 +226,27 @@ public class ItemActivity extends ListActivity implements MongoInterface {
         tv.setText(text);
     }
 
-    /**
-     * put item object to item object list
-     *
-     * @param c  cursor which is already separated by category
-     * @param db
-     */
-    private void addToObjects(Cursor c, SQLiteDatabase db) {
-        Boolean isEof = c.moveToFirst();
-        Cursor color;
-        while (isEof) {
-                objects.add(new ItemObject(c.getInt(c.getColumnIndex("itemId")), c.getString(c.getColumnIndex("item")), true, c.getInt(c.getColumnIndex("checked"))));
-          
-            listsize++;
-            isEof = c.moveToNext();
-        }
-    }
 
-
+    public void saveOrder() {
+        ListView listView = (ListView) getListView();
+        datasource.saveOrderOfItemList(listView, listsize);
+       }
     /**
      * save the order
      */
     @Override
     public void onPause() {
-        super.onPause();
-        //save item positions to the database
         saveOrder();
+        datasource.close();
+        super.onPause();
     }
-
     @Override
-    public void onStart(){
-        super.onStart();
+    protected void onResume()
+    {
+        datasource.open();
         resetList();
+        super.onResume();
     }
-
-    public void saveOrder() {
-        DBHelper helper = new DBHelper(this);
-        SQLiteDatabase db = helper.getReadableDatabase();
-        ListView listView = (ListView) getListView();
-        for (int position = 0; position < listsize; position++) {
-            ItemObject selectedItem = (ItemObject) listView.getItemAtPosition(position);
-            ContentValues cv = new ContentValues();
-            cv.put("importance", position);
-            if (selectedItem.getChecked() != 0) {
-                cv.put("checked", 1);
-            } else {
-                cv.put("checked", 0);
-            }
-            db.update("Items", cv, "ItemId = " + selectedItem.getItemId(), null);
-        }
-       }
 
     /*drag & drop stuff*/
     private DragSortListView.DropListener onDrop = new DragSortListView.DropListener() {
@@ -400,7 +290,21 @@ public class ItemActivity extends ListActivity implements MongoInterface {
 
     public void processResult( String result )
     {
+        JSONArray arr;
+        JSONObject obj;
+        ArrayList<ItemObject> items = new ArrayList<ItemObject>();
+
+        try {
+            arr = new JSONArray(result);
+            for( int i=0; i<arr.length(); ++i )
+            {
+                items.add( ItemObject.parseJSON( arr.getJSONObject(i) ));
+            }
+        }
+        catch (Exception e){ e.printStackTrace();
+        }
+
+        //DO SOMETHING WITH THE ITEMS
 
     }
-
 }

@@ -1,9 +1,7 @@
 package com.example.nav.listget.Activities;
 
 import android.app.Activity;
-import android.content.ContentValues;
 import android.content.Intent;
-import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -11,8 +9,9 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
-import com.example.nav.listget.DBHelper;
+import com.example.nav.listget.AccessObject;
 import com.example.nav.listget.R;
 import com.example.nav.listget.parcelable.ListObject;
 
@@ -21,11 +20,15 @@ public class EditListActivity extends Activity {
 
     private ListObject selectedCat = null;
     private EditText editText = null;
+    private AccessObject datasource;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit_list);
+        datasource = new AccessObject(this);
+        datasource.open();
         setButtons();
         Intent intent = getIntent();
         selectedCat = ((ListObject) intent.getExtras().getSerializable("list"));
@@ -56,22 +59,21 @@ public class EditListActivity extends Activity {
 
     class ClickListener implements OnClickListener {
         public void onClick(View v){
-            //open database
-            DBHelper helper = new DBHelper(getBaseContext());
-            SQLiteDatabase db = helper.getReadableDatabase();
-            ContentValues cv = new ContentValues();
             switch(v.getId())
             {
                 case R.id.b_save:
-                    selectedCat.setCategory(editText.getText().toString());
-                    cv.put("category", selectedCat.getCategory() );
-                    db.update("categories", cv, "categoryId = "+selectedCat.getCategoryId(), null);
-                    db.close();
-                    finish();
+                    if(editText.getText().toString() ==""){
+                        Toast.makeText(getBaseContext(), "The name of the list cannot be empty. Failed to save.", Toast.LENGTH_LONG).show();
+                    }else {
+                        selectedCat.setCategory(editText.getText().toString());
+                        datasource.updateListName(selectedCat.getCategory(), selectedCat.getCategoryId());
+                        selectedCat.setCategory(editText.getText().toString());
+                        finish();
+                    }
                     break;
 
                 case R.id.b_delete:
-                    db.delete("categories", "categoryId = " + selectedCat.getCategoryId(), null);
+                    datasource.deleteListById(selectedCat.getCategoryId());
                     Intent intent = new Intent(getBaseContext(), List.class);
                     intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                     startActivity(intent);
@@ -88,5 +90,18 @@ public class EditListActivity extends Activity {
         Button btn4 = (Button)findViewById(R.id.b_delete);
         btn4.setOnClickListener(listener);
     }
+
+    @Override
+    protected void onResume()
+    {
+        datasource.open();
+        super.onResume();
+    }
+    @Override
+    public void onPause() {
+        datasource.close();
+        super.onPause();
+    }
+
 
 }

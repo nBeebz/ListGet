@@ -10,22 +10,31 @@ import java.io.Serializable;
 public class ItemObject implements Serializable {
     private int itemId;
     private String item;
-    private boolean inDatabase;
     private int complete = 0;
+    private String memo;
 
-    public ItemObject(int id, String t, boolean d){
+    public ItemObject(int id, String t){
         itemId = id;
         item = t;
-        inDatabase = d;
 
     }
 
-    public ItemObject(int id, String t, boolean d, int checked){
+    public ItemObject(int id, String t, String m){
         itemId = id;
         item = t;
-        inDatabase = d;
+        memo = m;
+
+    }
+
+    public ItemObject(int id, String t, int checked){
+        itemId = id;
+        item = t;
         complete = checked;
 
+    }
+
+    public String getMemo(){
+        return memo;
     }
     public String toString(){
         return  item;
@@ -47,13 +56,6 @@ public class ItemObject implements Serializable {
         return item;
     }
 
-    public void putInDatabase(){
-        inDatabase = true;
-    }
-
-    public boolean ifInDatabase(){
-        return inDatabase;
-    }
     public int getChecked(){
         return complete;
     }
@@ -65,7 +67,6 @@ public class ItemObject implements Serializable {
     {
         int id = 0;
         String name = null;
-        boolean db = true;
 
         try{
             id = obj.getInt( Mongo.KEY_ID );
@@ -73,6 +74,6 @@ public class ItemObject implements Serializable {
         }
         catch (Exception e ){ e.printStackTrace(); }
 
-        return new ItemObject( id, name, db );
+        return new ItemObject( id, name );
     }
 }

@@ -41,5 +41,7 @@ public class Login extends Activity implements MongoInterface {
     public void register( View v ){}
     public void login( View v ){ startActivity( new Intent( this, List.class ) );}
 
-    public void processResult( String result ){}
+    public void processResult( String result ){
+
+    }
 }

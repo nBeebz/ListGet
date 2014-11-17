@@ -29,7 +29,6 @@ public class EditListActivity extends Activity {
         setButtons();
         Intent intent = getIntent();
         selectedCat = ((ListObject) intent.getExtras().getSerializable("list"));
-
         editText = (EditText)findViewById(R.id.category);
         editText.setText(selectedCat.getCategory());
 

@@ -2,13 +2,15 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.nav.listget" >
 
+    <uses-permission android:name="android.permission.READ_CONTACTS" />
+
     <application
         android:allowBackup="true"
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
         <activity
-            android:name=".Activities.List"
+            android:name="com.example.nav.listget.Activities.List"
             android:label="@string/title_activity_list" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -17,16 +19,20 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".Activities.ItemActivity"
+            android:name="com.example.nav.listget.Activities.ItemActivity"
             android:label="@string/title_activity_item" >
         </activity>
         <activity
-            android:name=".Activities.EditListActivity"
+            android:name="com.example.nav.listget.Activities.EditListActivity"
             android:label="@string/title_activity_edit_list" >
         </activity>
         <activity
-            android:name=".Activities.EditItemActivity"
+            android:name="com.example.nav.listget.Activities.EditItemActivity"
             android:label="@string/title_activity_edit_item" >
+        </activity>
+        <activity
+            android:name="com.example.nav.listget.Contact_pickers"
+            android:label="@string/title_activity_contact_pickers" >
         </activity>
     </application>
 

@@ -30,9 +30,9 @@
     <string name="delete">Delete</string>
     <string name="memo">memo</string>
     <string name="item">item</string>
-
     <string name="list_name">List Name</string>
     <string name="title_activity_edit_list">EditListActivity</string>
     <string name="title_activity_edit_item">EditItemActivity</string>
+    <string name="title_activity_contact_pickers">Contact_pickers</string>
 
 </resources>

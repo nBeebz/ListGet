@@ -21,8 +21,10 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.nav.listget.Adapters.ItemAdapter;
+
 import com.example.nav.listget.DBHelper;
 import com.example.nav.listget.DragSort.DragSortController;
 import com.example.nav.listget.DragSort.DragSortListView;
@@ -80,18 +82,35 @@ public class ItemActivity extends ListActivity {
         return true;
     }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-        if (id == R.id.action_settings) {
-            return true;
-        }
-        return super.onOptionsItemSelected(item);
-    }
+    public boolean onOptionsItemSelected(MenuItem item)
+    {
+        switch (item.getItemId())
+        {
+            case R.id.share:
+                Intent contact_select = new Intent(getBaseContext(), ContactPicker.class);
+                contact_select.putExtra("list", selectedCat);
+                startActivity(contact_select);
+                return true;
 
+            case R.id.from_contacts:
+                Toast.makeText(getBaseContext(), "From Contacts", Toast.LENGTH_LONG).show();
+                return true;
+
+            case R.id.edit:
+                Intent intent = new Intent(getBaseContext(), EditListActivity.class);
+                intent.putExtra("list", selectedCat);
+                startActivity(intent);
+
+                return true;
+
+            case R.id.item2:
+                Toast.makeText(getBaseContext(), "item2", Toast.LENGTH_LONG).show();
+                return true;
+
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
 
     /**
      * Set EditTextField and Category textview field, set Selectedcategory

@@ -1,5 +1,9 @@
 package com.example.nav.listget.parcelable;
 
+import com.example.nav.listget.Mongo;
+
+import org.json.JSONObject;
+
 import java.io.Serializable;
 
 /* Stores values for items */
@@ -7,7 +11,6 @@ public class ItemObject implements Serializable {
     private int itemId;
     private String item;
     private boolean inDatabase;
-    private int color = 0;
     private int complete = 0;
 
     public ItemObject(int id, String t, boolean d){
@@ -17,11 +20,10 @@ public class ItemObject implements Serializable {
 
     }
 
-    public ItemObject(int id, String t, boolean d, int c, int checked){
+    public ItemObject(int id, String t, boolean d, int checked){
         itemId = id;
         item = t;
         inDatabase = d;
-        color = c;
         complete = checked;
 
     }
@@ -36,9 +38,6 @@ public class ItemObject implements Serializable {
     public void setItem(String t){
         item = t;
     }
-    public void setColor(int c){
-        color = c;
-    }
 
     public int getItemId(){
         return itemId;
@@ -46,9 +45,6 @@ public class ItemObject implements Serializable {
 
     public String getItem(){
         return item;
-    }
-    public int getColor(){
-        return color;
     }
 
     public void putInDatabase(){
@@ -65,5 +61,18 @@ public class ItemObject implements Serializable {
         complete = d;
     }
 
+    public static ItemObject parseJSON( JSONObject obj )
+    {
+        int id = 0;
+        String name = null;
+        boolean db = true;
 
+        try{
+            id = obj.getInt( Mongo.KEY_ID );
+            name = obj.getString( Mongo.KEY_NAME );
+        }
+        catch (Exception e ){ e.printStackTrace(); }
+
+        return new ItemObject( id, name, db );
+    }
 }

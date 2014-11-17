@@ -18,13 +18,17 @@ import com.example.nav.listget.Adapters.ListAdapter2;
 import com.example.nav.listget.DBHelper;
 import com.example.nav.listget.DragSort.DragSortController;
 import com.example.nav.listget.DragSort.DragSortListView;
+import com.example.nav.listget.Interfaces.MongoInterface;
 import com.example.nav.listget.MyDialogFragment;
 import com.example.nav.listget.R;
 import com.example.nav.listget.parcelable.ListObject;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
+
 import java.util.ArrayList;
 
-public class List extends ListActivity {
+public class List extends ListActivity implements MongoInterface{
 
     //EditCategoryFragment frag;
 
@@ -84,7 +88,7 @@ public class List extends ListActivity {
         //objects.add(new ListObject(-3, "AllItems",-1,number));
         while (isEof) {
             number = getNumber("select count(itemId) from items where categoryId =" + c.getInt(0) + ";", db);
-            objects.add(new ListObject(c.getInt(0), c.getString(1), c.getInt(2), number));
+            objects.add(new ListObject(c.getInt(0), c.getString(1), number));
             isEof = c.moveToNext();
             listsize++;
         }
@@ -199,5 +203,24 @@ public class List extends ListActivity {
             cv.put("importance", importance--);
             db.update("categories", cv, "categoryId = " + selectedCat.getCategoryId(), null);
         }
+    }
+
+    public void processResult( String result )
+    {
+        JSONArray arr;
+        JSONObject obj;
+        ArrayList<ListObject> lists = new ArrayList<ListObject>();
+
+        try {
+            arr = new JSONArray(result);
+            for( int i=0; i<arr.length(); ++i )
+            {
+                lists.add( ListObject.parseJSON( arr.getJSONObject(i) ));
+            }
+        }
+        catch (Exception e){ e.printStackTrace(); }
+
+        //DO SOMETHING WITH THE LISTS
+
     }
 }

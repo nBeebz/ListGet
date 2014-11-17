@@ -45,7 +45,7 @@ public class MyDialogFragment extends DialogFragment {
 			Button b_delete = (Button) dialog.findViewById(R.id.b_delete);
 			b_delete.setVisibility(View.GONE);
 			selectedCat.setCategory("");
-			selectedCat.setColor(1);
+		    //selectedCat.setColor(1);
 			insertButton(dialog);
 
 		}else{

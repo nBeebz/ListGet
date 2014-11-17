@@ -1,30 +1,26 @@
 package com.example.nav.listget.parcelable;
 
+import com.example.nav.listget.Mongo;
+
+import org.json.JSONObject;
+
 import java.io.Serializable;
 
 /* Storing items for a list */
 public class ListObject implements Serializable {
     private int categoryId;
     private String category;
-    private int color;
     private int numTask = 0;
 
 
-    public ListObject(int id, String l, int c){
-        categoryId = id;
-        category = l;
-        color = c;
-
-    }
     public ListObject(int id, String l){
         categoryId = id;
         category = l;
     }
 
-    public ListObject(int id, String l, int c, int n){
+    public ListObject(int id, String l,  int n){
         categoryId = id;
         category = l;
-        color = c;
         numTask = n;
     }
 
@@ -46,9 +42,6 @@ public class ListObject implements Serializable {
     public void setCategory(String t){
         category = t;
     }
-    public void setColor(int c){
-        color = c;
-    }
 
     public int getCategoryId(){
         return categoryId;
@@ -58,10 +51,20 @@ public class ListObject implements Serializable {
         return category;
     }
 
-    public int getColor(){
-        return color;
+    public static ListObject parseJSON( JSONObject obj )
+    {
+        int id = 0;
+        int items = 0;
+        String name = null;
+
+        try {
+            id = obj.getInt(Mongo.KEY_ID);
+            name = obj.getString( Mongo.KEY_NAME );
+
+        }
+        catch ( Exception e ){ e.printStackTrace(); }
+
+        return new ListObject( id, name );
     }
-
-
 
 }

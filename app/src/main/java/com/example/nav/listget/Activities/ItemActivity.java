@@ -28,15 +28,19 @@ import com.example.nav.listget.Adapters.ItemAdapter;
 import com.example.nav.listget.DBHelper;
 import com.example.nav.listget.DragSort.DragSortController;
 import com.example.nav.listget.DragSort.DragSortListView;
+import com.example.nav.listget.Interfaces.MongoInterface;
 import com.example.nav.listget.R;
 import com.example.nav.listget.parcelable.ItemObject;
 import com.example.nav.listget.parcelable.ListObject;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
 
 
-public class ItemActivity extends ListActivity {
+public class ItemActivity extends ListActivity implements MongoInterface {
 
     static ItemAdapter adapter;
     private DragSortController mController;
@@ -351,9 +355,9 @@ public class ItemActivity extends ListActivity {
         while (isEof) {
             color = (Cursor) db.rawQuery("select * from categories where categoryId=" + c.getInt(2) + ";", null);
             if (color.moveToFirst()) {
-                objects.add(new ItemObject(c.getInt(c.getColumnIndex("itemId")), c.getString(c.getColumnIndex("item")), true, color.getInt(color.getColumnIndex("color")), c.getInt(c.getColumnIndex("checked"))));
+                objects.add(new ItemObject(c.getInt(c.getColumnIndex("itemId")), c.getString(c.getColumnIndex("item")), true, c.getInt(c.getColumnIndex("checked"))));
             } else {
-                objects.add(new ItemObject(c.getInt(c.getColumnIndex("itemId")), c.getString(c.getColumnIndex("item")), true, 0, c.getInt(c.getColumnIndex("checked"))));
+                objects.add(new ItemObject(c.getInt(c.getColumnIndex("itemId")), c.getString(c.getColumnIndex("item")), true, c.getInt(c.getColumnIndex("checked"))));
             }
             listsize++;
             isEof = c.moveToNext();
@@ -385,7 +389,7 @@ public class ItemActivity extends ListActivity {
             ItemObject selectedItem = (ItemObject) listView.getItemAtPosition(position);
             ContentValues cv = new ContentValues();
             cv.put("importance", position);
-            if (selectedItem.getChecked() == 1) {
+            if (selectedItem.getChecked() != 0) {
                 cv.put("checked", 1);
             } else {
                 cv.put("checked", 0);
@@ -437,5 +441,23 @@ public class ItemActivity extends ListActivity {
     }
 	/*drag & drop stuff done*/
 
+    public void processResult( String result )
+    {
+        JSONArray arr;
+        JSONObject obj;
+        ArrayList<ItemObject> items = new ArrayList<ItemObject>();
+
+        try {
+            arr = new JSONArray(result);
+            for( int i=0; i<arr.length(); ++i )
+            {
+                items.add( ItemObject.parseJSON( arr.getJSONObject(i) ));
+            }
+        }
+        catch (Exception e){ e.printStackTrace(); }
+
+        //DO SOMETHING WITH THE ITEMS
+
+    }
 
 }

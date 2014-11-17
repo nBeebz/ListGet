@@ -34,5 +34,6 @@
     <string name="title_activity_edit_list">EditListActivity</string>
     <string name="title_activity_edit_item">EditItemActivity</string>
     <string name="title_activity_display_test">DisplayTest</string>
+    <string name="title_activity_login">Login</string>
 
 </resources>

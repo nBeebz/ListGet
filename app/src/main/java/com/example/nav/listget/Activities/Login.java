@@ -5,33 +5,23 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.EditText;
-import android.widget.TextView;
 
 import com.example.nav.listget.Interfaces.MongoInterface;
-import com.example.nav.listget.Mongo;
 import com.example.nav.listget.R;
 
-import org.json.JSONArray;
-
-public class DisplayTest extends Activity implements MongoInterface {
-
-    private Mongo m;
-    private JSONArray arr;
+public class Login extends Activity implements MongoInterface {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_display_test);
-        m = new Mongo( this );
-        m.get( "users", 1 );
+        setContentView(R.layout.activity_login);
     }
 
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.display_test, menu);
+        getMenuInflater().inflate(R.menu.login, menu);
         return true;
     }
 
@@ -47,32 +37,8 @@ public class DisplayTest extends Activity implements MongoInterface {
         return super.onOptionsItemSelected(item);
     }
 
+    public void register( View v ){}
+    public void login( View v ){}
 
-    public void getMongo( View v )
-    {
-        String text = "";
-        int num = Integer.parseInt(((EditText) findViewById(R.id.num)).getText().toString());
-        try {
-            text = arr.get(--num).toString();
-        }
-        catch (Exception e)
-        {
-            e.printStackTrace();
-        }
-
-        ((TextView)findViewById(R.id.text)).setText( text );
-    }
-
-
-    public void setDisplayList( String result )
-    {
-        try
-        {
-            arr = new JSONArray(result);
-        }
-        catch (Exception e)
-        {
-            e.printStackTrace();
-        }
-    }
+    public void processResult( String result ){}
 }

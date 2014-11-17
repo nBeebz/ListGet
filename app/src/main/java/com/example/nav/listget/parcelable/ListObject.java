@@ -1,5 +1,9 @@
 package com.example.nav.listget.parcelable;
 
+import com.example.nav.listget.Mongo;
+
+import org.json.JSONObject;
+
 import java.io.Serializable;
 
 /* Storing items for a list */
@@ -47,5 +51,20 @@ public class ListObject implements Serializable {
         return category;
     }
 
+    public static ListObject parseJSON( JSONObject obj )
+    {
+        int id = 0;
+        int items = 0;
+        String name = null;
+
+        try {
+            id = obj.getInt(Mongo.KEY_ID);
+            name = obj.getString( Mongo.KEY_NAME );
+
+        }
+        catch ( Exception e ){ e.printStackTrace(); }
+
+        return new ListObject( id, name );
+    }
 
 }

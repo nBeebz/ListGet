@@ -26,16 +26,19 @@ import com.example.nav.listget.Adapters.ItemAdapter;
 import com.example.nav.listget.DBHelper;
 import com.example.nav.listget.DragSort.DragSortController;
 import com.example.nav.listget.DragSort.DragSortListView;
-import com.example.nav.listget.Interfaces.Display;
+import com.example.nav.listget.Interfaces.MongoInterface;
 import com.example.nav.listget.R;
 import com.example.nav.listget.parcelable.ItemObject;
 import com.example.nav.listget.parcelable.ListObject;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
 
 
-public class ItemActivity extends ListActivity implements Display{
+public class ItemActivity extends ListActivity implements MongoInterface {
 
     static ItemAdapter adapter;
     private DragSortController mController;
@@ -420,8 +423,22 @@ public class ItemActivity extends ListActivity implements Display{
     }
 	/*drag & drop stuff done*/
 
-    public void setDisplayList( String result )
+    public void processResult( String result )
     {
+        JSONArray arr;
+        JSONObject obj;
+        ArrayList<ItemObject> items = new ArrayList<ItemObject>();
+
+        try {
+            arr = new JSONArray(result);
+            for( int i=0; i<arr.length(); ++i )
+            {
+                items.add( ItemObject.parseJSON( arr.getJSONObject(i) ));
+            }
+        }
+        catch (Exception e){ e.printStackTrace(); }
+
+        //DO SOMETHING WITH THE ITEMS
 
     }
 

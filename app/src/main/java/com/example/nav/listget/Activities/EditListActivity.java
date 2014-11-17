@@ -18,7 +18,6 @@ import com.example.nav.listget.parcelable.ListObject;
 
 public class EditListActivity extends Activity {
 
-
     private ListObject selectedCat = null;
     private EditText editText = null;
 
@@ -33,7 +32,6 @@ public class EditListActivity extends Activity {
         editText.setText(selectedCat.getCategory());
 
     }
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

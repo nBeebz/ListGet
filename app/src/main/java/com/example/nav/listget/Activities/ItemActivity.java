@@ -237,6 +237,11 @@ public class ItemActivity extends ListActivity {
             boolean checked = addToObjectsWithString(sql, db);
             if (notChecked || checked)
                 dataInside = true;
+        if(selectedCat != null) {
+            Cursor c = (Cursor) db.rawQuery("select * from categories where categoryId == " + selectedCat.getCategoryId() + ";", null);
+            c.moveToFirst();
+            selectedCat.setCategory(c.getString(c.getColumnIndex("category")));
+        }
         db.close();
         adapter = new ItemAdapter(this, objects);
         setListAdapter(adapter);

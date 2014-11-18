@@ -12,11 +12,6 @@
         <activity
             android:name=".Activities.List"
             android:label="@string/title_activity_list" >
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
         </activity>
         <activity
             android:name=".Activities.ItemActivity"
@@ -33,11 +28,6 @@
         <activity
             android:name=".Activities.DisplayTest"
             android:label="@string/title_activity_display_test" >
-        </activity>
-        <activity
-            android:name=".LoginActivity"
-            android:label="@string/title_activity_login"
-            android:windowSoftInputMode="adjustResize|stateHidden" >
         </activity>
 
         <meta-data

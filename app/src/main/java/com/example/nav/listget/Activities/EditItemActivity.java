@@ -1,21 +1,17 @@
 package com.example.nav.listget.Activities;
 
 import android.app.Activity;
-import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
-import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
-import com.example.nav.listget.DBHelper;
+import com.example.nav.listget.AccessObject;
 import com.example.nav.listget.R;
 import com.example.nav.listget.parcelable.ItemObject;
 import com.example.nav.listget.parcelable.ListObject;
@@ -27,10 +23,16 @@ public class EditItemActivity extends Activity {
     EditText textMemo;
     int selectedItem;
     int selectedCat;
+    private AccessObject datasource;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit_item);
+
+        datasource = new AccessObject(this);
+        datasource.open();
+
         MyOnFocusChangeListener focusChangeListener = new MyOnFocusChangeListener();
         //itemName
         itemName = (EditText)findViewById(R.id.item_value);
@@ -45,7 +47,7 @@ public class EditItemActivity extends Activity {
 
     }
 
-
+/*
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -64,12 +66,12 @@ public class EditItemActivity extends Activity {
         }
         return super.onOptionsItemSelected(item);
     }
+    */
 
  
 
     @Override
     public void onStart() {
-        // TODO Auto-generated method stub
         super.onStart();
         setStoredData();
     }
@@ -102,67 +104,50 @@ public class EditItemActivity extends Activity {
      * put data to edit text
      */
     private void setStoredData(){
-        DBHelper helper = new DBHelper(this);
-        SQLiteDatabase db = helper.getReadableDatabase();
-        Cursor c = (Cursor)db.rawQuery("select * from items where itemId="+selectedItem+";", null);
-        if(c.moveToFirst()){
-            itemName.setText(c.getString(c.getColumnIndex("item")));
-            textMemo.setText(c.getString(c.getColumnIndex("memo")));
-        }
-        db.close();
+        ItemObject item =datasource.getItemById(selectedItem);
+        itemName.setText(item.getItem());
+        textMemo.setText(item.getMemo());
     }
-
-
 
     /**
      * listener class
      */
-
     class ClickListener implements OnClickListener {
         public void onClick(View v){
-            //open database
-            DBHelper helper = new DBHelper(getBaseContext());
-            SQLiteDatabase db = helper.getReadableDatabase();
-            ContentValues cv = getDataFromFields();
             switch(v.getId())
             {
                 case R.id.save:
-                    save(db, cv);
+                    String nameItem = itemName.getText().toString();
+                    String memoItem = textMemo.getText().toString();
+                    ItemObject item = new ItemObject(selectedItem, nameItem,memoItem);
+                    if(nameItem.equals("")) {
+                        Toast.makeText(getBaseContext(), "The name of the item cannot be empty. Failed to save.", Toast.LENGTH_LONG).show();
+                    }else{
+                        datasource.updateItem(item);
+                        finish();
+                    }
                     break;
 
                 case R.id.delete:
-                    db.delete("items", "itemId = "+selectedItem, null);
+                    datasource.deleteItemById(selectedItem);
+                    finish();
                     break;
                 default:
                     break;
             }
-            db.close();
-            finish();
         }
     }
 
-    /**
-     * put everything to store in cv
-     * @return　cv things in imput field
-     */
-    public ContentValues getDataFromFields(){
-        ContentValues cv = new ContentValues();
-        String inputTask = (String)itemName.getText().toString();
-        String inputMemo = textMemo.getText().toString();
 
-        if(!(inputTask.equals(""))){
-            cv.put("item", inputTask );
-            cv.put("memo", inputMemo );
-        }
-        return cv;
+    @Override
+    protected void onResume()
+    {
+        datasource.open();
+        super.onResume();
     }
-
-    /**
-     * save data in cv to database
-     * @param db database
-     * @param cv data
-     */
-    private void save(SQLiteDatabase db,ContentValues cv){
-        db.update("items", cv, "itemId = "+selectedItem, null);
+    @Override
+    public void onPause() {
+        datasource.close();
+        super.onPause();
     }
 }

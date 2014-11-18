@@ -46,16 +46,5 @@ public class DBHelper extends SQLiteOpenHelper {
         db.execSQL("insert into categories(category)values ('private');");
         db.execSQL("insert into categories(category)values ('shopping');");
 
-
-        db.execSQL("create table SelectedCategories(" +
-                "categoryId INTEGER," +
-                "category text not null,"+
-                "filter integer default 0," +
-                "number integer default 0" +
-                ");");
-
-        // filter 0 = allItems, 1=unCheckedItems, 2=checkedItems
-        db.execSQL("insert into SelectedCategories(categoryId, category) values (1, 'job');");
-
     }
 }

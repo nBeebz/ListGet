@@ -62,5 +62,15 @@ public class DisplayTest extends Activity implements MongoInterface {
     }
 
 
-    public void processResult( String result ){}
+    public void processResult( String result )
+    {
+        try
+        {
+            arr = new JSONArray(result);
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+    }
 }

@@ -30,8 +30,8 @@ public class Mongo {
 
     private final MongoInterface activity;
 
-    private static final String BASE_URL = "https://api.mongolab.com/api/1//databases/sandbox/collections/";
-    private static final String API_KEY = "apiKey=bup2ZBWGDC-IlRrpRsjTtJqiM_QKSmKa";
+    private static final String BASE_URL = "https://api.mongolab.com/api/1//databases/listget/collections/";
+    private static final String API_KEY = "apiKey=udmFRpCikTGkubKaohV0exs_6xotJN5m";
 
     public static final String KEY_EMAIL = "\"email\"";
     public static final String KEY_PASSWORD = "\"password\"";

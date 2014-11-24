@@ -1,30 +1,44 @@
 package com.example.nav.listget;
 
 import android.content.ContentValues;
-import android.content.Context;
 import android.database.Cursor;
-import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
+import android.util.Log;
 import android.widget.ListView;
 
+import com.example.nav.listget.Interfaces.MongoInterface;
 import com.example.nav.listget.parcelable.ItemObject;
 import com.example.nav.listget.parcelable.ListObject;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 
 /**
  * Created by mao on 2014/11/17.
  */
-public class AccessObject {
-    private final DBHelper dbHelper;
+public class AccessObject2 implements MongoInterface {
     private SQLiteDatabase database;
 
+    private final Mongo m;
+    private JSONArray jsonarray;
 
-    public AccessObject(Context context)
+    static final String ID = "_id";
+    static final String USER_DB = "users";
+    static final String USER_DB_COL_EMAIL = "email";
+    static final String USER_DB_COL_PASS  = "password";
+
+
+    public AccessObject2()
     {
-        dbHelper = new DBHelper(context);
+        m = new Mongo(this);
+
+        //dbHelper = new DBHelper(context);
     }
 
+    /*
     public void open()throws SQLException
     {
         database = dbHelper.getWritableDatabase();
@@ -32,7 +46,7 @@ public class AccessObject {
 
     public void close() {
         dbHelper.close();
-    }
+    }*/
 
     /**
      * save all the lists in list activity
@@ -41,15 +55,15 @@ public class AccessObject {
      * @param listView all the lists in list view
      */
 
-    /*public void saveLists(int listsize, ListView listView) {
+    public void saveLists(int listsize, ListView listView) {
         int importance = listsize;
         for (int position = 0; position < listsize; position++) {
             ListObject selectedCat = (ListObject) listView.getItemAtPosition(position);
             ContentValues cv = new ContentValues();
-            //cv.put("importance", importance--);
+            cv.put("importance", importance--);
             database.update("categories", cv, "categoryId = " + selectedCat.getCategoryId(), null);
         }
-    }*/
+    }
 
     /**
      * get all the lists in database with number of items in a list
@@ -57,7 +71,7 @@ public class AccessObject {
      */
     public ArrayList<ListObject> getLists(){
         ArrayList<ListObject> objects = new ArrayList<ListObject>();
-        Cursor c = (Cursor) database.rawQuery("select * from categories;", null);
+        Cursor c = (Cursor) database.rawQuery("select * from categories order by importance desc;", null);
         boolean isEof = c.moveToFirst();
         while (isEof) {
             int number = getNumber(c.getInt(c.getColumnIndex("categoryId")));
@@ -100,7 +114,7 @@ public class AccessObject {
         for (int position = 0; position < listsize; position++) {
             ItemObject selectedItem = (ItemObject) listView.getItemAtPosition(position);
             ContentValues cv = new ContentValues();
-            //cv.put("importance", position);
+            cv.put("importance", position);
              cv.put("checked", selectedItem.getChecked());
             database.update("Items", cv, "ItemId = " + selectedItem.getItemId(), null);
         }
@@ -146,12 +160,11 @@ public class AccessObject {
 
             c = (Cursor) database.rawQuery("select * from items where importance < 0 and checked != 0 order by importance asc;", null);
             addToItemObjectArrayList(c, objects);
-
+            */
             c = (Cursor) database.rawQuery("select * from items where importance >-1 and categoryId == "+listId+" order by importance asc;", null);
             addToItemObjectArrayList(c, objects);
-            }*/
 
-            c = (Cursor) database.rawQuery("select * from items where categoryId == "+listId+";", null);
+            c = (Cursor) database.rawQuery("select * from items where importance < 0 AND categoryId == "+listId+";", null);
             addToItemObjectArrayList(c, objects);
 
         }
@@ -230,4 +243,30 @@ public class AccessObject {
         database.delete("items", "itemId = "+id, null);
     }
 
+
+    public int login(String username, String password) throws JSONException {
+        int userId = -1;
+        m.get(USER_DB,USER_DB_COL_PASS,password);
+        if(jsonarray != null &&jsonarray.length() >0){
+            JSONObject obj = jsonarray.getJSONObject(0);
+            userId = obj.getInt(ID);
+        }
+        Log.d("userId", ""+userId);
+
+        return userId;
+    }
+
+    @Override
+    public void processResult(String result) {
+        try
+        {
+            Log.d("processResult called","accessObject2");
+             jsonarray =  new JSONArray(result);
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+
+    }
 }

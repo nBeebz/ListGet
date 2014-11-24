@@ -3,7 +3,6 @@ package com.example.nav.listget.Activities;
 import android.app.Activity;
 import android.app.ListActivity;
 import android.content.Intent;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -13,8 +12,6 @@ import android.widget.ListView;
 
 import com.example.nav.listget.AccessObject;
 import com.example.nav.listget.Adapters.ListAdapter2;
-import com.example.nav.listget.DragSort.DragSortController;
-import com.example.nav.listget.DragSort.DragSortListView;
 import com.example.nav.listget.MyDialogFragment;
 import com.example.nav.listget.R;
 import com.example.nav.listget.parcelable.ListObject;
@@ -29,13 +26,13 @@ public class List extends ListActivity {
     //EditCategoryFragment frag;
 
     ListAdapter2 adapterCat = null;
-    private DragSortController mController;
+    //private DragSortController mController;
     private AccessObject datasource;
 
 
     LinearLayout btn;
 
-    DragSortListView listCat = null;
+    ListView listCat = null;
     private int listsize = 0;
 
     Intent intent = null;
@@ -79,27 +76,30 @@ public class List extends ListActivity {
         ArrayList<ListObject> objects = datasource.getLists();
         listsize = objects.size();
         // set adapter
-        listCat = (DragSortListView) getListView();
+        listCat =  getListView();
         adapterCat = new ListAdapter2(act, objects);
         listCat.setAdapter(adapterCat);
     }
 
 
     private void createList() {
-        listCat = (DragSortListView) getListView();
-        mController = buildController(listCat);
-        listCat.setFloatViewManager(mController);
-        listCat.setOnTouchListener(mController);
-        listCat.setDragEnabled(true);
+        listCat = (ListView) getListView();
+        //mController = buildController(listCat);
+        //listCat.setFloatViewManager(mController);
+        //listCat.setOnTouchListener(mController);
+        //listCat.setDragEnabled(true);
         // set adapter and list
         setAdapterForCatList();
         //listener for list
+
+        //listCat.setDropListener(onDrop);
+        //listCat.setRemoveListener(onRemove);
         listCat.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 //get selected item
                 ListView listView = (ListView) parent;
                 ListObject selectedCat = (ListObject) listView.getItemAtPosition(position);
-               // saveCatInDatabase(selectedCat);
+                // saveCatInDatabase(selectedCat);
                 Intent itemActivity = new Intent(act, ItemActivity.class);
                 itemActivity.putExtra("list", selectedCat);
                 itemActivity.putExtra("listsize",selectedCat.getNumTask());
@@ -107,12 +107,10 @@ public class List extends ListActivity {
                 startActivity(itemActivity);
             }
         });
-        listCat.setDropListener(onDrop);
-        listCat.setRemoveListener(onRemove);
     }
 
     
-    /*drag & drop stuff*/
+    /*drag & drop stuff
     private DragSortListView.DropListener onDrop = new DragSortListView.DropListener() {
         @Override
         public void drop(int from, int to) {
@@ -153,7 +151,7 @@ public class List extends ListActivity {
         //save task positions to the database
         ListView listView = (ListView) getListView();
         int importance = listsize;
-        datasource.saveLists(importance, listView);
+        //datasource.saveLists(importance, listView);
         datasource.close();
         super.onPause();
 

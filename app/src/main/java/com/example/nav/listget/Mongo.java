@@ -30,8 +30,8 @@ public class Mongo {
 
     private final MongoInterface activity;
 
-    private static final String BASE_URL = "https://api.mongolab.com/api/1//databases/sandbox/collections/";
-    private static final String API_KEY = "apiKey=bup2ZBWGDC-IlRrpRsjTtJqiM_QKSmKa";
+    private static final String BASE_URL = "https://api.mongolab.com/api/1/databases/listget/collections/";
+    private static final String API_KEY = "?apiKey=udmFRpCikTGkubKaohV0exs_6xotJN5m";
 
     public static final String KEY_EMAIL = "\"email\"";
     public static final String KEY_PASSWORD = "\"password\"";
@@ -46,9 +46,26 @@ public class Mongo {
 
     public void get( String coll, String key, String value )
     {
+        Log.d("get 2","something wrong?");
         try {
-            String query = "{" + key + ":\"" + value + "\"}";
+            String query = "{\"" + key + "\":\"" + value + "\"}";
+            Log.d("a",query);
+
+            String url = BASE_URL + coll + /*"?q=" + URLEncoder.encode(query, "UTF-8") + "&" +*/ API_KEY;
+            Log.d("a",url);
+            Log.d("adtivity name ", activity.getClass().getSimpleName());
+
+            new GetTask(activity).execute(url);
+        }catch (Exception e){e.printStackTrace();}
+    }
+
+    public void get( String coll, String key, String value,String key2, String value2 )
+    {
+        try {
+            String query =" {\"" + key + "\":\"" + value + "\",\"" + key2 + "\":\"" + value2 + "\"}";
+
             String url = BASE_URL + coll + "?q=" + URLEncoder.encode(query, "UTF-8") + "&" + API_KEY;
+            if(activity != null)
             new GetTask(activity).execute(url);
         }catch (Exception e){e.printStackTrace();}
     }
@@ -154,6 +171,8 @@ public class Mongo {
         @Override
         protected void onPostExecute(final String result)
         {
+            Log.d("onPostExecute called","accessObject2");
+
             if (result != null)
             {
                 activity.processResult(result);

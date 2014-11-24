@@ -25,8 +25,8 @@ public class DBHelper extends SQLiteOpenHelper {
                 "item text not null, " +
                 "categoryId integer default 0,"+
                 "memo text," +
-                "checked integer default 0," +     // 0 = not checked, 1 = checked
-                "importance integer default -1" +  // used to change order
+                "checked integer default 0" +     // 0 = not checked, 1 = checked
+                //"importance integer default -1" +  // used to change order
                 ");");
 
         //test
@@ -36,9 +36,9 @@ public class DBHelper extends SQLiteOpenHelper {
         //create category table
         db.execSQL("create table categories(" +
                 "categoryId INTEGER PRIMARY KEY AUTOINCREMENT," +
-                "category text not null, " +
+                "category text not null " +
                 // "color integer default 0," +
-                "importance integer default -1" +// used to change order
+               //"importance integer default -1" +// used to change order
                 ");");
 
         //test

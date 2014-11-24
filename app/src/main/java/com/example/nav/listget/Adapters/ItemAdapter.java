@@ -10,7 +10,6 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -51,7 +50,6 @@ public class ItemAdapter extends ArrayAdapter<ItemObject> {
             }
             holder.textCircle = (TextView) row.findViewById(R.id.circle);
             holder.textView = (TextView) row.findViewById(R.id.text1);
-            holder.drag = (ImageView) row.findViewById(R.id.drag_handle);
             holder.paint = holder.textView.getPaint();
 
             holder.checkbox.setOnClickListener(new onCheckClicked());
@@ -65,11 +63,11 @@ public class ItemAdapter extends ArrayAdapter<ItemObject> {
         if (item.getChecked() != 0)
 
         {
-            setStyleDone(holder.checkbox, holder.textCircle, holder.textView, holder.drag, holder.paint, row, item);
+            setStyleDone(holder.checkbox, holder.textCircle, holder.textView, holder.paint, row, item);
         } else
 
         {
-            setStyleNotDone(holder.checkbox, holder.textCircle, holder.textView, holder.drag, holder.paint, row, item);
+            setStyleNotDone(holder.checkbox, holder.textCircle, holder.textView, holder.paint, row, item);
         }
 
         holder.textPos.setText("" + position);
@@ -82,15 +80,12 @@ public class ItemAdapter extends ArrayAdapter<ItemObject> {
             LinearLayout row = (LinearLayout) v.getParent();
             TextView textView = null;
             CheckableLinearLayout checkbox = null;
-            ImageView drag = null;
             TextView textCircle = null;
             for (int i = 0; i < row.getChildCount(); i++) {
                 if (row.getChildAt(i).getId() == R.id.text1) {
                     textView = (TextView) row.getChildAt(i);
                 } else if (row.getChildAt(i).getId() == R.id.LinearLayout) {
                     checkbox = (CheckableLinearLayout) row.getChildAt(i);
-                } else if (row.getChildAt(i).getId() == R.id.drag_handle) {
-                    drag = (ImageView) row.getChildAt(i);
                 } else if (row.getChildAt(i).getId() == R.id.circle) {
                     textCircle = (TextView) row.getChildAt(i);
                 }
@@ -101,17 +96,17 @@ public class ItemAdapter extends ArrayAdapter<ItemObject> {
             ItemObject item = (ItemObject) getItem(position);
             if (checkbox.isChecked()) {
                 item.setChecked(0);
-                setStyleNotDone(checkbox, textCircle, textView, drag, paint, row, item);
+                setStyleNotDone(checkbox, textCircle, textView,  paint, row, item);
             } else {
                 item.setChecked(1);
-                setStyleDone(checkbox, textCircle, textView, drag, paint, row, item);
+                setStyleDone(checkbox, textCircle, textView, paint, row, item);
             }
         }
 
     }
 
 
-    public void setStyleDone(CheckableLinearLayout checkbox, TextView textCircle, TextView textView, ImageView drag, Paint paint, View row, ItemObject item) {
+    public void setStyleDone(CheckableLinearLayout checkbox, TextView textCircle, TextView textView,  Paint paint, View row, ItemObject item) {
         checkbox.setChecked(true);
         textView.setText(Html.fromHtml("<font color='#aaa9a9'>" + item.getItem() + "</font>"));
         //色
@@ -124,7 +119,7 @@ public class ItemAdapter extends ArrayAdapter<ItemObject> {
         paint.setAntiAlias(true);
     }
 
-    public void setStyleNotDone(CheckableLinearLayout checkbox, TextView textCircle, TextView textView, ImageView drag, Paint paint, View row, ItemObject item) {
+    public void setStyleNotDone(CheckableLinearLayout checkbox, TextView textCircle, TextView textView,  Paint paint, View row, ItemObject item) {
         checkbox.setChecked(false);
         textView.setText(Html.fromHtml(item.getItem()));
         /*checkbox.setBackgroundColor(Color.parseColor("#"+row.getResources().getString(R.color.check_notDone).substring(3)));
@@ -177,7 +172,6 @@ public class ItemAdapter extends ArrayAdapter<ItemObject> {
         TextView textCircle;
         TextView textView;
         TextView textPos;
-        ImageView drag;
         TextPaint paint;
     }
 

@@ -4,7 +4,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical" >
 
-    <com.example.nav.listget.DragSort.DragSortListView
+    <ListView
         xmlns:dslv="http://schemas.android.com/apk/com.example.todo"
         android:id="@android:id/list"
         android:layout_width="fill_parent"

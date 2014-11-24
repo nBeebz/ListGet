@@ -3,7 +3,6 @@ package com.example.nav.listget.Activities;
 import android.app.ListActivity;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.view.KeyEvent;
 import android.view.Menu;
@@ -20,8 +19,6 @@ import android.widget.Toast;
 
 import com.example.nav.listget.AccessObject;
 import com.example.nav.listget.Adapters.ItemAdapter;
-import com.example.nav.listget.DragSort.DragSortController;
-import com.example.nav.listget.DragSort.DragSortListView;
 import com.example.nav.listget.Interfaces.MongoInterface;
 import com.example.nav.listget.R;
 import com.example.nav.listget.parcelable.ItemObject;
@@ -37,7 +34,7 @@ import java.util.List;
 public class ItemActivity extends ListActivity implements MongoInterface {
 
     static ItemAdapter adapter;
-    private DragSortController mController;
+   // private DragSortController mController;
     private AccessObject datasource;
 
 
@@ -116,15 +113,16 @@ public class ItemActivity extends ListActivity implements MongoInterface {
 
         if (savedInstanceState == null) {
             resetList();
-            DragSortListView mDslv = (DragSortListView) getListView();
+            ListView ls = getListView();
+            /*DragSortListView mDslv = (DragSortListView) getListView();
             mController = buildController(mDslv);
             mDslv.setFloatViewManager(mController);
             mDslv.setOnTouchListener(mController);
             mDslv.setDragEnabled(true);
-            mDslv.setOnItemClickListener(new listViewListener());
             mDslv.getCheckedItemPosition();
             mDslv.setDropListener(onDrop);
-            mDslv.setRemoveListener(onRemove);
+            mDslv.setRemoveListener(onRemove);*/
+            ls.setOnItemClickListener(new listViewListener());
         } else {
             resetList();
         }
@@ -132,7 +130,7 @@ public class ItemActivity extends ListActivity implements MongoInterface {
 
     public class listViewListener implements AdapterView.OnItemClickListener {
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-            DragSortListView listView = (DragSortListView) parent;
+            ListView listView = (ListView) parent;
             ItemObject selectedItem = (ItemObject) listView.getItemAtPosition(position);
             //listener.onMove(selectedTask, selectedCat);
             Intent intent = new Intent(getBaseContext(), EditItemActivity.class);
@@ -240,7 +238,7 @@ public class ItemActivity extends ListActivity implements MongoInterface {
         super.onResume();
     }
 
-    /*drag & drop stuff*/
+    /*
     private DragSortListView.DropListener onDrop = new DragSortListView.DropListener() {
         @Override
         public void drop(int from, int to) {

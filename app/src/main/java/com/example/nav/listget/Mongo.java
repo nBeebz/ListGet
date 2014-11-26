@@ -27,12 +27,15 @@ import java.net.URLEncoder;
  * Created by Nav on 11/22/2014.
  */
 public class Mongo {
-    public static final String COLL_USERS = "users";
-    public static final String COLL_LISTS = "lists";
-    public static final String COLL_ITEMS = "items";
-    public static final String KEY_ID = "_id";
-    public static final String KEY_EMAIL = "email";
-    public static final String KEY_OWNER = "owner";
+    public static final String COLL_USERS = "users";//users Table
+    public static final String COLL_LISTS = "lists";//lists Table
+    public static final String COLL_ITEMS = "items";//items Table
+
+    public static final String KEY_ID = "_id";//_id field
+    public static final String KEY_PASS = "password";//password field
+    public static final String KEY_EMAIL = "email";//email field
+    public static final String KEY_OWNER = "owner";//owner field
+
     private static final String BASE_URL = "https://api.mongolab.com/api/1//databases/sandbox/collections/";
     private static final String API_KEY = "apiKey=bup2ZBWGDC-IlRrpRsjTtJqiM_QKSmKa";
 

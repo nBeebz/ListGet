@@ -9,9 +9,12 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.example.nav.listget.Interfaces.MongoInterface;
+import com.example.nav.listget.Mongo;
 import com.example.nav.listget.R;
+import com.example.nav.listget.parcelable.User;
 
-public class RegisterActivity extends Activity {
+public class RegisterActivity extends Activity implements MongoInterface {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,11 +45,11 @@ public class RegisterActivity extends Activity {
     public void register( View v ){
         String password = ((EditText)findViewById(R.id.password)).getText().toString();
         String passwordC = ((EditText)findViewById(R.id.password_confirm)).getText().toString();
+        String email = ((EditText)findViewById(R.id.username)).getText().toString();
         if(password.equals(passwordC)){
+            User u = new User( email, password );
+            Mongo.getMongo(this).post( Mongo.COLL_USERS, u.getJSON() );
 
-            /* validate if the email doesn't exist, register */
-            Toast.makeText(getBaseContext(),"password and password confirm don't match.",Toast.LENGTH_LONG).show();
-            startActivity( new Intent( this, Login.class ) );
         }else{
             Toast.makeText(getBaseContext(),"password and password confirm don't match.",Toast.LENGTH_LONG).show();
         }
@@ -56,5 +59,10 @@ public class RegisterActivity extends Activity {
         ((EditText)findViewById(R.id.password)).setText("");
         ((EditText)findViewById(R.id.password_confirm)).setText("");
         ((EditText)findViewById(R.id.username)).setText("");
+    }
+
+    public void processResult(String result)
+    {
+        startActivity(new Intent(this, Login.class));
     }
 }

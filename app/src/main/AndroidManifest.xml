@@ -29,10 +29,6 @@
             android:label="@string/title_activity_edit_item" >
         </activity>
         <activity
-            android:name=".Activities.DisplayTest"
-            android:label="@string/title_activity_display_test" >
-        </activity>
-        <activity
             android:name=".Activities.Login"
             android:label="@string/title_activity_login" >
             <intent-filter>

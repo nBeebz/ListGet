@@ -32,6 +32,7 @@ public class Mongo {
     public static final String COLL_ITEMS = "items";
     public static final String KEY_ID = "_id";
     public static final String KEY_EMAIL = "email";
+    public static final String KEY_OWNER = "owner";
     private static final String BASE_URL = "https://api.mongolab.com/api/1//databases/sandbox/collections/";
     private static final String API_KEY = "apiKey=bup2ZBWGDC-IlRrpRsjTtJqiM_QKSmKa";
 
@@ -66,7 +67,7 @@ public class Mongo {
         }catch (Exception e){e.printStackTrace();}
     }
 
-    public void getContributorLists( String value )
+    public void getListByContributor( String value )
     {
         String query;
         String url;

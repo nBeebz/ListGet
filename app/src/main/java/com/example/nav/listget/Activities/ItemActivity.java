@@ -166,7 +166,7 @@ public class ItemActivity extends ListActivity implements MongoInterface {
                 InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
                 imm.hideSoftInputFromWindow(v.getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
                 if (!(inputItem.getText().toString().equals(""))) {
-                    datasource.insertAnItem(inputItem.getText().toString(),selectedCat.getCategoryId());
+//                    datasource.insertAnItem(inputItem.getText().toString(),selectedCat.getCategoryId());
                     saveOrder();
                     resetList();
                 }
@@ -184,8 +184,9 @@ public class ItemActivity extends ListActivity implements MongoInterface {
      * @return
      */
     public String getFilterString() {
-        String str = selectedCat.getCategory();
-        return str + " (" + listsize + ") ";
+//        String str = selectedCat.getCategory();
+//        return str + " (" + listsize + ") ";
+        return "hello";
     }
 
     /**
@@ -194,10 +195,10 @@ public class ItemActivity extends ListActivity implements MongoInterface {
     private void resetList() {
         objects = new ArrayList<ItemObject>();
         if(selectedCat != null) {
-            objects = datasource.getItems(selectedCat.getCategoryId());
+//            objects = datasource.getItems(selectedCat.getCategoryId());
             listsize = objects.size();
-            String newName = datasource.getListNameById(selectedCat.getCategoryId());
-            selectedCat.setCategory(newName);
+//            String newName = datasource.getListNameById(selectedCat.getCategoryId());
+//            selectedCat.setCategory(newName);
         }
         adapter = new ItemAdapter(this, objects);
         setListAdapter(adapter);
@@ -288,7 +289,7 @@ public class ItemActivity extends ListActivity implements MongoInterface {
             arr = new JSONArray(result);
             for( int i=0; i<arr.length(); ++i )
             {
-                items.add( ItemObject.parseJSON( arr.getJSONObject(i) ));
+//                items.add( ItemObject.parseJSON( arr.getJSONObject(i) ));
             }
         }
         catch (Exception e){ e.printStackTrace();

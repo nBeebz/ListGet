@@ -61,7 +61,7 @@ public class AccessObject {
         boolean isEof = c.moveToFirst();
         while (isEof) {
             int number = getNumber(c.getInt(c.getColumnIndex("categoryId")));
-            objects.add(new ListObject(c.getInt(0), c.getString(1), number));
+//            objects.add(new ListObject(c.getInt(0), c.getString(1), number));
             isEof = c.moveToNext();
         }
         c.close();
@@ -101,8 +101,8 @@ public class AccessObject {
             ItemObject selectedItem = (ItemObject) listView.getItemAtPosition(position);
             ContentValues cv = new ContentValues();
             //cv.put("importance", position);
-             cv.put("checked", selectedItem.getChecked());
-            database.update("Items", cv, "ItemId = " + selectedItem.getItemId(), null);
+//            cv.put("checked", selectedItem.getChecked());
+//            database.update("Items", cv, "ItemId = " + selectedItem.getItemId(), null);
         }
 
     }
@@ -137,16 +137,12 @@ public class AccessObject {
             /*
             c = (Cursor) database.rawQuery("select * from items where importance >-1 and checked == 0 order by importance asc;", null);
             addToItemObjectArrayList(c, objects);
-
             c = (Cursor) database.rawQuery("select * from items where importance < 0 and checked == 0 order by importance asc;", null);
             addToItemObjectArrayList(c, objects);
-
             c = (Cursor) database.rawQuery("select * from items where importance >-1 and checked != 0 order by importance asc;", null);
             addToItemObjectArrayList(c, objects);
-
             c = (Cursor) database.rawQuery("select * from items where importance < 0 and checked != 0 order by importance asc;", null);
             addToItemObjectArrayList(c, objects);
-
             c = (Cursor) database.rawQuery("select * from items where importance >-1 and categoryId == "+listId+" order by importance asc;", null);
             addToItemObjectArrayList(c, objects);
             }*/
@@ -189,7 +185,7 @@ public class AccessObject {
     private void addToItemObjectArrayList(Cursor c, ArrayList<ItemObject> objects) {
         Boolean isEof = c.moveToFirst();
         while (isEof) {
-            objects.add(new ItemObject(c.getInt(c.getColumnIndex("itemId")), c.getString(c.getColumnIndex("item")), c.getInt(c.getColumnIndex("checked"))));
+//            objects.add(new ItemObject(c.getInt(c.getColumnIndex("itemId")), c.getString(c.getColumnIndex("item")), c.getInt(c.getColumnIndex("checked"))));
             isEof = c.moveToNext();
         }
     }
@@ -205,7 +201,7 @@ public class AccessObject {
         if(c.moveToFirst()){
             String itemName = c.getString(c.getColumnIndex("item"));
             String itemMemo = c.getString(c.getColumnIndex("memo"));
-            item = new ItemObject(itemId, itemName,itemMemo);
+//            item = new ItemObject(itemId, itemName,itemMemo);
         }
         return item;
     }
@@ -216,9 +212,9 @@ public class AccessObject {
      */
     public void updateItem(ItemObject item){
         ContentValues cv = new ContentValues();
-        cv.put("item", item.getItem() );
+//        cv.put("item", item.getItem() );
         cv.put("memo", item.getMemo() );
-        database.update("items", cv, "itemId = "+item.getItemId(), null);
+//        database.update("items", cv, "itemId = "+item.getItemId(), null);
 
     }
 

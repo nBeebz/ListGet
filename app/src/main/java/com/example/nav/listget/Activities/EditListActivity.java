@@ -30,7 +30,7 @@ public class EditListActivity extends Activity {
         Intent intent = getIntent();
         selectedCat = ((ListObject) intent.getExtras().getSerializable("list"));
         editText = (EditText)findViewById(R.id.category);
-        editText.setText(selectedCat.getCategory());
+//        editText.setText(selectedCat.getCategory());
 
     }
     /*
@@ -63,15 +63,15 @@ public class EditListActivity extends Activity {
                     if(editText.getText().toString() ==""){
                         Toast.makeText(getBaseContext(), "The name of the list cannot be empty. Failed to save.", Toast.LENGTH_LONG).show();
                     }else {
-                        selectedCat.setCategory(editText.getText().toString());
-                        datasource.updateListName(selectedCat.getCategory(), selectedCat.getCategoryId());
-                        selectedCat.setCategory(editText.getText().toString());
+//                        selectedCat.setCategory(editText.getText().toString());
+//                        datasource.updateListName(selectedCat.getCategory(), selectedCat.getCategoryId());
+//                        selectedCat.setCategory(editText.getText().toString());
                         finish();
                     }
                     break;
 
                 case R.id.b_delete:
-                    datasource.deleteListById(selectedCat.getCategoryId());
+//                    datasource.deleteListById(selectedCat.getCategoryId());
                     Intent intent = new Intent(getBaseContext(), List.class);
                     intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                     startActivity(intent);

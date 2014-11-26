@@ -14,7 +14,6 @@ import android.widget.Toast;
 import com.example.nav.listget.AccessObject;
 import com.example.nav.listget.R;
 import com.example.nav.listget.parcelable.ItemObject;
-import com.example.nav.listget.parcelable.ListObject;
 
 public class EditItemActivity extends Activity {
 
@@ -42,8 +41,8 @@ public class EditItemActivity extends Activity {
         textMemo.setOnFocusChangeListener(focusChangeListener);
         setButtons();
         Intent intent = getIntent();
-        selectedItem = ((ItemObject) intent.getExtras().getSerializable("item")).getItemId();
-        selectedCat = ((ListObject) intent.getExtras().getSerializable("list")).getCategoryId();
+//        selectedItem = ((ItemObject) intent.getExtras().getSerializable("item")).getItemId();
+//        selectedCat = ((ListObject) intent.getExtras().getSerializable("list")).getCategoryId();
 
     }
 
@@ -105,7 +104,7 @@ public class EditItemActivity extends Activity {
      */
     private void setStoredData(){
         ItemObject item =datasource.getItemById(selectedItem);
-        itemName.setText(item.getItem());
+//        itemName.setText(item.getItem());
         textMemo.setText(item.getMemo());
     }
 
@@ -119,11 +118,11 @@ public class EditItemActivity extends Activity {
                 case R.id.save:
                     String nameItem = itemName.getText().toString();
                     String memoItem = textMemo.getText().toString();
-                    ItemObject item = new ItemObject(selectedItem, nameItem,memoItem);
+//                    ItemObject item = new ItemObject(selectedItem, nameItem,memoItem);
                     if(nameItem.equals("")) {
                         Toast.makeText(getBaseContext(), "The name of the item cannot be empty. Failed to save.", Toast.LENGTH_LONG).show();
                     }else{
-                        datasource.updateItem(item);
+//                        datasource.updateItem(item);
                         finish();
                     }
                     break;

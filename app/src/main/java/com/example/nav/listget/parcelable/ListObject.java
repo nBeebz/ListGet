@@ -1,70 +1,107 @@
 package com.example.nav.listget.parcelable;
 
-import com.example.nav.listget.Mongo;
+import android.os.Parcel;
+import android.os.Parcelable;
+import android.util.Log;
 
+import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.Serializable;
+import java.util.ArrayList;
 
-/* Storing items for a list */
-public class ListObject implements Serializable {
-    private int categoryId;
-    private String category;
-    private int numTask = 0;
+/**
+ * Created by Nav on 11/22/2014.
+ */
+public class ListObject implements Parcelable {
+    private String id;
+    private String name;
+    private String owner;
+    private ArrayList<String> contributors;
 
-
-    public ListObject(int id, String l){
-        categoryId = id;
-        category = l;
-    }
-
-    public ListObject(int id, String l,  int n){
-        categoryId = id;
-        category = l;
-        numTask = n;
-    }
-
-    public int getNumTask(){
-        return numTask;
-    }
-    public void setNumTask(int n){
-        numTask = n;
-    }
-
-    public String toString(){
-        return  category;
-    }
-
-    public void setCategoryId(int id){
-        categoryId = id;
-    }
-
-    public void setCategory(String t){
-        category = t;
-    }
-
-    public int getCategoryId(){
-        return categoryId;
-    }
-
-    public String getCategory(){
-        return category;
-    }
-
-    public static ListObject parseJSON( JSONObject obj )
+    public ListObject( String i, String n, String o, ArrayList<String> c )
     {
-        int id = 0;
-        int items = 0;
-        String name = null;
-
-        try {
-            id = obj.getInt(Mongo.KEY_ID);
-            name = obj.getString( Mongo.KEY_NAME );
-
-        }
-        catch ( Exception e ){ e.printStackTrace(); }
-
-        return new ListObject( id, name );
+        id = i;
+        name = n;
+        owner = o;
+        contributors = c;
     }
 
+    public ListObject( Parcel p )
+    {
+        id = p.readString();
+        name = p.readString();
+        owner = p.readString();
+        contributors = p.createStringArrayList();
+    }
+
+    public static ArrayList<ListObject> getLists( String str )
+    {
+        JSONArray arr;
+        ArrayList<ListObject> lists = null;
+        try{
+            arr = new JSONArray( str );
+            lists = new ArrayList<ListObject>( arr.length() );
+            for( int i=0; i<arr.length(); ++i )
+            {
+                lists.add( i, getList( arr.getJSONObject(i) ));
+            }
+        }
+        catch ( JSONException e )
+        {
+            Log.d( "getLists", e.getLocalizedMessage() );
+        }
+        return lists;
+    }
+    public static ListObject getList( JSONObject obj )
+    {
+        String d = null;
+        String o = null;
+        String n = null;
+        ArrayList<String> c = new ArrayList<String>();
+        JSONArray arr = null;
+        try{
+            d = obj.getJSONObject("_id").getString("$oid");
+            n = obj.getString("name");
+            o = obj.getString("owner");
+            arr = obj.getJSONArray("contributors");
+            for( int i=0; i<arr.length(); ++i )
+            {
+                c.add(arr.getJSONObject(i).getString("email"));
+            }
+        }
+        catch (JSONException e)
+        {
+            Log.d("getList", e.getLocalizedMessage());
+        }
+        return new ListObject( d, n, o, c );
+    }
+
+    public String getId(){ return id; }
+    public String getName(){ return name; }
+    public String getOwner(){ return owner; }
+    public ArrayList<String> getContributors(){ return contributors; }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel parcel, int i) {
+        parcel.writeString( id );
+        parcel.writeString( name );
+        parcel.writeString( owner );
+        parcel.writeStringList( contributors );
+    }
+
+    public static final Parcelable.Creator<ListObject> CREATOR = new Parcelable.Creator<ListObject>() {
+        public ListObject createFromParcel(Parcel in) {
+            return new ListObject(in);
+        }
+
+        public ListObject[] newArray(int size) {
+            return new ListObject[size];
+        }
+    };
 }

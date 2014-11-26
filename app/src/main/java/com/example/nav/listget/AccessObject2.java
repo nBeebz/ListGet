@@ -33,7 +33,7 @@ public class AccessObject2 implements MongoInterface {
 
     public AccessObject2()
     {
-        m = new Mongo(this);
+        m = Mongo.getMongo(this);
 
         //dbHelper = new DBHelper(context);
     }
@@ -61,7 +61,7 @@ public class AccessObject2 implements MongoInterface {
             ListObject selectedCat = (ListObject) listView.getItemAtPosition(position);
             ContentValues cv = new ContentValues();
             cv.put("importance", importance--);
-            database.update("categories", cv, "categoryId = " + selectedCat.getCategoryId(), null);
+//            database.update("categories", cv, "categoryId = " + selectedCat.getCategoryId(), null);
         }
     }
 
@@ -75,7 +75,7 @@ public class AccessObject2 implements MongoInterface {
         boolean isEof = c.moveToFirst();
         while (isEof) {
             int number = getNumber(c.getInt(c.getColumnIndex("categoryId")));
-            objects.add(new ListObject(c.getInt(0), c.getString(1), number));
+//            objects.add(new ListObject(c.getInt(0), c.getString(1), number));
             isEof = c.moveToNext();
         }
         c.close();
@@ -115,8 +115,8 @@ public class AccessObject2 implements MongoInterface {
             ItemObject selectedItem = (ItemObject) listView.getItemAtPosition(position);
             ContentValues cv = new ContentValues();
             cv.put("importance", position);
-             cv.put("checked", selectedItem.getChecked());
-            database.update("Items", cv, "ItemId = " + selectedItem.getItemId(), null);
+//             cv.put("checked", selectedItem.getChecked());
+//            database.update("Items", cv, "ItemId = " + selectedItem.getItemId(), null);
         }
 
     }
@@ -202,7 +202,7 @@ public class AccessObject2 implements MongoInterface {
     private void addToItemObjectArrayList(Cursor c, ArrayList<ItemObject> objects) {
         Boolean isEof = c.moveToFirst();
         while (isEof) {
-            objects.add(new ItemObject(c.getInt(c.getColumnIndex("itemId")), c.getString(c.getColumnIndex("item")), c.getInt(c.getColumnIndex("checked"))));
+//            objects.add(new ItemObject(c.getInt(c.getColumnIndex("itemId")), c.getString(c.getColumnIndex("item")), c.getInt(c.getColumnIndex("checked"))));
             isEof = c.moveToNext();
         }
     }
@@ -218,7 +218,7 @@ public class AccessObject2 implements MongoInterface {
         if(c.moveToFirst()){
             String itemName = c.getString(c.getColumnIndex("item"));
             String itemMemo = c.getString(c.getColumnIndex("memo"));
-            item = new ItemObject(itemId, itemName,itemMemo);
+//            item = new ItemObject(itemId, itemName,itemMemo);
         }
         return item;
     }
@@ -229,9 +229,9 @@ public class AccessObject2 implements MongoInterface {
      */
     public void updateItem(ItemObject item){
         ContentValues cv = new ContentValues();
-        cv.put("item", item.getItem() );
+//        cv.put("item", item.getItem() );
         cv.put("memo", item.getMemo() );
-        database.update("items", cv, "itemId = "+item.getItemId(), null);
+//        database.update("items", cv, "itemId = "+item.getItemId(), null);
 
     }
 

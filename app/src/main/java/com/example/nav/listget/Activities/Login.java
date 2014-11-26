@@ -5,20 +5,23 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.Toast;
 
-import com.example.nav.listget.AccessObject2;
+import com.example.nav.listget.Interfaces.MongoInterface;
+import com.example.nav.listget.Mongo;
 import com.example.nav.listget.R;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 
-public class Login extends Activity {
+public class Login extends Activity implements MongoInterface {
 
-    private AccessObject2 datasource;
+//    private AccessObject2 datasource;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        datasource = new AccessObject2();
+//        datasource = new AccessObject2();
         setContentView(R.layout.activity_login);
     }
 
@@ -28,16 +31,33 @@ public class Login extends Activity {
         startActivity(new Intent(this, RegisterActivity.class) );
 
     }
-    public void login( View v ) throws JSONException {
-        // if the password matchs
-        String username = ((EditText)findViewById(R.id.username)).getText().toString();
-        String password = ((EditText)findViewById(R.id.password)).getText().toString();
+    public void login( View v )
+    {
+        String email = ((EditText)findViewById(R.id.username)).getText().toString();
+        Mongo.getMongo( this ).get("users", "_id", email);
+    }
 
+    public void processResult( String result )
+    {
+        JSONArray arr;
+        String email;
+        Intent myIntent;
 
-        int userId = datasource.login(username, password);
-        Intent intent = new Intent(this, List.class);
-        intent.putExtra("userId", userId);
-        startActivity(intent );
+        try
+        {
+            arr = new JSONArray(result);
+            if( arr.length() > 0 )
+            {
+                myIntent = new Intent( this, ListActivity.class );
+                email = arr.getJSONObject(0).getString( "_id" );
+                myIntent.putExtra( "email", email );
+                startActivity( myIntent );
+            }
+        }
+        catch (JSONException e)
+        {
+            Toast.makeText(this, "Invalid email/password", Toast.LENGTH_LONG).show();
+        }
     }
 
 }

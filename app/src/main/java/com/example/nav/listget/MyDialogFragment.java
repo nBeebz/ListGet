@@ -40,20 +40,20 @@ public class MyDialogFragment extends DialogFragment {
 		dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);  
 		dialog.setCanceledOnTouchOutside(false);
 		dialog.setContentView(R.layout.fragment_my_dialog);
+//
+//		if(selectedCat.getCategory().equals("Add List")){
+//			Button b_delete = (Button) dialog.findViewById(R.id.b_delete);
+//			b_delete.setVisibility(View.GONE);
+//			selectedCat.setCategory("");
+//		    //selectedCat.setColor(1);
+//			insertButton(dialog);
 
-		if(selectedCat.getCategory().equals("Add List")){
-			Button b_delete = (Button) dialog.findViewById(R.id.b_delete);
-			b_delete.setVisibility(View.GONE);
-			selectedCat.setCategory("");
-		    //selectedCat.setColor(1);
-			insertButton(dialog);
-
-		}else{
-			updateButton(dialog);
-			deleteButton(dialog);
-		}
-
-		cancelButton(dialog);
+//		}else{
+//			updateButton(dialog);
+//			deleteButton(dialog);
+//		}
+//
+//		cancelButton(dialog);
 		//色用gridview
         /*
 		GridView gridView1 = (GridView) dialog.findViewById(R.id.gridView1);
@@ -72,7 +72,7 @@ public class MyDialogFragment extends DialogFragment {
 		gridView1.setAdapter(adapter);
 		*/
 		editText = (EditText)dialog.findViewById(R.id.category);
-		editText.setText(selectedCat.getCategory());
+//		editText.setText(selectedCat.getCategory());
 
 		return dialog;
 	}
@@ -104,11 +104,11 @@ public class MyDialogFragment extends DialogFragment {
 			@Override
 			public void onClick(View v) {
 				if(!(editText.getText().toString().equals(""))){
-					selectedCat.setCategory(editText.getText().toString());
+//					selectedCat.setCategory(editText.getText().toString());
 					DBHelper helper = new DBHelper(getActivity());
 					SQLiteDatabase db = helper.getReadableDatabase();
 					ContentValues cv = new ContentValues();
-					cv.put("category", selectedCat.getCategory() );
+//					cv.put("category", selectedCat.getCategory() );
 					//cv.put("color", selectedCat.getColor() );
 					db.insert("categories", null, cv);
 					db.close();
@@ -128,14 +128,14 @@ public class MyDialogFragment extends DialogFragment {
 			@Override
 			public void onClick(View v) {
 				if(!(editText.getText().toString().equals(""))){
-					selectedCat.setCategory(editText.getText().toString());
+//					selectedCat.setCategory(editText.getText().toString());
 
 					DBHelper helper = new DBHelper(getActivity());
 					SQLiteDatabase db = helper.getReadableDatabase();
 					ContentValues cv = new ContentValues();
-					cv.put("category", selectedCat.getCategory() );
+//					cv.put("category", selectedCat.getCategory() );
 					//cv.put("color", selectedCat.getColor() );
-					db.update("categories", cv, "categoryId = "+selectedCat.getCategoryId(), null);
+//					db.update("categories", cv, "categoryId = "+selectedCat.getCategoryId(), null);
 					db.close();
 					//onCloselistenerを呼ぶ
 					listener.onClose();
@@ -155,7 +155,7 @@ public class MyDialogFragment extends DialogFragment {
 			public void onClick(View v) {
 				DBHelper helper = new DBHelper(getActivity());
 				SQLiteDatabase db = helper.getReadableDatabase();
-				db.delete("categories", "categoryId = "+selectedCat.getCategoryId(), null);
+//				db.delete("categories", "categoryId = "+selectedCat.getCategoryId(), null);
 				db.close();
 				listener.onClose();
 				dismiss();

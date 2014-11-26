@@ -50,9 +50,9 @@ public class List extends ListActivity {
         btn = (LinearLayout) findViewById(R.id.LinearLayout);
         btn.setOnClickListener(new OnClickListener() {
             public void onClick(View v) {
-                ListObject selectedCat = new ListObject(0, "Add List", 1);
+//                ListObject selectedCat = new ListObject(0, "Add List", 1);
                 MyDialogFragment dialog = new MyDialogFragment();
-                dialog.setCategory(selectedCat);
+//                dialog.setCategory(selectedCat);
                 dialog.setOnCloseListener(new onMyClickListener());
                 dialog.show(act.getFragmentManager(), "");
             }
@@ -102,7 +102,7 @@ public class List extends ListActivity {
                 // saveCatInDatabase(selectedCat);
                 Intent itemActivity = new Intent(act, ItemActivity.class);
                 itemActivity.putExtra("list", selectedCat);
-                itemActivity.putExtra("listsize",selectedCat.getNumTask());
+//                itemActivity.putExtra("listsize",selectedCat.getNumTask());
 
                 startActivity(itemActivity);
             }
@@ -175,7 +175,7 @@ public class List extends ListActivity {
             arr = new JSONArray(result);
             for( int i=0; i<arr.length(); ++i )
             {
-                lists.add( ListObject.parseJSON( arr.getJSONObject(i) ));
+//                lists.add( ListObject.parseJSON( arr.getJSONObject(i) ));
             }
         }
         catch (Exception e){ e.printStackTrace(); }

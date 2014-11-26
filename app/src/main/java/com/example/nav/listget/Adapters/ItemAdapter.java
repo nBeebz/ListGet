@@ -2,7 +2,6 @@ package com.example.nav.listget.Adapters;
 
 import android.content.Context;
 import android.graphics.Paint;
-import android.text.Html;
 import android.text.TextPaint;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -59,16 +58,16 @@ public class ItemAdapter extends ArrayAdapter<ItemObject> {
             holder = (ViewHolder) row.getTag();
         }
         //String colorS=toString(item.getColor(), row);
-        //holder.textCircle.setTextColor(Color.parseColor(colorS));
-        if (item.getChecked() != 0)
-
-        {
-            setStyleDone(holder.checkbox, holder.textCircle, holder.textView, holder.paint, row, item);
-        } else
-
-        {
-            setStyleNotDone(holder.checkbox, holder.textCircle, holder.textView, holder.paint, row, item);
-        }
+//        //holder.textCircle.setTextColor(Color.parseColor(colorS));
+//        if (item.getChecked() != 0)
+//
+//        {
+//            setStyleDone(holder.checkbox, holder.textCircle, holder.textView, holder.paint, row, item);
+//        } else
+//
+//        {
+//            setStyleNotDone(holder.checkbox, holder.textCircle, holder.textView, holder.paint, row, item);
+//        }
 
         holder.textPos.setText("" + position);
 
@@ -95,10 +94,10 @@ public class ItemAdapter extends ArrayAdapter<ItemObject> {
             int position = Integer.parseInt(textPos.getText().toString());
             ItemObject item = (ItemObject) getItem(position);
             if (checkbox.isChecked()) {
-                item.setChecked(0);
+//                item.setChecked(0);
                 setStyleNotDone(checkbox, textCircle, textView,  paint, row, item);
             } else {
-                item.setChecked(1);
+//                item.setChecked(1);
                 setStyleDone(checkbox, textCircle, textView, paint, row, item);
             }
         }
@@ -108,7 +107,7 @@ public class ItemAdapter extends ArrayAdapter<ItemObject> {
 
     public void setStyleDone(CheckableLinearLayout checkbox, TextView textCircle, TextView textView,  Paint paint, View row, ItemObject item) {
         checkbox.setChecked(true);
-        textView.setText(Html.fromHtml("<font color='#aaa9a9'>" + item.getItem() + "</font>"));
+//        textView.setText(Html.fromHtml("<font color='#aaa9a9'>" + item.getItem() + "</font>"));
         //色
         /*checkbox.setBackgroundColor(Color.parseColor("#"+row.getResources().getString(R.color.check_done).substring(3)));
         drag.setBackgroundColor(Color.parseColor("#"+row.getResources().getString(R.color.text_done).substring(3)));
@@ -121,7 +120,7 @@ public class ItemAdapter extends ArrayAdapter<ItemObject> {
 
     public void setStyleNotDone(CheckableLinearLayout checkbox, TextView textCircle, TextView textView,  Paint paint, View row, ItemObject item) {
         checkbox.setChecked(false);
-        textView.setText(Html.fromHtml(item.getItem()));
+//        textView.setText(Html.fromHtml(item.getItem()));
         /*checkbox.setBackgroundColor(Color.parseColor("#"+row.getResources().getString(R.color.check_notDone).substring(3)));
         drag.setBackgroundColor(Color.parseColor("#"+row.getResources().getString(R.color.white).substring(3)));
         textView.setBackgroundColor(Color.parseColor("#"+row.getResources().getString(R.color.white).substring(3)));

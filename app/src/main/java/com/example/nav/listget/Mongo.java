@@ -24,48 +24,67 @@ import java.net.URI;
 import java.net.URLEncoder;
 
 /**
- * Created by Nav on 11/11/2014.
+ * Created by Nav on 11/22/2014.
  */
 public class Mongo {
-
-    private final MongoInterface activity;
-
-    private static final String BASE_URL = "https://api.mongolab.com/api/1/databases/listget/collections/";
-    private static final String API_KEY = "?apiKey=udmFRpCikTGkubKaohV0exs_6xotJN5m";
-
-    public static final String KEY_EMAIL = "\"email\"";
-    public static final String KEY_PASSWORD = "\"password\"";
-    public static final String KEY_ID = "\"_id\"";
-    public static final String KEY_NAME = "\"name\"";
-
     public static final String COLL_USERS = "users";
     public static final String COLL_LISTS = "lists";
     public static final String COLL_ITEMS = "items";
+    public static final String KEY_ID = "_id";
+    public static final String KEY_EMAIL = "email";
+    private static final String BASE_URL = "https://api.mongolab.com/api/1//databases/sandbox/collections/";
+    private static final String API_KEY = "apiKey=bup2ZBWGDC-IlRrpRsjTtJqiM_QKSmKa";
 
-    public Mongo( final MongoInterface a ){ activity = a; }
+    private MongoInterface activity = null;
+    private static Mongo m = null;
+
+    private Mongo( MongoInterface a )
+    {
+        activity = a;
+    }
+
+    public static Mongo getMongo( MongoInterface a )
+    {
+        if( m == null )
+            m = new Mongo( a );
+        else
+            m.setActivity( a );
+        return m;
+    }
+
+    private void setActivity( MongoInterface a ){ activity = a; }
 
     public void get( String coll, String key, String value )
     {
-        Log.d("get 2","something wrong?");
+        String query;
+        String url;
+
         try {
-            String query = "{\"" + key + "\":\"" + value + "\"}";
-            Log.d("a",query);
-
-            String url = BASE_URL + coll + /*"?q=" + URLEncoder.encode(query, "UTF-8") + "&" +*/ API_KEY;
-            Log.d("a",url);
-            Log.d("adtivity name ", activity.getClass().getSimpleName());
-
+            query = "{\"" + key + "\":\"" + value + "\"}";
+            url = BASE_URL + coll + "?q=" + URLEncoder.encode(query, "UTF-8") + "&" + API_KEY;
             new GetTask(activity).execute(url);
         }catch (Exception e){e.printStackTrace();}
     }
 
-    public void get( String coll, String key, String value,String key2, String value2 )
+    public void getContributorLists( String value )
     {
-        try {
-            String query =" {\"" + key + "\":\"" + value + "\",\"" + key2 + "\":\"" + value2 + "\"}";
+        String query;
+        String url;
 
-            String url = BASE_URL + coll + "?q=" + URLEncoder.encode(query, "UTF-8") + "&" + API_KEY;
-            if(activity != null)
+        try {
+            query = "{\"contributors\":{\"email\":\"" + value + "\"}}";
+            url = BASE_URL + "lists" + "?q=" + URLEncoder.encode(query, "UTF-8") + "&" + API_KEY;
+            new GetTask(activity).execute(url);
+        }catch (Exception e){e.printStackTrace();}
+    }
+
+    public void getByID( String coll, String oid )
+    {
+        String query = "{\"_id\":{\"$oid\":\"" + oid + "\"}}";
+        String url;
+
+        try {
+            url = BASE_URL + coll + "?q=" + URLEncoder.encode(query, "UTF-8") + "&" + API_KEY;
             new GetTask(activity).execute(url);
         }catch (Exception e){e.printStackTrace();}
     }
@@ -171,8 +190,6 @@ public class Mongo {
         @Override
         protected void onPostExecute(final String result)
         {
-            Log.d("onPostExecute called","accessObject2");
-
             if (result != null)
             {
                 activity.processResult(result);

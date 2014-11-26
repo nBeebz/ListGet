@@ -1,7 +1,6 @@
 package com.example.nav.listget.Adapters;
 
 import android.content.Context;
-import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -42,7 +41,7 @@ public class ListAdapter2 extends ArrayAdapter<ListObject> {
             holder = (ViewHolder) row.getTag();
         }
         //String colorS=toString(item.getColor(), row);
-        holder.textView.setText(Html.fromHtml(item.getCategory() + " (" + item.getNumTask() + ") "));
+//        holder.textView.setText(Html.fromHtml(item.getCategory() + " (" + item.getNumTask() + ") "));
         return (row);
     }
 

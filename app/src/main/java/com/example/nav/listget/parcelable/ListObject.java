@@ -109,11 +109,14 @@ public class ListObject implements Parcelable {
 
     public static JSONObject JSONlist( String name, String owner, ArrayList<String> contributors )
     {
+        JSONObject obj = null;
         try{
-            JSONObject obj = new JSONObject();
+            obj = new JSONObject();
             obj.put(Mongo.KEY_OWNER, owner );
             obj.put(Mongo.KEY_NAME, name  );
             obj.put(Mongo.KEY_CONTRIBUTORS, new JSONArray( contributors ) );
         }catch (Exception e){ Log.d("List Object", e.getLocalizedMessage()); }
+
+        return obj;
     }
 }

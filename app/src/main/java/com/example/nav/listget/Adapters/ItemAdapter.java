@@ -21,12 +21,6 @@ import java.util.List;
 public class ItemAdapter extends ArrayAdapter<ItemObject> {
     private LayoutInflater layoutInflater_;
 
-	/*
-    public TaskAdapter(Context context, int textViewResourceId, List<ItemObject> objects) {
-		super(context, textViewResourceId, objects);
-		layoutInflater_ = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-	}
-	 */
 
     public ItemAdapter(Context context, List<ItemObject> objects) {
         super(context, R.layout.adapter_item, objects);
@@ -108,12 +102,7 @@ public class ItemAdapter extends ArrayAdapter<ItemObject> {
     public void setStyleDone(CheckableLinearLayout checkbox, TextView textCircle, TextView textView,  Paint paint, View row, ItemObject item) {
         checkbox.setChecked(true);
 //        textView.setText(Html.fromHtml("<font color='#aaa9a9'>" + item.getItem() + "</font>"));
-        //色
-        /*checkbox.setBackgroundColor(Color.parseColor("#"+row.getResources().getString(R.color.check_done).substring(3)));
-        drag.setBackgroundColor(Color.parseColor("#"+row.getResources().getString(R.color.text_done).substring(3)));
-        textView.setBackgroundColor(Color.parseColor("#"+row.getResources().getString(R.color.text_done).substring(3)));
-        textCircle.setBackgroundColor(Color.parseColor("#"+row.getResources().getString(R.color.text_done).substring(3)));
-        */
+
         paint.setFlags(textView.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
         paint.setAntiAlias(true);
     }
@@ -121,50 +110,10 @@ public class ItemAdapter extends ArrayAdapter<ItemObject> {
     public void setStyleNotDone(CheckableLinearLayout checkbox, TextView textCircle, TextView textView,  Paint paint, View row, ItemObject item) {
         checkbox.setChecked(false);
 //        textView.setText(Html.fromHtml(item.getItem()));
-        /*checkbox.setBackgroundColor(Color.parseColor("#"+row.getResources().getString(R.color.check_notDone).substring(3)));
-        drag.setBackgroundColor(Color.parseColor("#"+row.getResources().getString(R.color.white).substring(3)));
-        textView.setBackgroundColor(Color.parseColor("#"+row.getResources().getString(R.color.white).substring(3)));
-        textCircle.setBackgroundColor(Color.parseColor("#"+row.getResources().getString(R.color.white).substring(3)));
-        */
+
         paint.setFlags(textView.getPaintFlags() & (~Paint.STRIKE_THRU_TEXT_FLAG));
     }
 
-    /*
-    // color
-    public String toString(int color,View view){
-        String str;
-        switch(color){
-            case 1:
-                str = view.getResources().getString(R.color.cat1).substring(3);
-                break;
-            case 2:
-                str = view.getResources().getString(R.color.cat2).substring(3);
-                break;
-            case 3:
-                str = view.getResources().getString(R.color.cat3).substring(3);
-                break;
-            case 4:
-                str = view.getResources().getString(R.color.cat4).substring(3);
-                break;
-            case 5:
-                str = view.getResources().getString(R.color.cat5).substring(3);
-                break;
-            case 6:
-                str = view.getResources().getString(R.color.cat6).substring(3);
-                break;
-            case 7:
-                str = view.getResources().getString(R.color.cat7).substring(3);
-                break;
-            case -1:
-                str = "";
-                break;
-            default:
-                str = view.getResources().getString(R.color.black).substring(3);
-                break;
-        }
-        return "#"+str;
-    }
-    */
 
     public static class ViewHolder {
         CheckableLinearLayout checkbox;

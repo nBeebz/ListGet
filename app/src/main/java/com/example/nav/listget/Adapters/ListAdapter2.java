@@ -29,10 +29,6 @@ public class ListAdapter2 extends ArrayAdapter<ListObject> {
         if (null == row) {
             holder = new ViewHolder();
             row = layoutInflater_.inflate(R.layout.adapter_list, parent, false);
-            //disable drag_sort listview
-            /*if(item.getColor() <1){
-                row=layoutInflater_.inflate(R.layout.object_list, parent, false);
-            }*/
             holder.textView = (TextView) row.findViewById(R.id.text);
 
 
@@ -40,7 +36,6 @@ public class ListAdapter2 extends ArrayAdapter<ListObject> {
         } else {
             holder = (ViewHolder) row.getTag();
         }
-        //String colorS=toString(item.getColor(), row);
 //        holder.textView.setText(Html.fromHtml(item.getCategory() + " (" + item.getNumTask() + ") "));
         return (row);
     }

@@ -23,17 +23,13 @@ import java.util.ArrayList;
 
 public class List extends ListActivity {
 
-    //EditCategoryFragment frag;
-
     ListAdapter2 adapterCat = null;
-    //private DragSortController mController;
     private AccessObject datasource;
 
 
     LinearLayout btn;
 
     ListView listCat = null;
-    private int listsize = 0;
 
     Intent intent = null;
     Activity act = this;
@@ -46,7 +42,6 @@ public class List extends ListActivity {
         datasource = new AccessObject(this);
         datasource.open();
 
-        //if(btn==null){
         btn = (LinearLayout) findViewById(R.id.LinearLayout);
         btn.setOnClickListener(new OnClickListener() {
             public void onClick(View v) {
@@ -74,7 +69,6 @@ public class List extends ListActivity {
 
     private void setAdapterForCatList() {
         ArrayList<ListObject> objects = datasource.getLists();
-        listsize = objects.size();
         // set adapter
         listCat =  getListView();
         adapterCat = new ListAdapter2(act, objects);
@@ -84,16 +78,9 @@ public class List extends ListActivity {
 
     private void createList() {
         listCat = (ListView) getListView();
-        //mController = buildController(listCat);
-        //listCat.setFloatViewManager(mController);
-        //listCat.setOnTouchListener(mController);
-        //listCat.setDragEnabled(true);
         // set adapter and list
         setAdapterForCatList();
         //listener for list
-
-        //listCat.setDropListener(onDrop);
-        //listCat.setRemoveListener(onRemove);
         listCat.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 //get selected item
@@ -108,62 +95,6 @@ public class List extends ListActivity {
             }
         });
     }
-
-    
-    /*drag & drop stuff
-    private DragSortListView.DropListener onDrop = new DragSortListView.DropListener() {
-        @Override
-        public void drop(int from, int to) {
-            ListObject item = adapterCat.getItem(from);
-            adapterCat.remove(item);
-            adapterCat.insert(item, to);
-        }
-    };
-
-    private DragSortListView.RemoveListener onRemove = new DragSortListView.RemoveListener() {
-        @Override
-        public void remove(int which) {
-            adapterCat.remove(adapterCat.getItem(which));
-        }
-    };
-
-    public DragSortController getController() {
-        return mController;
-    }
-
-    private DragSortController buildController(DragSortListView dslv) {
-        DragSortController controller = new DragSortController(dslv);
-        controller.setDragHandleId(R.id.drag_handle);
-        //controller.setClickRemoveId(R.id.click_remove);
-        controller.setBackgroundColor(Color.GRAY);
-        controller.setRemoveEnabled(false);
-        controller.setSortEnabled(true);
-        controller.setDragInitMode(DragSortController.ON_DOWN);
-        controller.setRemoveMode(DragSortController.CLICK_REMOVE);
-        controller.setDragInitMode(DragSortController.ON_LONG_PRESS);
-        return controller;
-    }
-
-	/*drag & drop stuff done*/
-
-    @Override
-    public void onPause() {
-        //save task positions to the database
-        ListView listView = (ListView) getListView();
-        int importance = listsize;
-        //datasource.saveLists(importance, listView);
-        datasource.close();
-        super.onPause();
-
-    }
-    @Override
-    protected void onResume()
-    {
-        datasource.open();
-        createList();
-        super.onResume();
-    }
-
 
     public void processResult( String result )
     {

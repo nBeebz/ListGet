@@ -35,6 +35,8 @@ public class Mongo {
     public static final String KEY_PASS = "password";//password field
     public static final String KEY_EMAIL = "email";//email field
     public static final String KEY_OWNER = "owner";//owner field
+    public static final String KEY_NAME = "name";//name field
+    public static final String KEY_CONTRIBUTORS = "contributors";
 
     private static final String BASE_URL = "https://api.mongolab.com/api/1//databases/sandbox/collections/";
     private static final String API_KEY = "apiKey=bup2ZBWGDC-IlRrpRsjTtJqiM_QKSmKa";

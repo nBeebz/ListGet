@@ -9,17 +9,20 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v13.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 
 import com.example.nav.listget.Adapters.OwnedListAdapter;
 import com.example.nav.listget.Adapters.SharedListAdapter;
 import com.example.nav.listget.Interfaces.MongoInterface;
 import com.example.nav.listget.Mongo;
+import com.example.nav.listget.MyDialogFragment;
 import com.example.nav.listget.R;
 import com.example.nav.listget.parcelable.ListObject;
 
@@ -49,7 +52,6 @@ public class ListActivity extends Activity implements ActionBar.TabListener {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_list2);
-
         // Set up the action bar.
         final ActionBar actionBar = getActionBar();
         actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
@@ -84,8 +86,11 @@ public class ListActivity extends Activity implements ActionBar.TabListener {
                             .setText(mSectionsPagerAdapter.getPageTitle(i))
                             .setTabListener(this));
         }
+
         email = getIntent().getStringExtra( "email" );
     }
+
+
 
 
     @Override
@@ -179,17 +184,46 @@ public class ListActivity extends Activity implements ActionBar.TabListener {
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                                  Bundle savedInstanceState) {
+            super.onCreate(savedInstanceState);
+            View view = inflater.inflate(R.layout.activity_list, container, false);
             Mongo.getMongo( this ).get( Mongo.COLL_LISTS, Mongo.KEY_OWNER, email );
             inf = inflater;
-            return super.onCreateView(inflater, container, savedInstanceState);
+
+            // set onclick listener for add list button
+            LinearLayout btn = (LinearLayout) view.findViewById(R.id.LinearLayout);
+            btn.setOnClickListener(new View.OnClickListener() {
+                public void onClick(View v) {
+                    ListObject selectedCat = new ListObject( "", email);
+                    MyDialogFragment dialog = new MyDialogFragment();
+                    dialog.setCategory(selectedCat);
+                    dialog.setOnCloseListener(new onMyClickListener());
+                    dialog.show(getActivity().getFragmentManager(), "");
+                }
+            });
+
+            return view;
+        }
+
+        /**
+         * listener for　fragmentDialog.
+         * listens action from fragment dialog and does stuff in this fragment
+         */
+        public class onMyClickListener implements MyDialogFragment.OnMyClickListener {
+            @Override
+            public void onClose() {
+                //setAdapterForCatList();
+            }
+
+            //closed dialog by tapping x
+            public void onCancelClose() {
+            }
         }
 
         @Override
         public void processResult(String result) {
             lists = ListObject.getLists( result );
             OwnedListAdapter adapter = new OwnedListAdapter(
-                    inf.getContext(), R.layout.owned_list_line, R.id.oListName,
-                    lists);
+                    inf.getContext(), R.layout.owned_list_line, R.id.oListName,lists);
             setListAdapter(adapter);
         }
     }
@@ -211,9 +245,11 @@ public class ListActivity extends Activity implements ActionBar.TabListener {
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                                  Bundle savedInstanceState) {
-            Mongo.getMongo(this).getListByContributor( email );
+            super.onCreate(savedInstanceState);
+            View view = inflater.inflate(R.layout.fragment_shared_lists, container, false);
+            Mongo.getMongo(this).getListByContributor(email);
             inf = inflater;
-            return super.onCreateView(inflater, container, savedInstanceState);
+            return view;
         }
 
         @Override
@@ -222,6 +258,7 @@ public class ListActivity extends Activity implements ActionBar.TabListener {
             SharedListAdapter adapter = new SharedListAdapter(
                     inf.getContext(), R.layout.shared_list_line, R.id.sListName,
                     lists);
+            Log.d("processResult",result);
             setListAdapter(adapter);
         }
     }

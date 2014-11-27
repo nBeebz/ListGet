@@ -27,12 +27,16 @@ import java.net.URLEncoder;
  * Created by Nav on 11/22/2014.
  */
 public class Mongo {
+    //tables
     public static final String COLL_USERS = "users";//users Table
     public static final String COLL_LISTS = "lists";//lists Table
     public static final String COLL_ITEMS = "items";//items Table
 
+    //fields
     public static final String KEY_ID = "_id";//_id field
     public static final String KEY_PASS = "password";//password field
+    public static final String KEY_NAME = "name";//name field
+    public static final String KEY_CONTRIBUTORS = "contributors";//contributors field
     public static final String KEY_EMAIL = "email";//email field
     public static final String KEY_OWNER = "owner";//owner field
 
@@ -264,12 +268,7 @@ public class Mongo {
 
         @Override
         protected void onPostExecute(final String result)
-        {
-            if (result != null)
-            {
-                activity.processResult( result );
-            }
-        }
+        {}
 
     }
 

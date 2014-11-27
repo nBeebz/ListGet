@@ -4,6 +4,8 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.util.Log;
 
+import com.example.nav.listget.Mongo;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -104,4 +106,14 @@ public class ListObject implements Parcelable {
             return new ListObject[size];
         }
     };
+
+    public static JSONObject JSONlist( String name, String owner, ArrayList<String> contributors )
+    {
+        try{
+            JSONObject obj = new JSONObject();
+            obj.put(Mongo.KEY_OWNER, owner );
+            obj.put(Mongo.KEY_NAME, name  );
+            obj.put(Mongo.KEY_CONTRIBUTORS, new JSONArray( contributors ) );
+        }catch (Exception e){ Log.d("List Object", e.getLocalizedMessage()); }
+    }
 }

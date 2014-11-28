@@ -32,17 +32,6 @@
 
     </com.example.nav.listget.Activities.CheckableLinearLayout>
 
-    <TextView
-        android:id="@+id/circle"
-        android:layout_width="wrap_content"
-        android:layout_height="64dip"
-        android:ellipsize="marquee"
-        android:gravity="center_vertical"
-        android:paddingLeft="10dip"
-        android:paddingRight="0dip"
-        android:singleLine="true"
-        android:text="●"
-        android:textAppearance="?android:attr/textAppearanceMedium" />
 
     <TextView
         android:id="@+id/text1"

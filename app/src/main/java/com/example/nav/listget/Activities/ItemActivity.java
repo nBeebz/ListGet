@@ -4,6 +4,7 @@ import android.app.ListActivity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -17,33 +18,33 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.nav.listget.AccessObject;
 import com.example.nav.listget.Adapters.ItemAdapter;
 import com.example.nav.listget.Interfaces.MongoInterface;
+import com.example.nav.listget.Mongo;
 import com.example.nav.listget.R;
 import com.example.nav.listget.parcelable.ItemObject;
 import com.example.nav.listget.parcelable.ListObject;
 
 import org.json.JSONArray;
-import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
+
 
 
 public class ItemActivity extends ListActivity implements MongoInterface {
 
     static ItemAdapter adapter;
    // private DragSortController mController;
-    private AccessObject datasource;
+   // private AccessObject datasource;
 
 
-    int listsize = 0;
-    ListObject selectedCat = null;
+    ListObject selectedList = null;
 
-    List<ItemObject> objects;
-    EditText inputItem = null;
+    List<ItemObject> items;
+    EditText inputEditText= null;
     TextView filterText;
+    MongoInterface m = null;
 
     public ItemActivity() {
     }
@@ -71,7 +72,7 @@ public class ItemActivity extends ListActivity implements MongoInterface {
 
             case R.id.action_settings:
                 Intent intent = new Intent(getBaseContext(), EditListActivity.class);
-                intent.putExtra("list", selectedCat);
+                intent.putExtra("list", selectedList);
                 startActivity(intent);
 
                 return true;
@@ -93,38 +94,26 @@ public class ItemActivity extends ListActivity implements MongoInterface {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_item);
-
-        datasource = new AccessObject(this);
-        datasource.open();
-
+        m = this;
         this.getWindow().setSoftInputMode(LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
 
         //set edittext field
-        inputItem = (EditText) findViewById(R.id.addItem);
-        inputItem.setOnFocusChangeListener(new MyOnFocusChangeListener());
-        inputItem.setOnEditorActionListener(new MyOnEditorActionListener());
-
+        inputEditText = (EditText) findViewById(R.id.addItem);
+        inputEditText.setOnFocusChangeListener(new MyOnFocusChangeListener());
+        inputEditText.setOnEditorActionListener(new MyOnEditorActionListener());
         filterText = (TextView) findViewById(R.id.textView2);
 
-        Intent intent = getIntent();
-        selectedCat = ((ListObject) intent.getExtras().getSerializable("list"));
-        listsize = intent.getExtras().getInt("listsize");
-
-
         if (savedInstanceState == null) {
-            resetList();
             ListView ls = getListView();
-            /*DragSortListView mDslv = (DragSortListView) getListView();
-            mController = buildController(mDslv);
-            mDslv.setFloatViewManager(mController);
-            mDslv.setOnTouchListener(mController);
-            mDslv.setDragEnabled(true);
-            mDslv.getCheckedItemPosition();
-            mDslv.setDropListener(onDrop);
-            mDslv.setRemoveListener(onRemove);*/
             ls.setOnItemClickListener(new listViewListener());
-        } else {
-            resetList();
+        }
+
+        Intent intent = getIntent();
+        selectedList = ((ListObject) intent.getExtras().getParcelable("list"));
+        if(selectedList!=null){
+            filterText.setText(selectedList.getName());
+            adapter = new ItemAdapter(this, items);
+            Mongo.getMongo(this).get(Mongo.COLL_ITEMS, Mongo.KEY_LISTID, selectedList.getId());
         }
     }
 
@@ -132,10 +121,9 @@ public class ItemActivity extends ListActivity implements MongoInterface {
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
             ListView listView = (ListView) parent;
             ItemObject selectedItem = (ItemObject) listView.getItemAtPosition(position);
-            //listener.onMove(selectedTask, selectedCat);
             Intent intent = new Intent(getBaseContext(), EditItemActivity.class);
             intent.putExtra("item", selectedItem);
-            intent.putExtra("list", selectedCat);
+            intent.putExtra("list", selectedList);
             startActivity(intent);
         }
 
@@ -150,7 +138,7 @@ public class ItemActivity extends ListActivity implements MongoInterface {
             if (hasFocus == false) {
                 InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
                 imm.hideSoftInputFromWindow(v.getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
-                inputItem.setText("");
+                inputEditText.setText("");
             }
         }
     }
@@ -165,46 +153,22 @@ public class ItemActivity extends ListActivity implements MongoInterface {
             if (actionId == EditorInfo.IME_ACTION_DONE) {
                 InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
                 imm.hideSoftInputFromWindow(v.getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
-                if (!(inputItem.getText().toString().equals(""))) {
-//                    datasource.insertAnItem(inputItem.getText().toString(),selectedCat.getCategoryId());
-                    saveOrder();
-                    resetList();
+                if (!(inputEditText.getText().toString().equals(""))) {
+
+                    String id =""+ System.currentTimeMillis();
+                    ItemObject inputItem = new ItemObject(id,selectedList.getId(),inputEditText.getText().toString() ,"","");
+                    Mongo.getMongo(m).post(Mongo.COLL_ITEMS, inputItem.getJSON());
+                    adapter.add(inputItem);
+                    setListAdapter(adapter);
+//                    datasource.insertAnItem(inputEditText.getText().toString(),selectedCat.getCategoryId());
+                    //saveOrder();
+                    //resetList();
                 }
-                inputItem.setText("");
+                inputEditText.setText("");
                 return true;
             }
             return false;
         }
-    }
-
-
-    /**
-     * return the category name with number of items
-     *
-     * @return
-     */
-    public String getFilterString() {
-//        String str = selectedCat.getCategory();
-//        return str + " (" + listsize + ") ";
-        return "hello";
-    }
-
-    /**
-     * reset, recreate listView and filterText
-     */
-    private void resetList() {
-        objects = new ArrayList<ItemObject>();
-        if(selectedCat != null) {
-//            objects = datasource.getItems(selectedCat.getCategoryId());
-            listsize = objects.size();
-//            String newName = datasource.getListNameById(selectedCat.getCategoryId());
-//            selectedCat.setCategory(newName);
-        }
-        adapter = new ItemAdapter(this, objects);
-        setListAdapter(adapter);
-        if (listsize<1)
-            setEmptyText("NoItems");
-        filterText.setText(getFilterString());
     }
 
 
@@ -218,13 +182,15 @@ public class ItemActivity extends ListActivity implements MongoInterface {
     }
 
 
+    /*
     public void saveOrder() {
         ListView listView = (ListView) getListView();
-        datasource.saveOrderOfItemList(listView, listsize);
+        //datasource.saveOrderOfItemList(listView, listsize);
     }
     /**
      * save the order
      */
+    /*
     @Override
     public void onPause() {
         saveOrder();
@@ -237,59 +203,23 @@ public class ItemActivity extends ListActivity implements MongoInterface {
         datasource.open();
         resetList();
         super.onResume();
-    }
+    }*/
 
-    /*
-    private DragSortListView.DropListener onDrop = new DragSortListView.DropListener() {
-        @Override
-        public void drop(int from, int to) {
-            DragSortListView list = (DragSortListView) getListView();
-            ItemObject item = adapter.getItem(from);
-            adapter.remove(item);
-            adapter.insert(item, to);
-            list.moveCheckState(from, to);
-        }
-    };
-
-    private DragSortListView.RemoveListener onRemove = new DragSortListView.RemoveListener() {
-        @Override
-        public void remove(int which) {
-            DragSortListView list = (DragSortListView) getListView();
-            ItemObject item = adapter.getItem(which);
-            adapter.remove(item);
-            list.removeCheckState(which);
-        }
-    };
-
-    public DragSortController getController() {
-        return mController;
-    }
-
-    private DragSortController buildController(DragSortListView dslv) {
-        DragSortController controller = new DragSortController(dslv);
-        controller.setDragHandleId(R.id.drag_handle);
-        //controller.setClickRemoveId(R.id.click_remove);
-        controller.setBackgroundColor(Color.GRAY);
-        controller.setRemoveEnabled(false);
-        controller.setSortEnabled(true);
-        controller.setDragInitMode(DragSortController.ON_DOWN);
-        controller.setRemoveMode(DragSortController.CLICK_REMOVE);
-        controller.setDragInitMode(DragSortController.ON_LONG_PRESS);
-        return controller;
-    }
-	/*drag & drop stuff done*/
 
     public void processResult( String result )
     {
         JSONArray arr;
-        JSONObject obj;
-        ArrayList<ItemObject> items = new ArrayList<ItemObject>();
-
+        items = new ArrayList<ItemObject>();
         try {
             arr = new JSONArray(result);
-            for( int i=0; i<arr.length(); ++i )
-            {
-//                items.add( ItemObject.parseJSON( arr.getJSONObject(i) ));
+            Log.d("result",result);
+            if(arr.length()<1){
+                setEmptyText("No Items");
+            }else {
+//                   items.add( ItemObject.parseJSON( arr.getJSONObject(i) ));
+                items = ItemObject.getItems(arr );
+                adapter = new ItemAdapter(this,items);
+                setListAdapter(adapter);
             }
         }
         catch (Exception e){ e.printStackTrace();

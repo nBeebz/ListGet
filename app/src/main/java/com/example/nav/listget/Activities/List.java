@@ -57,12 +57,12 @@ public class List extends ListActivity {
 
     public class onMyClickListener implements MyDialogFragment.OnMyClickListener {
         @Override
-        public void onClose() {
+        public void onDelete(ListObject list) {
             setAdapterForCatList();
         }
 
         //closed dialog by tapping x
-        public void onCancelClose() {
+        public void onSave(ListObject list) {
         }
     }
 

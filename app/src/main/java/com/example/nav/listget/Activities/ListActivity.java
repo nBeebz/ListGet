@@ -2,6 +2,7 @@ package com.example.nav.listget.Activities;
 
 import android.app.ActionBar;
 import android.app.Activity;
+import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.app.ListFragment;
@@ -9,7 +10,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v13.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -90,8 +90,24 @@ public class ListActivity extends Activity implements ActionBar.TabListener {
         email = getIntent().getStringExtra( "email" );
     }
 
+    public  FragmentPagerAdapter getSectionsPagerAdapter(){
+        return mSectionsPagerAdapter;
+    }
 
+    public  ViewPager getViewPager(){
+        return mViewPager;
+    }
 
+    /**
+     * get list fragment by position
+     * @param position
+     * @return
+     */
+    public Fragment findFragmentByPosition(int position) {
+        return this.getFragmentManager().findFragmentByTag(
+                "android:switcher:" + getViewPager().getId() + ":"
+                        + mSectionsPagerAdapter.getItemId(position));
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -172,7 +188,7 @@ public class ListActivity extends Activity implements ActionBar.TabListener {
      */
     public static class OwnedListsFragment extends ListFragment implements MongoInterface {
         private ArrayList<ListObject> lists;
-
+        private OwnedListAdapter adapter;
         private LayoutInflater inf;
         @Override
         public void onListItemClick(ListView l, View v, int position, long id) {
@@ -210,20 +226,26 @@ public class ListActivity extends Activity implements ActionBar.TabListener {
          */
         public class onMyClickListener implements MyDialogFragment.OnMyClickListener {
             @Override
-            public void onClose() {
-                //setAdapterForCatList();
+            public void onDelete(ListObject deletedList) {
+                adapter.remove(deletedList);
+                setListAdapter(adapter);
             }
 
-            //closed dialog by tapping x
-            public void onCancelClose() {
+            public void onSave(ListObject addedList) {
+                adapter.add(addedList);
+                setListAdapter(adapter);
             }
+        }
+
+        public void deleteListFromAdapter(ListObject deletedList){
+            adapter.remove(deletedList);
+            setListAdapter(adapter);
         }
 
         @Override
         public void processResult(String result) {
             lists = ListObject.getLists( result );
-            OwnedListAdapter adapter = new OwnedListAdapter(
-                    inf.getContext(), R.layout.owned_list_line, R.id.oListName,lists);
+            adapter = new OwnedListAdapter(inf.getContext(), R.layout.owned_list_line, R.id.oListName,lists);
             setListAdapter(adapter);
         }
     }
@@ -258,7 +280,6 @@ public class ListActivity extends Activity implements ActionBar.TabListener {
             SharedListAdapter adapter = new SharedListAdapter(
                     inf.getContext(), R.layout.shared_list_line, R.id.sListName,
                     lists);
-            Log.d("processResult",result);
             setListAdapter(adapter);
         }
     }

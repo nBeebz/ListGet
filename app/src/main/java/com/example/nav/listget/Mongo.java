@@ -39,8 +39,9 @@ public class Mongo {
     public static final String KEY_CONTRIBUTORS = "contributors";//contributors field
     public static final String KEY_EMAIL = "email";//email field
     public static final String KEY_OWNER = "owner";//owner field
-    public static final String KEY_NAME = "name";//name field
-    public static final String KEY_CONTRIBUTORS = "contributors";
+    public static final String KEY_LISTID ="listID";//listID field in items collection
+    public static final String KEY_MEMO ="memo";
+    public static final String KEY_COMPLETED = "completed";
 
     private static final String BASE_URL = "https://api.mongolab.com/api/1//databases/sandbox/collections/";
     private static final String API_KEY = "apiKey=bup2ZBWGDC-IlRrpRsjTtJqiM_QKSmKa";
@@ -108,17 +109,33 @@ public class Mongo {
     public void put( String coll, String key, String value, String newKey, String newValue )
     {
         try {
-            String update = "{\"$set\":{" + newKey + ":\"" + newValue + "\"}}";
-            String query = "{" + key + ":\"" + value + "\"}";
+            String update = "{\"$set\":{\"" + newKey + "\":\"" + newValue + "\"}}";
+            String query = "{\"" + key + "\":\"" + value + "\"}";
+            Log.d(key+value, newKey+newValue);
+            String url = BASE_URL + coll + "?" + API_KEY + "&q=" + URLEncoder.encode(query, "UTF-8");
+            Log.d(update, query);
+            new PutTask( activity ).execute( url, update );
+        }catch (Exception e){ e.printStackTrace(); }
+    }
+
+    public void putById( String coll, String id, String newKey, String newValue )
+    {
+        try {
+            String update = "{\"$set\":{\"" + newKey + "\":\"" + newValue + "\"}}";
+            String query = "{ \"_id\" : { \"$oid\" :\"" + id + "\"}}";
             String url = BASE_URL + coll + "?" + API_KEY + "&q=" + URLEncoder.encode(query, "UTF-8");
             new PutTask( activity ).execute( url, update );
         }catch (Exception e){ e.printStackTrace(); }
     }
 
+
     public void delete( String coll, String id )
     {
+        try {
         String url = BASE_URL + coll + "/" + id + "?" + API_KEY;
         new DeleteTask( activity ).execute( url );
+            Log.d("delete",url);
+        }catch (Exception e){ e.printStackTrace(); }
     }
 
     private String convertStreamToString(final InputStream is)
@@ -361,9 +378,9 @@ public class Mongo {
             InputStream inputStream;
             String      result;
 
-            if(params.length != 2)
+            if(params.length != 1)
             {
-                throw new IllegalArgumentException("You must provide 2 parameters");
+                throw new IllegalArgumentException("You must provide 1 parameter only");
             }
 
             inputStream = null;

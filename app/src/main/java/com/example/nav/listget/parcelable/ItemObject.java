@@ -4,6 +4,8 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.util.Log;
 
+import com.example.nav.listget.Mongo;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -15,13 +17,23 @@ import java.util.ArrayList;
  */
 public class ItemObject implements Parcelable{
     private String id;
+    private String listID;
     private String name;
     private String memo;
     private String completed;
 
-    public ItemObject( String i, String n, String m, String c )
+    public ItemObject( String i,String listI, String n, String m, String c )
     {
         id = i;
+        listID = listI;
+        name = n;
+        memo = m;
+        completed = c;
+    }
+    public ItemObject( String i,String n, String m, String c )
+    {
+        id = i;
+        listID = "";
         name = n;
         memo = m;
         completed = c;
@@ -59,7 +71,8 @@ public class ItemObject implements Parcelable{
         String c = "";
 
         try{
-            i = obj.getJSONObject( "_id" ).getString( "$oid" );
+            //i = obj.getJSONObject( "_id" ).getString( "$oid" );
+            i = obj.getString( "_id" );
             n = obj.getString( "name" );
             if( obj.has("memo") ) m = obj.getString( "memo" );
             if( obj.has("completed") ) c = obj.getString( "completed" );
@@ -98,4 +111,20 @@ public class ItemObject implements Parcelable{
             return new ItemObject[size];
         }
     };
+
+    public JSONObject getJSON()
+    {
+        JSONObject obj = null;
+        try{
+            obj = new JSONObject();
+            obj.put(Mongo.KEY_ID, id );
+            obj.put(Mongo.KEY_LISTID, listID);
+
+            obj.put(Mongo.KEY_NAME, name  );
+            obj.put(Mongo.KEY_MEMO, memo);
+            obj.put(Mongo.KEY_COMPLETED,completed);
+        }catch (Exception e){ Log.d("List Object", e.getLocalizedMessage()); }
+
+        return obj;
+    }
 }

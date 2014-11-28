@@ -27,8 +27,8 @@ public class MyDialogFragment extends DialogFragment implements MongoInterface {
     }
 
     public interface OnMyClickListener {
-		public void onClose();
-		public void onCancelClose();
+		public void onDelete(ListObject removedList);
+		public void onSave(ListObject addedList);
 	}
 
 
@@ -73,7 +73,7 @@ public class MyDialogFragment extends DialogFragment implements MongoInterface {
 				if(!(editText.getText().toString().equals(""))){
                     selectedList.setName(editText.getText().toString());
                     Mongo.getMongo(m).post( Mongo.COLL_LISTS, selectedList.getJSON() );
-					listener.onClose();
+                    listener.onSave(selectedList);
 					dismiss();
 				}
 			}
@@ -90,12 +90,8 @@ public class MyDialogFragment extends DialogFragment implements MongoInterface {
 			public void onClick(View v) {
 				if(!(editText.getText().toString().equals(""))){
                     selectedList.setName(editText.getText().toString());
+                    Mongo.getMongo(m).putById(Mongo.COLL_LISTS, selectedList.getId(), Mongo.KEY_NAME, selectedList.getName());
 
-//					cv.put("category", selectedCat.getCategory() );
-					//cv.put("color", selectedCat.getColor() );
-//					db.update("categories", cv, "categoryId = "+selectedCat.getCategoryId(), null);
-					//onCloselistener
-					listener.onClose();
 					dismiss();
 				}
 			}
@@ -110,13 +106,16 @@ public class MyDialogFragment extends DialogFragment implements MongoInterface {
 		b_delete.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-//				db.delete("categories", "categoryId = "+selectedCat.getCategoryId(), null);
-				listener.onClose();
+                Mongo.getMongo(m).delete(Mongo.COLL_LISTS,selectedList.getId());
+				listener.onDelete(selectedList);
 				dismiss();
 			}
 		});
 
 	}
+
+
+
 	/**
 	 * cancel button listener (x)
 	 * @param dialog
@@ -126,7 +125,6 @@ public class MyDialogFragment extends DialogFragment implements MongoInterface {
 		b_cancel.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				listener.onCancelClose();
 				dismiss();
 			}
 		});

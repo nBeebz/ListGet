@@ -3,7 +3,6 @@ package com.example.nav.listget;
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.util.Log;
 import android.widget.ListView;
 
 import com.example.nav.listget.Interfaces.MongoInterface;
@@ -251,8 +250,6 @@ public class AccessObject2 implements MongoInterface {
             JSONObject obj = jsonarray.getJSONObject(0);
             userId = obj.getInt(ID);
         }
-        Log.d("userId", ""+userId);
-
         return userId;
     }
 
@@ -260,7 +257,6 @@ public class AccessObject2 implements MongoInterface {
     public void processResult(String result) {
         try
         {
-            Log.d("processResult called","accessObject2");
              jsonarray =  new JSONArray(result);
         }
         catch (Exception e)

@@ -1,13 +1,18 @@
 package com.example.nav.listget.Adapters;
 
 import android.app.Activity;
+import android.app.Fragment;
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+
+import com.example.nav.listget.Activities.ListActivity.OwnedListsFragment;
+import com.example.nav.listget.Activities.ListActivity;
 
 import com.example.nav.listget.MyDialogFragment;
 import com.example.nav.listget.R;
@@ -21,12 +26,13 @@ import java.util.ArrayList;
 public class OwnedListAdapter extends ArrayAdapter<ListObject> {
 
     private ArrayList<ListObject> lists;
-    private Activity c = null;
+    private Activity act = null;
+    private OwnedListsFragment frag = null;
 
     public OwnedListAdapter(Context context, int layoutResourceId, int textViewResourceId, ArrayList<ListObject> list)
     {
         super( context, layoutResourceId, textViewResourceId, list );
-        c = (Activity)context;
+        act = (Activity)context;
         lists = list;
     }
 
@@ -78,7 +84,7 @@ public class OwnedListAdapter extends ArrayAdapter<ListObject> {
             MyDialogFragment dialog = new MyDialogFragment();
             dialog.setCategory(selectedList);
             dialog.setOnCloseListener(new onMyClickListener());
-            dialog.show(c.getFragmentManager(), "");
+            dialog.show(act.getFragmentManager(), "");
         }
     }
 
@@ -88,12 +94,18 @@ public class OwnedListAdapter extends ArrayAdapter<ListObject> {
      */
     public class onMyClickListener implements MyDialogFragment.OnMyClickListener {
         @Override
-        public void onClose() {
-            //setAdapterForCatList();
+        public void onDelete(ListObject list) {
+            Fragment frag = ((ListActivity)act).findFragmentByPosition(0);
+            if(frag instanceof OwnedListsFragment){
+                ((OwnedListsFragment) frag).deleteListFromAdapter(list);
+            }else{
+                Log.d("OwnedListAdapter","couldn't get owned list fragment");
+            }
+
         }
 
-        //closed dialog by tapping x
-        public void onCancelClose() {
+
+        public void onSave(ListObject list) {
         }
     }
 }

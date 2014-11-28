@@ -4,8 +4,6 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.util.Log;
 
-import com.example.nav.listget.Mongo;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -27,13 +25,6 @@ public class ListObject implements Parcelable {
         name = n;
         owner = o;
         contributors = c;
-    }
-
-    public ListObject( String n, String o)
-    {
-        id ="";
-        name = n;
-        owner = o;
     }
 
     public ListObject( Parcel p )
@@ -62,7 +53,6 @@ public class ListObject implements Parcelable {
         }
         return lists;
     }
-
     public static ListObject getList( JSONObject obj )
     {
         String d = null;
@@ -87,9 +77,6 @@ public class ListObject implements Parcelable {
         return new ListObject( d, n, o, c );
     }
 
-    public void setName(String name){
-        this.name = name;
-    }
     public String getId(){ return id; }
     public String getName(){ return name; }
     public String getOwner(){ return owner; }
@@ -117,29 +104,4 @@ public class ListObject implements Parcelable {
             return new ListObject[size];
         }
     };
-
-    public JSONObject getJSON()
-    {
-        JSONObject obj = new JSONObject();
-        try {
-            obj.put(Mongo.KEY_OWNER, owner);
-            obj.put(Mongo.KEY_NAME, name);
-        }catch (Exception e) {
-            Log.d("ListObject", e.getLocalizedMessage());
-        }
-        return obj;
-    }
-
-    public static JSONObject JSONlist( String name, String owner, ArrayList<String> contributors )
-    {
-        JSONObject obj = null;
-        try{
-            obj = new JSONObject();
-            obj.put(Mongo.KEY_OWNER, owner );
-            obj.put(Mongo.KEY_NAME, name  );
-            obj.put(Mongo.KEY_CONTRIBUTORS, new JSONArray( contributors ) );
-        }catch (Exception e){ Log.d("List Object", e.getLocalizedMessage()); }
-
-        return obj;
-    }
 }

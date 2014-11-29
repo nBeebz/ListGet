@@ -7,6 +7,7 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.example.nav.listget.AccessObject;
 import com.example.nav.listget.Interfaces.MongoInterface;
 import com.example.nav.listget.Mongo;
 import com.example.nav.listget.R;
@@ -16,15 +17,28 @@ import org.json.JSONException;
 
 public class Login extends Activity implements MongoInterface {
 
-//    private AccessObject2 datasource;
+   private AccessObject datasource;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-//        datasource = new AccessObject2();
+       datasource = new AccessObject(this);
+        datasource.open();
+        String id = datasource.getId();
+        if(id != null){
+
+            Intent myIntent = new Intent( this, ListActivity.class );
+            myIntent.putExtra( "email", id);
+            startActivity( myIntent );
+        }
         setContentView(R.layout.activity_login);
     }
 
+    @Override
+    public void onPause() {
+        datasource.close();
+        super.onPause();
+    }
 
 
     public void register( View v ){
@@ -49,9 +63,16 @@ public class Login extends Activity implements MongoInterface {
             if( arr.length() > 0 )
             {
                 myIntent = new Intent( this, ListActivity.class );
-                email = arr.getJSONObject(0).getString( "_id" );
-                myIntent.putExtra( "email", email );
-                startActivity( myIntent );
+                String password = ((EditText)findViewById(R.id.password)).getText().toString();
+                if(arr.getJSONObject(0).getString(Mongo.KEY_PASSWORD).equals(password))
+                {
+                    email = arr.getJSONObject(0).getString( Mongo.KEY_ID );
+                    myIntent.putExtra( "email", email );
+                    datasource.saveId(email);
+                    startActivity( myIntent );
+                }else{
+                    Toast.makeText(getBaseContext(),"email and password don't match",Toast.LENGTH_LONG).show();
+                }
             }
         }
         catch (JSONException e)

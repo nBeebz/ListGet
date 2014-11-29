@@ -9,6 +9,10 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
 public class DBHelper extends SQLiteOpenHelper {
+
+
+    public static final String TABLE_USER= "users";
+    public static final String COL_ID= "_id";
     public DBHelper(Context context) {
         super(context, "items.db", null, 1);
     }
@@ -19,32 +23,10 @@ public class DBHelper extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        //create item table
-        db.execSQL("create table items(" +
-                "itemId INTEGER PRIMARY KEY AUTOINCREMENT," +
-                "item text not null, " +
-                "categoryId integer default 0,"+
-                "memo text," +
-                "checked integer default 0" +     // 0 = not checked, 1 = checked
-                //"importance integer default -1" +  // used to change order
+
+        db.execSQL("create table "+TABLE_USER+"(" +
+                COL_ID+" text PRIMARY KEY " +
                 ");");
-
-        //test
-        db.execSQL("insert into items(item, categoryId) values ('item1', 1);");
-        db.execSQL("insert into items(item, categoryId)values ('item1', 2);");
-
-        //create category table
-        db.execSQL("create table categories(" +
-                "categoryId INTEGER PRIMARY KEY AUTOINCREMENT," +
-                "category text not null " +
-                // "color integer default 0," +
-               //"importance integer default -1" +// used to change order
-                ");");
-
-        //test
-        db.execSQL("insert into categories(category) values ('job');");
-        db.execSQL("insert into categories(category)values ('private');");
-        db.execSQL("insert into categories(category)values ('shopping');");
 
     }
 }

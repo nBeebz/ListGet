@@ -1,5 +1,6 @@
 package com.example.nav.listget.Activities;
 
+import android.app.Activity;
 import android.app.ListActivity;
 import android.content.Context;
 import android.content.Intent;
@@ -56,6 +57,7 @@ public class ItemActivity extends ListActivity implements MongoInterface{
         return true;
     }
 
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item)
     {
@@ -70,9 +72,9 @@ public class ItemActivity extends ListActivity implements MongoInterface{
                 return true;
 
             case R.id.action_settings:
-                Intent intent = new Intent(getBaseContext(), EditListActivity.class);
+                /*Intent intent = new Intent(getBaseContext(), EditListActivity.class);
                 intent.putExtra("list", selectedList);
-                startActivity(intent);
+                startActivity(intent);*/
 
                 return true;
 
@@ -121,7 +123,8 @@ public class ItemActivity extends ListActivity implements MongoInterface{
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
             ListView listView = (ListView) parent;
             ItemObject selectedItem = (ItemObject) listView.getItemAtPosition(position);
-            Intent intent = new Intent(getBaseContext(), EditItemActivity.class);
+            /*editItemActivity*/
+            Intent intent = new Intent(getBaseContext(), ItemActivity.class);
             intent.putExtra("caller", getIntent().getComponent().getClassName());
             intent.putExtra("item", selectedItem);
             intent.putExtra("position", position);
@@ -195,7 +198,13 @@ public class ItemActivity extends ListActivity implements MongoInterface{
                     String id =""+ System.currentTimeMillis();
                     ItemObject inputItem = new ItemObject(id,selectedList.getId(),inputEditText.getText().toString() ,"","");
                     Mongo.getMongo(m).post(Mongo.COLL_ITEMS, inputItem.getJSON());
-                    adapter.add(inputItem);
+                    if(items.size() <1){
+                        items.add(inputItem);
+                        adapter = new ItemAdapter((Activity)m,items);
+                    }else {
+                        adapter.add(inputItem);
+                    }
+
                     setListAdapter(adapter);
                 }
                 inputEditText.setText("");

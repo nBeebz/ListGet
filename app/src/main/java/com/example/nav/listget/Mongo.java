@@ -42,6 +42,7 @@ public class Mongo {
     public static final String KEY_LISTID ="listID";//listID field in items collection
     public static final String KEY_MEMO ="memo";
     public static final String KEY_COMPLETED = "completed";
+    public static final String KEY_PASSWORD ="password";
 
     private static final String BASE_URL = "https://api.mongolab.com/api/1//databases/sandbox/collections/";
     private static final String API_KEY = "apiKey=bup2ZBWGDC-IlRrpRsjTtJqiM_QKSmKa";

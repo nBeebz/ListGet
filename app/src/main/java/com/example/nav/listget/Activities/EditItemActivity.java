@@ -8,43 +8,84 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.nav.listget.AccessObject;
+import com.example.nav.listget.Interfaces.MongoInterface;
+import com.example.nav.listget.Mongo;
 import com.example.nav.listget.R;
 import com.example.nav.listget.parcelable.ItemObject;
 
-public class EditItemActivity extends Activity {
+public class EditItemActivity extends Activity implements MongoInterface {
 
 
-    EditText itemName;
+    EditText textName;
     EditText textMemo;
-    int selectedItem;
-    int selectedCat;
-    private AccessObject datasource;
+    CheckBox checkbox;
+    TextView checkedBy;
+    ItemObject selectedItem;
+    int itemPosition = -1;
+    MongoInterface m;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit_item);
-
-        datasource = new AccessObject(this);
-        datasource.open();
+        m = this;
 
         MyOnFocusChangeListener focusChangeListener = new MyOnFocusChangeListener();
-        //itemName
-        itemName = (EditText)findViewById(R.id.item_value);
-        itemName.setOnFocusChangeListener(focusChangeListener);
+        //textName
+        textName = (EditText)findViewById(R.id.item_value);
+        textName.setOnFocusChangeListener(focusChangeListener);
         //memo
         textMemo = (EditText)findViewById(R.id.memo);
         textMemo.setOnFocusChangeListener(focusChangeListener);
+
+        checkbox = (CheckBox)findViewById(R.id.checkbox);
+        checkedBy = (TextView)findViewById(R.id.checkedBy);
+
         setButtons();
         Intent intent = getIntent();
-//        selectedItem = ((ItemObject) intent.getExtras().getSerializable("item")).getItemId();
-//        selectedCat = ((ListObject) intent.getExtras().getSerializable("list")).getCategoryId();
+        selectedItem = ((ItemObject) intent.getExtras().getParcelable("item"));
+        itemPosition = intent.getExtras().getInt("position");
+
+        textMemo.setText(selectedItem.getMemo());
+        textName.setText(selectedItem.getName());
+        checkbox.setOnClickListener(new CheckClickedListener());
+        if(!selectedItem.getCompleter().equals("")){
+            checkbox.setChecked(true);
+            checkedBy.setText(selectedItem.getCompleter()+" completed");
+        }else {
+            checkbox.setChecked(false);
+            checkedBy.setText("Nobody completed this item");
+
+        }
+    }
+
+
+    @Override
+    public void processResult(String result) {
 
     }
+
+    class CheckClickedListener implements OnClickListener {
+        public void onClick(View v) {
+            if(checkbox.isChecked()){
+                checkbox.setChecked(true);
+                selectedItem.setCompleter("You");
+                checkedBy.setText(selectedItem.getCompleter() + " completed");
+
+            }else {
+                checkbox.setChecked(false);
+                selectedItem.setCompleter("");
+                checkedBy.setText("Nobody completed this item");
+            }
+
+        }
+    }
+
 
 /*
     @Override
@@ -66,14 +107,6 @@ public class EditItemActivity extends Activity {
         return super.onOptionsItemSelected(item);
     }
     */
-
- 
-
-    @Override
-    public void onStart() {
-        super.onStart();
-        setStoredData();
-    }
 
     /**
      * close soft keyboad
@@ -100,35 +133,40 @@ public class EditItemActivity extends Activity {
 
 
     /**
-     * put data to edit text
-     */
-    private void setStoredData(){
-        ItemObject item =datasource.getItemById(selectedItem);
-//        itemName.setText(item.getItem());
-        textMemo.setText(item.getMemo());
-    }
-
-    /**
      * listener class
      */
     class ClickListener implements OnClickListener {
         public void onClick(View v){
+            Intent data = new Intent();
+            Bundle bundle = new Bundle();
+            bundle.putInt("position", itemPosition);
+
             switch(v.getId())
             {
                 case R.id.save:
-                    String nameItem = itemName.getText().toString();
+                    String nameItem = textName.getText().toString();
                     String memoItem = textMemo.getText().toString();
-//                    ItemObject item = new ItemObject(selectedItem, nameItem,memoItem);
                     if(nameItem.equals("")) {
                         Toast.makeText(getBaseContext(), "The name of the item cannot be empty. Failed to save.", Toast.LENGTH_LONG).show();
                     }else{
-//                        datasource.updateItem(item);
+                        selectedItem.setName(nameItem);
+                        selectedItem.setMemo(memoItem);
+                        Mongo.getMongo(m).put(Mongo.COLL_ITEMS,Mongo.KEY_ID,selectedItem.getId(),Mongo.KEY_NAME,nameItem);
+                        Mongo.getMongo(m).put(Mongo.COLL_ITEMS,Mongo.KEY_ID,selectedItem.getId(),Mongo.KEY_MEMO,memoItem);
+                        Mongo.getMongo(m).put(Mongo.COLL_ITEMS,Mongo.KEY_ID,selectedItem.getId(),Mongo.KEY_COMPLETED,selectedItem.getCompleter());
+
+                        bundle.putParcelable("item", selectedItem);
+                        data.putExtras(bundle);
+                        setResult(RESULT_OK, data);
+
                         finish();
                     }
                     break;
 
                 case R.id.delete:
-                    datasource.deleteItemById(selectedItem);
+                    Mongo.getMongo(m).delete(Mongo.COLL_ITEMS,selectedItem.getId());
+                    data.putExtras(bundle);
+                    setResult(RESULT_CANCELED, data);
                     finish();
                     break;
                 default:
@@ -137,16 +175,4 @@ public class EditItemActivity extends Activity {
         }
     }
 
-
-    @Override
-    protected void onResume()
-    {
-        datasource.open();
-        super.onResume();
-    }
-    @Override
-    public void onPause() {
-        datasource.close();
-        super.onPause();
-    }
 }

@@ -4,7 +4,6 @@ import android.app.ListActivity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -32,7 +31,7 @@ import java.util.List;
 
 
 
-public class ItemActivity extends ListActivity implements MongoInterface {
+public class ItemActivity extends ListActivity implements MongoInterface{
 
     static ItemAdapter adapter;
    // private DragSortController mController;
@@ -114,6 +113,7 @@ public class ItemActivity extends ListActivity implements MongoInterface {
             filterText.setText(selectedList.getName());
             adapter = new ItemAdapter(this, items);
             Mongo.getMongo(this).get(Mongo.COLL_ITEMS, Mongo.KEY_LISTID, selectedList.getId());
+
         }
     }
 
@@ -122,9 +122,12 @@ public class ItemActivity extends ListActivity implements MongoInterface {
             ListView listView = (ListView) parent;
             ItemObject selectedItem = (ItemObject) listView.getItemAtPosition(position);
             Intent intent = new Intent(getBaseContext(), EditItemActivity.class);
+            intent.putExtra("caller", getIntent().getComponent().getClassName());
             intent.putExtra("item", selectedItem);
-            intent.putExtra("list", selectedList);
-            startActivity(intent);
+            intent.putExtra("position", position);
+            int requestCode = 1;
+            startActivityForResult(intent, requestCode);
+
         }
 
     }
@@ -139,6 +142,40 @@ public class ItemActivity extends ListActivity implements MongoInterface {
                 InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
                 imm.hideSoftInputFromWindow(v.getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
                 inputEditText.setText("");
+            }
+        }
+    }
+
+    /**
+     * when edit item activity is closed, this method will be called and change list
+     * @param requestCode
+     * @param resultCode
+     * @param data
+     */
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if(data != null) {
+            Bundle bundle = data.getExtras();
+            int position = bundle.getInt("position");
+
+            switch (requestCode) {
+                case 1:
+                    if (resultCode == RESULT_OK) {
+                        ItemObject item = bundle.getParcelable("item");
+                        adapter.getItem(position).setName(item.getName());
+                        adapter.getItem(position).setMemo(item.getMemo());
+                        adapter.getItem(position).setCompleter(item.getCompleter());
+                        setListAdapter(adapter);
+
+                    } else if (resultCode == RESULT_CANCELED) {
+
+                        adapter.remove(items.get(position));
+                        setListAdapter(adapter);
+                    }
+                    break;
+
+                default:
+                    break;
             }
         }
     }
@@ -160,9 +197,6 @@ public class ItemActivity extends ListActivity implements MongoInterface {
                     Mongo.getMongo(m).post(Mongo.COLL_ITEMS, inputItem.getJSON());
                     adapter.add(inputItem);
                     setListAdapter(adapter);
-//                    datasource.insertAnItem(inputEditText.getText().toString(),selectedCat.getCategoryId());
-                    //saveOrder();
-                    //resetList();
                 }
                 inputEditText.setText("");
                 return true;
@@ -197,13 +231,23 @@ public class ItemActivity extends ListActivity implements MongoInterface {
         datasource.close();
         super.onPause();
     }
+
     @Override
     protected void onResume()
     {
-        datasource.open();
-        resetList();
+        if(selectedList!=null){
+            filterText.setText(selectedList.getName());
+            adapter = new ItemAdapter(this, items);
+            Mongo.getMongo(this).get(Mongo.COLL_ITEMS, Mongo.KEY_LISTID, selectedList.getId());
+
+        }
         super.onResume();
-    }*/
+    }
+
+   */
+
+
+
 
 
     public void processResult( String result )
@@ -212,7 +256,6 @@ public class ItemActivity extends ListActivity implements MongoInterface {
         items = new ArrayList<ItemObject>();
         try {
             arr = new JSONArray(result);
-            Log.d("result",result);
             if(arr.length()<1){
                 setEmptyText("No Items");
             }else {
@@ -228,4 +271,5 @@ public class ItemActivity extends ListActivity implements MongoInterface {
         //DO SOMETHING WITH THE ITEMS
 
     }
+
 }

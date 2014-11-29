@@ -220,6 +220,7 @@ public class ListActivity extends Activity implements ActionBar.TabListener {
             return view;
         }
 
+
         /**
          * listener for　fragmentDialog.
          * listens action from fragment dialog and does stuff in this fragment

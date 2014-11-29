@@ -88,6 +88,9 @@ public class ItemObject implements Parcelable{
     public String getMemo(){ return memo; }
     public String getCompleter(){ return completed; }
     public String getId(){ return id; }
+    public void setName(String n ){name = n;}
+    public void setMemo(String n){memo =n;}
+    public void setCompleter(String comp){completed = comp;}
 
     @Override
     public int describeContents() {

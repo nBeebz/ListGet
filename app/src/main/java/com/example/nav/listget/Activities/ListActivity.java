@@ -6,10 +6,12 @@ import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.app.ListFragment;
-import android.content.Intent;
+import android.content.Context;
 import android.os.Bundle;
 import android.support.v13.app.FragmentPagerAdapter;
+import android.support.v4.view.ViewCompat;
 import android.support.v4.view.ViewPager;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -187,26 +189,32 @@ public class ListActivity extends Activity implements ActionBar.TabListener {
      * A placeholder fragment containing a simple view.
      */
     public static class OwnedListsFragment extends ListFragment implements MongoInterface {
-        private ArrayList<ListObject> lists;
+        private SwipeRefreshLayout mSwipeRefreshLayout;
         private OwnedListAdapter adapter;
-        private LayoutInflater inf;
-        @Override
-        public void onListItemClick(ListView l, View v, int position, long id) {
-            Intent myIntent = new Intent( getActivity() , ItemActivity.class );
-            myIntent.putExtra( "list", lists.get(position) );
-            myIntent.putExtra("userid",email);
-            startActivity( myIntent );
-        }
+        LayoutInflater inf;
 
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                                  Bundle savedInstanceState) {
-            super.onCreate(savedInstanceState);
             View view = inflater.inflate(R.layout.activity_list, container, false);
-            Mongo.getMongo( this ).get( Mongo.COLL_LISTS, Mongo.KEY_OWNER, email );
+            // Create the list fragment's content view by calling the super method
             inf = inflater;
+            // Now create a SwipeRefreshLayout to wrap the fragment's content view
+            mSwipeRefreshLayout = new ListFragmentSwipeRefreshLayout(container.getContext());
 
-            // set onclick listener for add list button
+            // Add the list fragment's content view to the SwipeRefreshLayout, making sure that it fills
+            // the SwipeRefreshLayout
+            mSwipeRefreshLayout.addView(view,
+                    ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+
+            // Make sure that the SwipeRefreshLayout will fill the fragment
+            mSwipeRefreshLayout.setLayoutParams(
+                    new ViewGroup.LayoutParams(
+                            ViewGroup.LayoutParams.MATCH_PARENT,
+                            ViewGroup.LayoutParams.MATCH_PARENT));
+            Mongo.getMongo( this ).get( Mongo.COLL_LISTS, Mongo.KEY_OWNER, email );
+            mSwipeRefreshLayout.setColorSchemeResources(R.color.white, R.color.grey, R.color.black, R.color.txt_color);
+            setOnRefreshListener(new ListRefreshListener(this, mSwipeRefreshLayout, Mongo.KEY_OWNER));
             LinearLayout btn = (LinearLayout) view.findViewById(R.id.LinearLayout);
             btn.setOnClickListener(new View.OnClickListener() {
                 public void onClick(View v) {
@@ -217,15 +225,111 @@ public class ListActivity extends Activity implements ActionBar.TabListener {
                     dialog.show(getActivity().getFragmentManager(), "");
                 }
             });
-
-            return view;
+            setRefreshing( true );
+            // Now return the SwipeRefreshLayout as this fragment's content view
+            return mSwipeRefreshLayout;
         }
 
 
         /**
-         * listener for　fragmentDialog.
-         * listens action from fragment dialog and does stuff in this fragment
+         * Set the {@link android.support.v4.widget.SwipeRefreshLayout.OnRefreshListener} to listen for
+         * initiated refreshes.
+         *
+         * @see android.support.v4.widget.SwipeRefreshLayout#setOnRefreshListener(android.support.v4.widget.SwipeRefreshLayout.OnRefreshListener)
          */
+        public void setOnRefreshListener(SwipeRefreshLayout.OnRefreshListener listener) {
+            mSwipeRefreshLayout.setOnRefreshListener(listener);
+        }
+
+        /**
+         * Returns whether the {@link android.support.v4.widget.SwipeRefreshLayout} is currently
+         * refreshing or not.
+         *
+         * @see android.support.v4.widget.SwipeRefreshLayout#isRefreshing()
+         */
+        public boolean isRefreshing() {
+            return mSwipeRefreshLayout.isRefreshing();
+        }
+
+        /**
+         * Set whether the {@link android.support.v4.widget.SwipeRefreshLayout} should be displaying
+         * that it is refreshing or not.
+         *
+         * @see android.support.v4.widget.SwipeRefreshLayout#setRefreshing(boolean)
+         */
+        public void setRefreshing(boolean refreshing) {
+            mSwipeRefreshLayout.setRefreshing(refreshing);
+        }
+
+        /**
+         * @return the fragment's {@link android.support.v4.widget.SwipeRefreshLayout} widget.
+         */
+        public SwipeRefreshLayout getSwipeRefreshLayout() {
+            return mSwipeRefreshLayout;
+        }
+
+        /**
+         * Sub-class of {@link android.support.v4.widget.SwipeRefreshLayout} for use in this
+         * {@link android.support.v4.app.ListFragment}. The reason that this is needed is because
+         * {@link android.support.v4.widget.SwipeRefreshLayout} only supports a single child, which it
+         * expects to be the one which triggers refreshes. In our case the layout's child is the content
+         * view returned from
+         * {@link android.support.v4.app.ListFragment#onCreateView(android.view.LayoutInflater, android.view.ViewGroup, android.os.Bundle)}
+         * which is a {@link android.view.ViewGroup}.
+         *
+         * <p>To enable 'swipe-to-refresh' support via the {@link android.widget.ListView} we need to
+         * override the default behavior and properly signal when a gesture is possible. This is done by
+         * overriding {@link #canChildScrollUp()}.
+         */
+        private class ListFragmentSwipeRefreshLayout extends SwipeRefreshLayout {
+
+            public ListFragmentSwipeRefreshLayout(Context context) {
+                super(context);
+            }
+
+            /**
+             * As mentioned above, we need to override this method to properly signal when a
+             * 'swipe-to-refresh' is possible.
+             *
+             * @return true if the {@link android.widget.ListView} is visible and can scroll up.
+             */
+            @Override
+            public boolean canChildScrollUp() {
+                final ListView listView = getListView();
+                if (listView.getVisibility() == View.VISIBLE) {
+                    return canListViewScrollUp(listView);
+                } else {
+                    return false;
+                }
+            }
+
+        }
+
+        /**
+         * Utility method to check whether a {@link ListView} can scroll up from it's current position.
+         * Handles platform version differences, providing backwards compatible functionality where
+         * needed.
+         */
+        private static boolean canListViewScrollUp(ListView listView) {
+            if (android.os.Build.VERSION.SDK_INT >= 14) {
+                // For ICS and above we can call canScrollVertically() to determine this
+                return ViewCompat.canScrollVertically(listView, -1);
+            } else {
+                // Pre-ICS we need to manually check the first visible item and the child view's top
+                // value
+                return listView.getChildCount() > 0 &&
+                        (listView.getFirstVisiblePosition() > 0
+                                || listView.getChildAt(0).getTop() < listView.getPaddingTop());
+            }
+        }
+
+        public void processResult(String result) {
+            ArrayList<ListObject> lists = ListObject.getLists( result );
+            adapter = new OwnedListAdapter(inf.getContext(), R.layout.owned_list_line, R.id.oListName,lists);
+            setListAdapter(adapter);
+            setRefreshing(false);
+        }
+
         public class onMyClickListener implements MyDialogFragment.OnMyClickListener {
             @Override
             public void onDelete(ListObject deletedList) {
@@ -244,45 +348,164 @@ public class ListActivity extends Activity implements ActionBar.TabListener {
             setListAdapter(adapter);
         }
 
-        @Override
-        public void processResult(String result) {
-            lists = ListObject.getLists( result );
-            adapter = new OwnedListAdapter(inf.getContext(), R.layout.owned_list_line, R.id.oListName,lists);
-            setListAdapter(adapter);
-        }
     }
 
     /**
      * A placeholder fragment containing a simple view.
      */
     public static class SharedListsFragment extends ListFragment implements MongoInterface {
-        private ArrayList<ListObject> lists;
-
-        private LayoutInflater inf;
-        @Override
-        public void onListItemClick(ListView l, View v, int position, long id) {
-            Intent myIntent = new Intent( getActivity() , ItemActivity.class );
-            myIntent.putExtra( "list", lists.get(position) );
-            startActivity(myIntent);
-        }
+        private SwipeRefreshLayout mSwipeRefreshLayout;
+        private SharedListAdapter adapter;
+        LayoutInflater inf;
 
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                                  Bundle savedInstanceState) {
-            super.onCreate(savedInstanceState);
-            View view = inflater.inflate(R.layout.fragment_shared_lists, container, false);
-            Mongo.getMongo(this).getListByContributor(email);
+            View view = inflater.inflate(R.layout.activity_list, container, false);
+            // Create the list fragment's content view by calling the super method
             inf = inflater;
-            return view;
+            // Now create a SwipeRefreshLayout to wrap the fragment's content view
+            mSwipeRefreshLayout = new ListFragmentSwipeRefreshLayout(container.getContext());
+
+            // Add the list fragment's content view to the SwipeRefreshLayout, making sure that it fills
+            // the SwipeRefreshLayout
+            mSwipeRefreshLayout.addView(view,
+                    ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+
+            // Make sure that the SwipeRefreshLayout will fill the fragment
+            mSwipeRefreshLayout.setLayoutParams(
+                    new ViewGroup.LayoutParams(
+                            ViewGroup.LayoutParams.MATCH_PARENT,
+                            ViewGroup.LayoutParams.MATCH_PARENT));
+            Mongo.getMongo( this ).getListByContributor( email );
+            mSwipeRefreshLayout.setColorSchemeResources(R.color.white, R.color.grey, R.color.black, R.color.txt_color);
+            setOnRefreshListener(new ListRefreshListener( this, mSwipeRefreshLayout, Mongo.KEY_CONTRIBUTORS ));
+            setRefreshing( true );
+            // Now return the SwipeRefreshLayout as this fragment's content view
+            return mSwipeRefreshLayout;
         }
 
-        @Override
+
+        /**
+         * Set the {@link android.support.v4.widget.SwipeRefreshLayout.OnRefreshListener} to listen for
+         * initiated refreshes.
+         *
+         * @see android.support.v4.widget.SwipeRefreshLayout#setOnRefreshListener(android.support.v4.widget.SwipeRefreshLayout.OnRefreshListener)
+         */
+        public void setOnRefreshListener(SwipeRefreshLayout.OnRefreshListener listener) {
+            mSwipeRefreshLayout.setOnRefreshListener(listener);
+        }
+
+        /**
+         * Returns whether the {@link android.support.v4.widget.SwipeRefreshLayout} is currently
+         * refreshing or not.
+         *
+         * @see android.support.v4.widget.SwipeRefreshLayout#isRefreshing()
+         */
+        public boolean isRefreshing() {
+            return mSwipeRefreshLayout.isRefreshing();
+        }
+
+        /**
+         * Set whether the {@link android.support.v4.widget.SwipeRefreshLayout} should be displaying
+         * that it is refreshing or not.
+         *
+         * @see android.support.v4.widget.SwipeRefreshLayout#setRefreshing(boolean)
+         */
+        public void setRefreshing(boolean refreshing) {
+            mSwipeRefreshLayout.setRefreshing(refreshing);
+        }
+
+        /**
+         * @return the fragment's {@link android.support.v4.widget.SwipeRefreshLayout} widget.
+         */
+        public SwipeRefreshLayout getSwipeRefreshLayout() {
+            return mSwipeRefreshLayout;
+        }
+
+        /**
+         * Sub-class of {@link android.support.v4.widget.SwipeRefreshLayout} for use in this
+         * {@link android.support.v4.app.ListFragment}. The reason that this is needed is because
+         * {@link android.support.v4.widget.SwipeRefreshLayout} only supports a single child, which it
+         * expects to be the one which triggers refreshes. In our case the layout's child is the content
+         * view returned from
+         * {@link android.support.v4.app.ListFragment#onCreateView(android.view.LayoutInflater, android.view.ViewGroup, android.os.Bundle)}
+         * which is a {@link android.view.ViewGroup}.
+         *
+         * <p>To enable 'swipe-to-refresh' support via the {@link android.widget.ListView} we need to
+         * override the default behavior and properly signal when a gesture is possible. This is done by
+         * overriding {@link #canChildScrollUp()}.
+         */
+        private class ListFragmentSwipeRefreshLayout extends SwipeRefreshLayout {
+
+            public ListFragmentSwipeRefreshLayout(Context context) {
+                super(context);
+            }
+
+            /**
+             * As mentioned above, we need to override this method to properly signal when a
+             * 'swipe-to-refresh' is possible.
+             *
+             * @return true if the {@link android.widget.ListView} is visible and can scroll up.
+             */
+            @Override
+            public boolean canChildScrollUp() {
+                final ListView listView = getListView();
+                if (listView.getVisibility() == View.VISIBLE) {
+                    return canListViewScrollUp(listView);
+                } else {
+                    return false;
+                }
+            }
+
+        }
+
+        /**
+         * Utility method to check whether a {@link ListView} can scroll up from it's current position.
+         * Handles platform version differences, providing backwards compatible functionality where
+         * needed.
+         */
+        private static boolean canListViewScrollUp(ListView listView) {
+            if (android.os.Build.VERSION.SDK_INT >= 14) {
+                // For ICS and above we can call canScrollVertically() to determine this
+                return ViewCompat.canScrollVertically(listView, -1);
+            } else {
+                // Pre-ICS we need to manually check the first visible item and the child view's top
+                // value
+                return listView.getChildCount() > 0 &&
+                        (listView.getFirstVisiblePosition() > 0
+                                || listView.getChildAt(0).getTop() < listView.getPaddingTop());
+            }
+        }
+
         public void processResult(String result) {
-            lists = ListObject.getLists(result);
-            SharedListAdapter adapter = new SharedListAdapter(
-                    inf.getContext(), R.layout.shared_list_line, R.id.sListName,
-                    lists);
+            ArrayList<ListObject> lists = ListObject.getLists( result );
+            adapter = new SharedListAdapter(inf.getContext(), R.layout.owned_list_line, R.id.oListName,lists);
             setListAdapter(adapter);
+            setRefreshing(false);
+        }
+    }
+
+    private static class ListRefreshListener implements SwipeRefreshLayout.OnRefreshListener
+    {
+        private MongoInterface activity;
+        private SwipeRefreshLayout layout;
+        private String key;
+
+        ListRefreshListener( MongoInterface a, SwipeRefreshLayout l, String k )
+        {
+            super();
+            activity = a;
+            layout = l;
+            key = k;
+        }
+        @Override
+        public void onRefresh() {
+            layout.setRefreshing( true );
+            if( key.equals(Mongo.KEY_CONTRIBUTORS) )
+                Mongo.getMongo( activity ).getListByContributor( email );
+            else
+                Mongo.getMongo( activity ).get( Mongo.COLL_LISTS, key, email );
         }
     }
 

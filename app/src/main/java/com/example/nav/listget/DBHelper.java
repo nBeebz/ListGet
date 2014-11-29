@@ -13,9 +13,16 @@ public class DBHelper extends SQLiteOpenHelper {
 
     public static final String TABLE_USER= "users";
     public static final String COL_ID= "_id";
+
+    public static final String CREATE_TABLE =
+            "create table "+TABLE_USER+"(" +
+            COL_ID+" text PRIMARY KEY " +
+            ");";
+
     public DBHelper(Context context) {
         super(context, "items.db", null, 1);
     }
+
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
@@ -24,9 +31,7 @@ public class DBHelper extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase db) {
 
-        db.execSQL("create table "+TABLE_USER+"(" +
-                COL_ID+" text PRIMARY KEY " +
-                ");");
+        db.execSQL( CREATE_TABLE );
 
     }
 }

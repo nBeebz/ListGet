@@ -40,10 +40,10 @@ public class AccessObject {
     }
 
     public String getId(){
-        Cursor c = (Cursor) database.rawQuery("select * from "+DBHelper.TABLE_USER+" ;", null);
         String id = null;
-        if(c.moveToFirst())
-             id =  c.getString(c.getColumnIndex(DBHelper.COL_ID));
+        Cursor c = (Cursor) database.rawQuery("select * from " + DBHelper.TABLE_USER + " ;", null);
+        if (c.moveToFirst())
+            id = c.getString(c.getColumnIndex(DBHelper.COL_ID));
         c.close();
         return id;
     }

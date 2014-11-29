@@ -194,6 +194,7 @@ public class ListActivity extends Activity implements ActionBar.TabListener {
         public void onListItemClick(ListView l, View v, int position, long id) {
             Intent myIntent = new Intent( getActivity() , ItemActivity.class );
             myIntent.putExtra( "list", lists.get(position) );
+            myIntent.putExtra("userid",email);
             startActivity( myIntent );
         }
 

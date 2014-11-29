@@ -44,6 +44,7 @@ public class ItemActivity extends ListActivity implements MongoInterface{
     List<ItemObject> items;
     EditText inputEditText= null;
     TextView filterText;
+    String userid;
     MongoInterface m = null;
 
     public ItemActivity() {
@@ -111,6 +112,7 @@ public class ItemActivity extends ListActivity implements MongoInterface{
 
         Intent intent = getIntent();
         selectedList = ((ListObject) intent.getExtras().getParcelable("list"));
+        userid = intent.getExtras().getString("userid");
         if(selectedList!=null){
             filterText.setText(selectedList.getName());
             adapter = new ItemAdapter(this, items);
@@ -122,17 +124,17 @@ public class ItemActivity extends ListActivity implements MongoInterface{
     public class listViewListener implements AdapterView.OnItemClickListener {
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
             ListView listView = (ListView) parent;
+            storeChecked();
             ItemObject selectedItem = (ItemObject) listView.getItemAtPosition(position);
-            /*editItemActivity*/
-            Intent intent = new Intent(getBaseContext(), ItemActivity.class);
+            Intent intent = new Intent(getBaseContext(), EditItemActivity.class);
             intent.putExtra("caller", getIntent().getComponent().getClassName());
             intent.putExtra("item", selectedItem);
             intent.putExtra("position", position);
+            intent.putExtra("userid",userid);
             int requestCode = 1;
             startActivityForResult(intent, requestCode);
 
         }
-
     }
 
     /**
@@ -224,23 +226,26 @@ public class ItemActivity extends ListActivity implements MongoInterface{
         tv.setText(text);
     }
 
-
-    /*
-    public void saveOrder() {
-        ListView listView = (ListView) getListView();
-        //datasource.saveOrderOfItemList(listView, listsize);
-    }
-    /**
-     * save the order
-     */
-    /*
     @Override
-    public void onPause() {
-        saveOrder();
-        datasource.close();
-        super.onPause();
+    public void onBackPressed()
+    {
+        storeChecked();
+        super.onBackPressed();
     }
 
+
+    public void storeChecked(){
+        for(int i = 0; i< adapter.getCount();i++){
+            ItemObject item = adapter.getItem(i);
+            if(item.getCompleter().equals("user"))
+                Mongo.getMongo(this).put(Mongo.COLL_ITEMS,Mongo.KEY_ID,item.getId(),Mongo.KEY_COMPLETED,userid);
+            else if(item.getCompleter().equals(""))
+                Mongo.getMongo(this).put(Mongo.COLL_ITEMS,Mongo.KEY_ID,item.getId(),Mongo.KEY_COMPLETED,item.getCompleter());
+
+        }
+    }
+
+    /*
     @Override
     protected void onResume()
     {
@@ -264,14 +269,16 @@ public class ItemActivity extends ListActivity implements MongoInterface{
         JSONArray arr;
         items = new ArrayList<ItemObject>();
         try {
-            arr = new JSONArray(result);
-            if(arr.length()<1){
-                setEmptyText("No Items");
-            }else {
+            if(result != null) {
+                arr = new JSONArray(result);
+                if (arr.length() < 1) {
+                    setEmptyText("No Items");
+                } else {
 //                   items.add( ItemObject.parseJSON( arr.getJSONObject(i) ));
-                items = ItemObject.getItems(arr );
-                adapter = new ItemAdapter(this,items);
-                setListAdapter(adapter);
+                    items = ItemObject.getItems(arr);
+                    adapter = new ItemAdapter(this, items);
+                    setListAdapter(adapter);
+                }
             }
         }
         catch (Exception e){ e.printStackTrace();

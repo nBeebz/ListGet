@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.Paint;
 import android.text.Html;
 import android.text.TextPaint;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -81,10 +82,11 @@ public class ItemAdapter extends ArrayAdapter<ItemObject> {
             int position = Integer.parseInt(textPos.getText().toString());
             ItemObject item = (ItemObject) getItem(position);
             if (checkbox.isChecked()) {
-  //              item.setChecked(0);
-                setStyleNotDone(checkbox,  textView,  paint, row, item);
+                Log.d("ItemAdapter","setting user");
+                item.setCompleter("user");
+                setStyleNotDone(checkbox, textView, paint, row, item);
             } else {
-   //             item.setChecked(1);
+                item.setCompleter("");
                 setStyleDone(checkbox, textView, paint, row, item);
             }
         }
@@ -95,7 +97,6 @@ public class ItemAdapter extends ArrayAdapter<ItemObject> {
     public void setStyleDone(CheckableLinearLayout checkbox , TextView textView,  Paint paint, View row, ItemObject item) {
         checkbox.setChecked(true);
         textView.setText(Html.fromHtml("<font color='#aaa9a9'>" + item.getName() + "</font>"));
-
         paint.setFlags(textView.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
         paint.setAntiAlias(true);
     }
@@ -103,7 +104,6 @@ public class ItemAdapter extends ArrayAdapter<ItemObject> {
     public void setStyleNotDone(CheckableLinearLayout checkbox, TextView textView,  Paint paint, View row, ItemObject item) {
         checkbox.setChecked(false);
         textView.setText(Html.fromHtml(item.getName()));
-
         paint.setFlags(textView.getPaintFlags() & (~Paint.STRIKE_THRU_TEXT_FLAG));
     }
 

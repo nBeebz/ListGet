@@ -31,19 +31,19 @@ public class AccessObject {
     public void saveId(String id){
         deleteId();
         ContentValues cv = new ContentValues();
-        cv.put(SQLHelper.COL_ID, id);
-        database.insert(SQLHelper.TABLE_USER, null, cv);
+        cv.put(DBHelper.COL_ID, id);
+        database.insert(DBHelper.TABLE_USER, null, cv);
     }
 
     public void deleteId(){
-        database.delete(SQLHelper.TABLE_USER,null,null);
+        database.delete(DBHelper.TABLE_USER,null,null);
     }
 
     public String getId(){
-        Cursor c = (Cursor) database.rawQuery("select * from "+SQLHelper.TABLE_USER+" ;", null);
+        Cursor c = (Cursor) database.rawQuery("select * from "+DBHelper.TABLE_USER+" ;", null);
         String id = null;
         if(c.moveToFirst())
-             id =  c.getString(c.getColumnIndex(SQLHelper.COL_ID));
+             id =  c.getString(c.getColumnIndex(DBHelper.COL_ID));
         c.close();
         return id;
     }

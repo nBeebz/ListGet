@@ -20,11 +20,11 @@ import com.example.nav.listget.parcelable.ItemObject;
 
 public class EditItemActivity extends Activity implements MongoInterface {
 
-
     EditText textName;
     EditText textMemo;
     CheckBox checkbox;
     TextView checkedBy;
+    String userid;
     ItemObject selectedItem;
     int itemPosition = -1;
     MongoInterface m;
@@ -50,13 +50,17 @@ public class EditItemActivity extends Activity implements MongoInterface {
         Intent intent = getIntent();
         selectedItem = ((ItemObject) intent.getExtras().getParcelable("item"));
         itemPosition = intent.getExtras().getInt("position");
+        userid = intent.getExtras().getString("userid");
 
         textMemo.setText(selectedItem.getMemo());
         textName.setText(selectedItem.getName());
         checkbox.setOnClickListener(new CheckClickedListener());
         if(!selectedItem.getCompleter().equals("")){
             checkbox.setChecked(true);
-            checkedBy.setText(selectedItem.getCompleter()+" completed");
+            if(selectedItem.getCompleter().equals(userid))
+                checkedBy.setText("You completed");
+            else
+                checkedBy.setText(selectedItem.getCompleter()+" completed");
         }else {
             checkbox.setChecked(false);
             checkedBy.setText("Nobody completed this item");
@@ -74,8 +78,8 @@ public class EditItemActivity extends Activity implements MongoInterface {
         public void onClick(View v) {
             if(checkbox.isChecked()){
                 checkbox.setChecked(true);
-                selectedItem.setCompleter("You");
-                checkedBy.setText(selectedItem.getCompleter() + " completed");
+                selectedItem.setCompleter(userid);
+                checkedBy.setText("You completed");
 
             }else {
                 checkbox.setChecked(false);
@@ -86,27 +90,6 @@ public class EditItemActivity extends Activity implements MongoInterface {
         }
     }
 
-
-/*
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.edit_list, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-        if (id == R.id.action_settings) {
-            return true;
-        }
-        return super.onOptionsItemSelected(item);
-    }
-    */
 
     /**
      * close soft keyboad

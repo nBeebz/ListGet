@@ -133,6 +133,7 @@ public class ListObject implements Parcelable {
 
     public void addContributor( String email )
     {
-        contributors.add( email );
+        if( !contributors.contains( email ) )
+            contributors.add( email );
     }
 }

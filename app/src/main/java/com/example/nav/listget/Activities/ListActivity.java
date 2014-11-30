@@ -7,6 +7,7 @@ import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.app.ListFragment;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
@@ -21,7 +22,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.ListView;
-
 import com.example.nav.listget.AccessObject;
 import com.example.nav.listget.Adapters.OwnedListAdapter;
 import com.example.nav.listget.Adapters.SharedListAdapter;
@@ -232,7 +232,7 @@ public class ListActivity extends Activity implements ActionBar.TabListener {
         public void onListItemClick(ListView l, View v, int position, long id) {
             Intent myIntent = new Intent( getActivity() , ItemActivity.class );
             myIntent.putExtra( "list", lists.get(position) );
-            myIntent.putExtra("userid",email);
+            myIntent.putExtra("userid", email);
             startActivity( myIntent );
         }
 
@@ -290,7 +290,7 @@ public class ListActivity extends Activity implements ActionBar.TabListener {
             lists = ListObject.getLists( result );
             adapter = new OwnedListAdapter(inf.getContext(), R.layout.owned_list_line, R.id.oListName,lists);
             setListAdapter(adapter);
-            swipeLayout.setRefreshing( false );
+            swipeLayout.setRefreshing(false);
         }
     }
 
@@ -321,7 +321,7 @@ public class ListActivity extends Activity implements ActionBar.TabListener {
             swipeLayout = new ListFragmentSwipeRefreshLayout( container.getContext(), this );
             swipeLayout.addView( view );
             swipeLayout.setColorSchemeResources( R.color.bg_color, R.color.grey, R.color.txt_color, R.color.btn_blue);
-            swipeLayout.setOnRefreshListener( new ListRefreshListener( this, Mongo.KEY_CONTRIBUTORS, swipeLayout ));
+            swipeLayout.setOnRefreshListener(new ListRefreshListener(this, Mongo.KEY_CONTRIBUTORS, swipeLayout));
             swipeLayout.setRefreshing( true );
             return swipeLayout;
         }
@@ -333,7 +333,7 @@ public class ListActivity extends Activity implements ActionBar.TabListener {
                     inf.getContext(), R.layout.shared_list_line, R.id.sListName,
                     lists);
             setListAdapter(adapter);
-            swipeLayout.setRefreshing( false );
+            swipeLayout.setRefreshing(false);
         }
     }
 

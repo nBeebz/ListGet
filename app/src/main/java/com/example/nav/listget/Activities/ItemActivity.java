@@ -34,8 +34,6 @@ import java.util.List;
 public class ItemActivity extends ListActivity implements MongoInterface{
 
     static ItemAdapter adapter = null;
-   // private DragSortController mController;
-   // private AccessObject datasource;
 
     ListObject selectedList = null;
 
@@ -75,10 +73,6 @@ public class ItemActivity extends ListActivity implements MongoInterface{
                 intent.putExtra("list", selectedList);
                 startActivity(intent);*/
 
-                return true;
-
-            case R.id.item2:
-                Toast.makeText(getBaseContext(), "item2", Toast.LENGTH_LONG).show();
                 return true;
 
             default:

@@ -10,24 +10,18 @@ import android.app.ListFragment;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.database.Cursor;
-import android.net.Uri;
 import android.os.Bundle;
-import android.provider.ContactsContract;
 import android.support.v13.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.SwipeRefreshLayout;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ListView;
-import android.widget.Toast;
 
 import com.example.nav.listget.AccessObject;
 import com.example.nav.listget.Adapters.OwnedListAdapter;
@@ -79,7 +73,7 @@ public class ListActivity extends Activity implements ActionBar.TabListener {
             case R.id.action_logout:
                 AlertDialog.Builder alert = new AlertDialog.Builder(this);
 
-                alert.setTitle("Logout Confirmation");
+                alert.setTitle("Warning");
                 alert.setMessage("Are you sure to log out?");
 
                 alert.setPositiveButton("Logout", new DialogInterface.OnClickListener() {

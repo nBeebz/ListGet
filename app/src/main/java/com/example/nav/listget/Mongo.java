@@ -124,7 +124,16 @@ public class Mongo {
         try {
         String url = BASE_URL + coll + "/" + id + "?" + API_KEY;
         new DeleteTask( activity ).execute( url );
-            Log.d("delete",url);
+        }catch (Exception e){ e.printStackTrace(); }
+    }
+
+    public void delete( String coll, String key, String value )
+    {
+        try {
+            String query = "{\"" + key + "\":\"" + value + "\"}";
+            String url = BASE_URL + coll + "?" + API_KEY + "&q=" + URLEncoder.encode(query, "UTF-8");
+            Log.d("deleting?", query);
+            new DeleteTask( activity ).execute( url );
         }catch (Exception e){ e.printStackTrace(); }
     }
 

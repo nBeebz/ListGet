@@ -34,6 +34,7 @@ public class ListObject implements Parcelable {
         id = "";
         name = n;
         owner = o;
+        contributors = new ArrayList<String>();
     }
 
     public ListObject( Parcel p )

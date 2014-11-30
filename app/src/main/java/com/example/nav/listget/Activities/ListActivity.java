@@ -315,7 +315,7 @@ public class ListActivity extends Activity implements ActionBar.TabListener {
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                                  Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
-            View view = inflater.inflate(R.layout.fragment_shared_lists, container, false);
+            View view = inflater.inflate(R.layout.fragment_lists, container, false);
             Mongo.getMongo(this).get( Mongo.COLL_LISTS, Mongo.KEY_CONTRIBUTORS, email );
             inf = inflater;
             swipeLayout = new ListFragmentSwipeRefreshLayout( container.getContext(), this );

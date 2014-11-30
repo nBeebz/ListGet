@@ -31,6 +31,8 @@ import org.json.JSONArray;
 import java.util.ArrayList;
 import java.util.List;
 
+
+
 public class ItemActivity extends ListActivity implements MongoInterface{
 
     static ItemAdapter adapter = null;
@@ -46,6 +48,22 @@ public class ItemActivity extends ListActivity implements MongoInterface{
     public ItemActivity() {
     }
 
+
+    private OnMoveEditListener listener = null;
+
+    public interface OnMoveEditListener {
+        public void onMove(ItemObject selectedItem, ListObject selectedCat);
+    }
+
+    public void setOnMoveListener(OnMoveEditListener listener) {
+        this.listener = listener;
+    }
+
+    private String[] filterTitles = {
+            "All",
+            "unChecked",
+            "Checked"
+    };
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -68,6 +86,14 @@ public class ItemActivity extends ListActivity implements MongoInterface{
                 Toast.makeText(getBaseContext(), "From Contacts", Toast.LENGTH_LONG).show();
                 return true;
 
+
+            case R.id.edit:
+                Intent intent = new Intent(getBaseContext(), EditListActivity.class);
+                intent.putExtra("list", selectedCat);
+                startActivity(intent);
+
+                return true;
+
             case R.id.action_settings:
                 /*Intent intent = new Intent(getBaseContext(), EditListActivity.class);
                 intent.putExtra("list", selectedList);
@@ -81,6 +107,14 @@ public class ItemActivity extends ListActivity implements MongoInterface{
     }
 
 
+            case R.id.item2:
+                Toast.makeText(getBaseContext(), "item2", Toast.LENGTH_LONG).show();
+                return true;
+
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
     /**
      * Set EditTextField and Category textview field, set Selectedcategory
      */

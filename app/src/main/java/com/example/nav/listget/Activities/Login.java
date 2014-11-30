@@ -26,7 +26,6 @@ public class Login extends Activity implements MongoInterface {
         datasource.open();
         String id = datasource.getId();
         if(id != null){
-
             Intent myIntent = new Intent( this, ListActivity.class );
             myIntent.putExtra( "email", id);
             startActivity( myIntent );

@@ -2,10 +2,12 @@ package com.example.nav.listget.Activities;
 
 import android.app.ActionBar;
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.app.ListFragment;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v13.app.FragmentPagerAdapter;
@@ -18,6 +20,7 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 
+import com.example.nav.listget.AccessObject;
 import com.example.nav.listget.Adapters.OwnedListAdapter;
 import com.example.nav.listget.Adapters.SharedListAdapter;
 import com.example.nav.listget.Interfaces.MongoInterface;
@@ -33,6 +36,9 @@ import java.util.Locale;
 public class ListActivity extends Activity implements ActionBar.TabListener {
 
     private static String email;
+    private AccessObject datasource;
+    private Activity act;
+
     /**
      * The {@link android.support.v4.view.PagerAdapter} that will provide
      * fragments for each of the sections. We use a
@@ -49,9 +55,56 @@ public class ListActivity extends Activity implements ActionBar.TabListener {
     ViewPager mViewPager;
 
     @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.list, menu);
+        return true;
+    }
+
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item)
+    {
+        switch (item.getItemId())
+        {
+            case R.id.action_logout:
+                AlertDialog.Builder alert = new AlertDialog.Builder(this);
+
+                alert.setTitle("Logout Confirmation");
+                alert.setMessage("Are you sure to log out?");
+
+                alert.setPositiveButton("Logout", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int whichButton) {
+                        datasource.open();
+                        datasource.deleteId();
+                        datasource.close();
+                        Intent myIntent = new Intent( act, Login.class );
+                        myIntent.setFlags( Intent.FLAG_ACTIVITY_CLEAR_TOP |Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                        startActivity( myIntent );
+                        finish();
+                    }
+                });
+
+                alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int whichButton) {
+                    }
+                });
+                alert.show();
+
+                return true;
+
+            default:
+                return super.onOptionsItemSelected(item);
+
+        }
+    }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_list2);
+        datasource = new AccessObject(this);
+        act = this;
         // Set up the action bar.
         final ActionBar actionBar = getActionBar();
         actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
@@ -107,25 +160,6 @@ public class ListActivity extends Activity implements ActionBar.TabListener {
         return this.getFragmentManager().findFragmentByTag(
                 "android:switcher:" + getViewPager().getId() + ":"
                         + mSectionsPagerAdapter.getItemId(position));
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.list, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-        if (id == R.id.action_settings) {
-            return true;
-        }
-        return super.onOptionsItemSelected(item);
     }
 
     @Override
@@ -266,6 +300,8 @@ public class ListActivity extends Activity implements ActionBar.TabListener {
             startActivity(myIntent);
         }
 
+
+
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                                  Bundle savedInstanceState) {
@@ -285,5 +321,6 @@ public class ListActivity extends Activity implements ActionBar.TabListener {
             setListAdapter(adapter);
         }
     }
+
 
 }

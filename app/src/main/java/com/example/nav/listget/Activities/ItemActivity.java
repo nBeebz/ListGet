@@ -4,7 +4,11 @@ import android.app.Activity;
 import android.app.ListActivity;
 import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.ContactsContract;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -19,6 +23,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.nav.listget.Adapters.ItemAdapter;
+import com.example.nav.listget.ContactShare;
 import com.example.nav.listget.Interfaces.MongoInterface;
 import com.example.nav.listget.Mongo;
 import com.example.nav.listget.R;
@@ -32,6 +37,8 @@ import java.util.List;
 
 public class ItemActivity extends ListActivity implements MongoInterface{
 
+    private static final int CONTACT_PICKER_RESULT = 1001;
+
     static ItemAdapter adapter;
    // private DragSortController mController;
    // private AccessObject datasource;
@@ -44,7 +51,8 @@ public class ItemActivity extends ListActivity implements MongoInterface{
     String userid;
     MongoInterface m = null;
 
-    public ItemActivity() {
+    public ItemActivity()
+    {
     }
 
 
@@ -53,6 +61,24 @@ public class ItemActivity extends ListActivity implements MongoInterface{
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.item, menu);
         return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item)
+    {
+        switch (item.getItemId())
+        {
+            case R.id.share:
+                return true;
+
+            case R.id.from_contacts:
+                Intent contact_select = new Intent(getBaseContext(), ContactShare.class);
+                startActivity(contact_select);
+                return true;
+
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
 
     /**
@@ -181,8 +207,6 @@ public class ItemActivity extends ListActivity implements MongoInterface{
         }
     }
 
-
-
     /**
      * When there is no task, show the text
      */
@@ -197,7 +221,6 @@ public class ItemActivity extends ListActivity implements MongoInterface{
         //storeChecked();
         super.onBackPressed();
     }
-
 
     public void storeChecked(){
         for(int i = 0; i< adapter.getCount();i++){
@@ -225,10 +248,6 @@ public class ItemActivity extends ListActivity implements MongoInterface{
 
    */
 
-
-
-
-
     public void processResult( String result )
     {
         JSONArray arr;
@@ -248,9 +267,9 @@ public class ItemActivity extends ListActivity implements MongoInterface{
         }
         catch (Exception e){ e.printStackTrace();
         }
-
         //DO SOMETHING WITH THE ITEMS
 
     }
+
 
 }

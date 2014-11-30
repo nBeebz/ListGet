@@ -32,7 +32,6 @@ import android.widget.Toast;
 import com.example.nav.listget.AccessObject;
 import com.example.nav.listget.Adapters.OwnedListAdapter;
 import com.example.nav.listget.Adapters.SharedListAdapter;
-import com.example.nav.listget.ContactShare;
 import com.example.nav.listget.Interfaces.MongoInterface;
 import com.example.nav.listget.Mongo;
 import com.example.nav.listget.MyDialogFragment;

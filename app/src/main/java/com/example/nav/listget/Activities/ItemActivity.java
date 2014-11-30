@@ -55,37 +55,6 @@ public class ItemActivity extends ListActivity implements MongoInterface{
         return true;
     }
 
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item)
-    {
-        switch (item.getItemId())
-        {
-            case R.id.share:
-                Toast.makeText(getBaseContext(), "Share", Toast.LENGTH_LONG).show();
-                return true;
-
-            case R.id.from_contacts:
-                Toast.makeText(getBaseContext(), "From Contacts", Toast.LENGTH_LONG).show();
-                return true;
-
-            case R.id.action_settings:
-                /*Intent intent = new Intent(getBaseContext(), EditListActivity.class);
-                intent.putExtra("list", selectedList);
-                startActivity(intent);*/
-
-                return true;
-
-            case R.id.item2:
-                Toast.makeText(getBaseContext(), "item2", Toast.LENGTH_LONG).show();
-                return true;
-
-            default:
-                return super.onOptionsItemSelected(item);
-        }
-    }
-
-
     /**
      * Set EditTextField and Category textview field, set Selectedcategory
      */

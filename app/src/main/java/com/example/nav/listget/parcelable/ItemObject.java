@@ -28,7 +28,10 @@ public class ItemObject implements Parcelable{
         listID = listI;
         name = n;
         memo = m;
-        completed = c;
+        if(c ==null)
+            completed = "";
+        else
+            completed = c;
     }
     public ItemObject( String i,String n, String m, String c )
     {
@@ -36,7 +39,10 @@ public class ItemObject implements Parcelable{
         listID = "";
         name = n;
         memo = m;
-        completed = c;
+        if(c == null )
+            completed = "";
+        else
+            completed = c;
     }
 
     public ItemObject( Parcel p )

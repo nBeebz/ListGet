@@ -4,7 +4,6 @@ import android.content.Context;
 import android.graphics.Paint;
 import android.text.Html;
 import android.text.TextPaint;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -24,6 +23,8 @@ public class ItemAdapter extends ArrayAdapter<ItemObject> {
     private LayoutInflater layoutInflater_;
     private String id;
 
+    public static final String UNCHECKED = "userUNChecked";//users Table
+    public static final String CHECKED = "userChecked";//lists Table
 
 
     public ItemAdapter(Context context, List<ItemObject> objects) {
@@ -56,7 +57,7 @@ public class ItemAdapter extends ArrayAdapter<ItemObject> {
             holder = (ViewHolder) row.getTag();
         }
 
-       if (item.getCompleter().equals("") )
+       if (item.getCompleter().equals("")|| item.getCompleter().equals(CHECKED))
         {
             setStyleNotDone(holder.checkbox, holder.textView, holder.paint, row, item);
 
@@ -89,11 +90,10 @@ public class ItemAdapter extends ArrayAdapter<ItemObject> {
             int position = Integer.parseInt(textPos.getText().toString());
             ItemObject item = (ItemObject) getItem(position);
             if (checkbox.isChecked()) {
-                Log.d("ItemAdapter","setting user");
-                item.setCompleter(id);
+                item.setCompleter(UNCHECKED);
                 setStyleNotDone(checkbox, textView, paint, row, item);
             } else {
-                item.setCompleter("");
+                item.setCompleter(CHECKED);
                 setStyleDone(checkbox, textView, paint, row, item);
             }
         }

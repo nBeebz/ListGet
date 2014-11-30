@@ -22,7 +22,7 @@ public class Login extends Activity implements MongoInterface {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-       datasource = new AccessObject(this);
+        datasource = new AccessObject(this);
         datasource.open();
         String id = datasource.getId();
         if(id != null){

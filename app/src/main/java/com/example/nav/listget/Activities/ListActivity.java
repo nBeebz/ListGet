@@ -11,7 +11,9 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v13.app.FragmentPagerAdapter;
+import android.support.v4.view.ViewCompat;
 import android.support.v4.view.ViewPager;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -224,6 +226,8 @@ public class ListActivity extends Activity implements ActionBar.TabListener {
         private ArrayList<ListObject> lists;
         private OwnedListAdapter adapter;
         private LayoutInflater inf;
+        SwipeRefreshLayout swipeLayout;
+
         @Override
         public void onListItemClick(ListView l, View v, int position, long id) {
             Intent myIntent = new Intent( getActivity() , ItemActivity.class );
@@ -237,8 +241,11 @@ public class ListActivity extends Activity implements ActionBar.TabListener {
                                  Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
             View view = inflater.inflate(R.layout.activity_list, container, false);
-            Mongo.getMongo( this ).get( Mongo.COLL_LISTS, Mongo.KEY_OWNER, email );
             inf = inflater;
+            swipeLayout = new ListFragmentSwipeRefreshLayout( container.getContext(), this );
+            swipeLayout.addView( view );
+            swipeLayout.setColorSchemeResources( R.color.bg_color, R.color.grey, R.color.txt_color, R.color.btn_blue);
+            swipeLayout.setOnRefreshListener( new ListRefreshListener( this, Mongo.KEY_OWNER, swipeLayout ));
 
             // set onclick listener for add list button
             LinearLayout btn = (LinearLayout) view.findViewById(R.id.LinearLayout);
@@ -251,10 +258,10 @@ public class ListActivity extends Activity implements ActionBar.TabListener {
                     dialog.show(getActivity().getFragmentManager(), "");
                 }
             });
-
-            return view;
+            Mongo.getMongo( this ).get( Mongo.COLL_LISTS, Mongo.KEY_OWNER, email );
+            swipeLayout.setRefreshing( true );
+            return swipeLayout;
         }
-
 
         /**
          * listener for　fragmentDialog.
@@ -283,6 +290,7 @@ public class ListActivity extends Activity implements ActionBar.TabListener {
             lists = ListObject.getLists( result );
             adapter = new OwnedListAdapter(inf.getContext(), R.layout.owned_list_line, R.id.oListName,lists);
             setListAdapter(adapter);
+            swipeLayout.setRefreshing( false );
         }
     }
 
@@ -291,6 +299,7 @@ public class ListActivity extends Activity implements ActionBar.TabListener {
      */
     public static class SharedListsFragment extends ListFragment implements MongoInterface {
         private ArrayList<ListObject> lists;
+        SwipeRefreshLayout swipeLayout;
 
         private LayoutInflater inf;
         @Override
@@ -309,7 +318,12 @@ public class ListActivity extends Activity implements ActionBar.TabListener {
             View view = inflater.inflate(R.layout.fragment_shared_lists, container, false);
             Mongo.getMongo(this).getListByContributor(email);
             inf = inflater;
-            return view;
+            swipeLayout = new ListFragmentSwipeRefreshLayout( container.getContext(), this );
+            swipeLayout.addView( view );
+            swipeLayout.setColorSchemeResources( R.color.bg_color, R.color.grey, R.color.txt_color, R.color.btn_blue);
+            swipeLayout.setOnRefreshListener( new ListRefreshListener( this, Mongo.KEY_CONTRIBUTORS, swipeLayout ));
+            swipeLayout.setRefreshing( true );
+            return swipeLayout;
         }
 
         @Override
@@ -319,8 +333,64 @@ public class ListActivity extends Activity implements ActionBar.TabListener {
                     inf.getContext(), R.layout.shared_list_line, R.id.sListName,
                     lists);
             setListAdapter(adapter);
+            swipeLayout.setRefreshing( false );
         }
     }
 
+    private static class ListRefreshListener implements SwipeRefreshLayout.OnRefreshListener
+    {
+        private MongoInterface activity;
+        SwipeRefreshLayout layout;
+        private String key;
+
+        ListRefreshListener( MongoInterface a, String k, SwipeRefreshLayout l )
+        {
+            activity = a;
+            key = k;
+            layout = l;
+        }
+        @Override
+        public void onRefresh() {
+            Mongo m = Mongo.getMongo( activity );
+            if( key.equals(Mongo.KEY_CONTRIBUTORS) )
+                m.getListByContributor( email );
+            else
+                m.get( Mongo.COLL_LISTS, Mongo.KEY_OWNER, email );
+            layout.setRefreshing( true );
+        }
+    }
+
+    private static class ListFragmentSwipeRefreshLayout extends SwipeRefreshLayout {
+        ListFragment frag;
+
+        public ListFragmentSwipeRefreshLayout(Context context, ListFragment f) {
+            super(context);
+            frag = f;
+        }
+
+        @Override
+        public boolean canChildScrollUp() {
+            final ListView listView = frag.getListView();
+            if (listView.getVisibility() == View.VISIBLE) {
+                return canListViewScrollUp(listView);
+            } else {
+                return false;
+            }
+        }
+
+    }
+
+    private static boolean canListViewScrollUp(ListView listView) {
+        if (android.os.Build.VERSION.SDK_INT >= 14) {
+            // For ICS and above we can call canScrollVertically() to determine this
+            return ViewCompat.canScrollVertically(listView, -1);
+        } else {
+            // Pre-ICS we need to manually check the first visible item and the child view's top
+            // value
+            return listView.getChildCount() > 0 &&
+                    (listView.getFirstVisiblePosition() > 0
+                            || listView.getChildAt(0).getTop() < listView.getPaddingTop());
+        }
+    }
 
 }

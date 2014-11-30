@@ -72,7 +72,7 @@ public class ListActivity extends Activity implements ActionBar.TabListener {
             case R.id.action_logout:
                 AlertDialog.Builder alert = new AlertDialog.Builder(this);
 
-                alert.setTitle("Logout Confirmation");
+                alert.setTitle("Warning");
                 alert.setMessage("Are you sure to log out?");
 
                 alert.setPositiveButton("Logout", new DialogInterface.OnClickListener() {
@@ -97,7 +97,6 @@ public class ListActivity extends Activity implements ActionBar.TabListener {
 
             default:
                 return super.onOptionsItemSelected(item);
-
         }
     }
 
@@ -306,6 +305,7 @@ public class ListActivity extends Activity implements ActionBar.TabListener {
         public void onListItemClick(ListView l, View v, int position, long id) {
             Intent myIntent = new Intent( getActivity() , ItemActivity.class );
             myIntent.putExtra( "list", lists.get(position) );
+            myIntent.putExtra("userid", email);
             startActivity(myIntent);
         }
 
@@ -392,5 +392,6 @@ public class ListActivity extends Activity implements ActionBar.TabListener {
                             || listView.getChildAt(0).getTop() < listView.getPaddingTop());
         }
     }
+
 
 }

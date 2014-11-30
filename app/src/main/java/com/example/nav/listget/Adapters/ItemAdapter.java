@@ -4,7 +4,6 @@ import android.content.Context;
 import android.graphics.Paint;
 import android.text.Html;
 import android.text.TextPaint;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -13,6 +12,7 @@ import android.widget.ArrayAdapter;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.example.nav.listget.AccessObject;
 import com.example.nav.listget.Activities.CheckableLinearLayout;
 import com.example.nav.listget.R;
 import com.example.nav.listget.parcelable.ItemObject;
@@ -21,11 +21,19 @@ import java.util.List;
 
 public class ItemAdapter extends ArrayAdapter<ItemObject> {
     private LayoutInflater layoutInflater_;
+    private String id;
+
+    public static final String UNCHECKED = "userUNChecked";//users Table
+    public static final String CHECKED = "userChecked";//lists Table
 
 
     public ItemAdapter(Context context, List<ItemObject> objects) {
         super(context, R.layout.adapter_item, objects);
         layoutInflater_ = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        AccessObject datasource = new AccessObject(getContext());
+        datasource.open();
+        id = datasource.getId();
+        datasource.close();
 
     }
 
@@ -49,7 +57,7 @@ public class ItemAdapter extends ArrayAdapter<ItemObject> {
             holder = (ViewHolder) row.getTag();
         }
 
-       if (item.getCompleter().equals("") )
+       if (item.getCompleter().equals("")|| item.getCompleter().equals(CHECKED))
         {
             setStyleNotDone(holder.checkbox, holder.textView, holder.paint, row, item);
 
@@ -82,11 +90,10 @@ public class ItemAdapter extends ArrayAdapter<ItemObject> {
             int position = Integer.parseInt(textPos.getText().toString());
             ItemObject item = (ItemObject) getItem(position);
             if (checkbox.isChecked()) {
-                Log.d("ItemAdapter","setting user");
-                item.setCompleter("user");
+                item.setCompleter(UNCHECKED);
                 setStyleNotDone(checkbox, textView, paint, row, item);
             } else {
-                item.setCompleter("");
+                item.setCompleter(CHECKED);
                 setStyleDone(checkbox, textView, paint, row, item);
             }
         }

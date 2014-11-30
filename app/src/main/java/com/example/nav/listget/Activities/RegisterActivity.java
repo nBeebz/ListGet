@@ -1,7 +1,6 @@
 package com.example.nav.listget.Activities;
 
 import android.app.Activity;
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -14,8 +13,11 @@ import com.example.nav.listget.Mongo;
 import com.example.nav.listget.R;
 import com.example.nav.listget.parcelable.User;
 
+import org.json.JSONArray;
+
 public class RegisterActivity extends Activity implements MongoInterface {
 
+    User u = null;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -47,8 +49,9 @@ public class RegisterActivity extends Activity implements MongoInterface {
         String passwordC = ((EditText)findViewById(R.id.password_confirm)).getText().toString();
         String email = ((EditText)findViewById(R.id.username)).getText().toString();
         if(password.equals(passwordC)){
-            User u = new User( email, password );
-            Mongo.getMongo(this).post( Mongo.COLL_USERS, u.getJSON() );
+            u = new User( email, password );
+            Mongo.getMongo(this).get(Mongo.COLL_USERS,Mongo.KEY_ID,email);
+
 
         }else{
             Toast.makeText(getBaseContext(),"password and password confirm don't match.",Toast.LENGTH_LONG).show();
@@ -63,6 +66,28 @@ public class RegisterActivity extends Activity implements MongoInterface {
 
     public void processResult(String result)
     {
-        startActivity(new Intent(this, Login.class));
+        JSONArray arr;
+        try {
+            if(result != null) {
+                arr = new JSONArray(result);
+                if (arr.length() < 1) {
+                    if(u!=null) {
+                        Mongo.getMongo(this).post(Mongo.COLL_USERS, u.getJSON());
+                        Toast.makeText(getBaseContext(), "You are registered!!", Toast.LENGTH_LONG).show();
+
+                        finish();
+                    }
+                } else {
+                    Toast.makeText(getBaseContext(),"The email address has already been registered",Toast.LENGTH_LONG).show();
+
+                }
+            }
+        }
+        catch (Exception e){ e.printStackTrace();
+        }
+
+
+
+
     }
 }

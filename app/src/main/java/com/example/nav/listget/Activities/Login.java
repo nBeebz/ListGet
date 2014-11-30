@@ -25,20 +25,16 @@ public class Login extends Activity implements MongoInterface {
         datasource = new AccessObject(this);
         datasource.open();
         String id = datasource.getId();
+        datasource.close();
         if(id != null){
             Intent myIntent = new Intent( this, ListActivity.class );
             myIntent.putExtra( "email", id);
+            myIntent.setFlags( Intent.FLAG_ACTIVITY_CLEAR_TOP |Intent.FLAG_ACTIVITY_CLEAR_TOP);
             startActivity( myIntent );
+            finish();
         }
         setContentView(R.layout.activity_login);
     }
-
-    @Override
-    public void onPause() {
-        datasource.close();
-        super.onPause();
-    }
-
 
     public void register( View v ){
         startActivity(new Intent(this, RegisterActivity.class) );
@@ -47,7 +43,15 @@ public class Login extends Activity implements MongoInterface {
     public void login( View v )
     {
         String email = ((EditText)findViewById(R.id.username)).getText().toString();
-        Mongo.getMongo( this ).get("users", "_id", email);
+        String password = ((EditText)findViewById(R.id.password)).getText().toString();
+
+        if(email.equals("") || password.equals("")){
+            Toast.makeText(getBaseContext(),"Please input both username and password",Toast.LENGTH_LONG).show();
+
+        }else {
+            Mongo.getMongo(this).get("users", "_id", email);
+
+        }
     }
 
     public void processResult( String result )
@@ -67,11 +71,18 @@ public class Login extends Activity implements MongoInterface {
                 {
                     email = arr.getJSONObject(0).getString( Mongo.KEY_ID );
                     myIntent.putExtra( "email", email );
+                    datasource.open();
                     datasource.saveId(email);
-                    startActivity( myIntent );
+                    myIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                    startActivity(myIntent);
+                    datasource.close();
+                    finish();
                 }else{
                     Toast.makeText(getBaseContext(),"email and password don't match",Toast.LENGTH_LONG).show();
                 }
+            }else{
+                Toast.makeText(getBaseContext(),"The email address is not registered",Toast.LENGTH_LONG).show();
+
             }
         }
         catch (JSONException e)

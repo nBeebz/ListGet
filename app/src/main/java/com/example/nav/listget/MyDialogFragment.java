@@ -1,7 +1,10 @@
 package com.example.nav.listget;
 
+import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -20,6 +23,7 @@ public class MyDialogFragment extends DialogFragment implements MongoInterface {
 	private OnMyClickListener listener = null;
 	private EditText editText = null;
     private MongoInterface m = null;
+    private Activity act = null;
 
     @Override
     public void processResult(String result) {
@@ -41,7 +45,8 @@ public class MyDialogFragment extends DialogFragment implements MongoInterface {
 	public Dialog onCreateDialog(Bundle savedInstanceState) {
 		Dialog dialog = new Dialog(getActivity());
         m = this;
-		dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);  
+        act = getActivity();
+		dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
 		dialog.setCanceledOnTouchOutside(false);
 		dialog.setContentView(R.layout.fragment_my_dialog);
 
@@ -72,6 +77,8 @@ public class MyDialogFragment extends DialogFragment implements MongoInterface {
 			public void onClick(View v) {
 				if(!(editText.getText().toString().equals(""))){
                     selectedList.setName(editText.getText().toString());
+                    String id =""+ System.currentTimeMillis();
+                    selectedList.setId(id);
                     Mongo.getMongo(m).post( Mongo.COLL_LISTS, selectedList.getJSON() );
                     listener.onSave(selectedList);
 					dismiss();
@@ -90,7 +97,7 @@ public class MyDialogFragment extends DialogFragment implements MongoInterface {
 			public void onClick(View v) {
 				if(!(editText.getText().toString().equals(""))){
                     selectedList.setName(editText.getText().toString());
-                    Mongo.getMongo(m).putById(Mongo.COLL_LISTS, selectedList.getId(), Mongo.KEY_NAME, selectedList.getName());
+                    Mongo.getMongo(m).put(Mongo.COLL_LISTS,Mongo.KEY_ID, selectedList.getId(), Mongo.KEY_NAME, selectedList.getName());
 
 					dismiss();
 				}
@@ -104,13 +111,39 @@ public class MyDialogFragment extends DialogFragment implements MongoInterface {
 	private void deleteButton(Dialog dialog){
 		Button b_delete = (Button) dialog.findViewById(R.id.b_delete);
 		b_delete.setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View v) {
-                Mongo.getMongo(m).delete(Mongo.COLL_LISTS,selectedList.getId());
-				listener.onDelete(selectedList);
-				dismiss();
-			}
-		});
+            @Override
+            public void onClick(View v) {
+                if (selectedList.getContributors().size() > 0) {
+                    AlertDialog.Builder alert = new AlertDialog.Builder(act);
+                    int size = selectedList.getContributors().size();
+
+                    alert.setTitle("Warning");
+                    String contributer =  (size > 1) ? " contributors" : " contributor";
+                    alert.setMessage("Are you sure to delete?\nThere are " + size+ contributer+ " for this list.");
+
+                    alert.setPositiveButton("Delete", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int whichButton) {
+                            Mongo.getMongo(m).delete(Mongo.COLL_LISTS, selectedList.getId());
+                            Mongo.getMongo(m).delete(Mongo.COLL_ITEMS, Mongo.KEY_LISTID, selectedList.getId());
+                            listener.onDelete(selectedList);
+                            dismiss();
+                        }
+                    });
+
+                    alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int whichButton) {
+                        }
+                    });
+                    alert.show();
+                }else{
+                    Mongo.getMongo(m).delete(Mongo.COLL_LISTS, selectedList.getId());
+                    Mongo.getMongo(m).delete(Mongo.COLL_ITEMS, Mongo.KEY_LISTID, selectedList.getId());
+                    listener.onDelete(selectedList);
+                    dismiss();
+                }
+
+            }
+        });
 
 	}
 

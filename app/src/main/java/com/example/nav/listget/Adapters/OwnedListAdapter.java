@@ -8,6 +8,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -57,11 +58,16 @@ public class OwnedListAdapter extends ArrayAdapter<ListObject> {
             // These TextViews are created in the XML files we defined.
 
             TextView tt = (TextView) v.findViewById(R.id.oListName);
+            ImageView icon_share = (ImageView)v.findViewById(R.id.icon_shared);
+
 
             // check to see if each individual textview is null.
             // if not, assign some text!
             if (tt != null){
                 tt.setText(list.getName());
+                if(list.getContributors().size()<1) {
+                    icon_share.setVisibility(View.GONE);
+                }
             }
 
         }

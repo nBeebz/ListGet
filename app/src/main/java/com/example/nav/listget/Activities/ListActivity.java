@@ -10,22 +10,29 @@ import android.app.ListFragment;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.ContactsContract;
 import android.support.v13.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.example.nav.listget.AccessObject;
 import com.example.nav.listget.Adapters.OwnedListAdapter;
 import com.example.nav.listget.Adapters.SharedListAdapter;
+import com.example.nav.listget.ContactShare;
 import com.example.nav.listget.Interfaces.MongoInterface;
 import com.example.nav.listget.Mongo;
 import com.example.nav.listget.MyDialogFragment;
@@ -41,6 +48,8 @@ public class ListActivity extends Activity implements ActionBar.TabListener {
     private static String email;
     private AccessObject datasource;
     private Activity act;
+
+    private static final int CONTACT_PICKER_RESULT = 1001;
 
     /**
      * The {@link android.support.v4.view.PagerAdapter} that will provide
@@ -96,9 +105,16 @@ public class ListActivity extends Activity implements ActionBar.TabListener {
 
                 return true;
 
+            case R.id.share:
+                return true;
+
+            case R.id.from_contacts:
+                Intent contact_select = new Intent(getBaseContext(), ContactShare.class);
+                startActivity(contact_select);
+                return true;
+
             default:
                 return super.onOptionsItemSelected(item);
-
         }
     }
 
@@ -394,4 +410,66 @@ public class ListActivity extends Activity implements ActionBar.TabListener {
         }
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data)
+    {
+        if (resultCode == RESULT_OK)
+        {
+            switch (requestCode)
+            {
+                case CONTACT_PICKER_RESULT:
+                    Cursor cursor = null;
+                    String email = "";
+                    try
+                    {
+                        Uri result = data.getData();
+                        Log.v("DEBUG_TAG", "Got a contact result: "
+                                + result.toString());
+
+                        // get the contact id from the Uri
+                        String id = result.getLastPathSegment();
+
+                        // query for everything email
+                        cursor = getContentResolver().query(ContactsContract.CommonDataKinds.Email.CONTENT_URI,
+                                null, ContactsContract.CommonDataKinds.Email.CONTACT_ID + "=?", new String[] { id },
+                                null);
+
+                        int emailIdx = cursor.getColumnIndex(ContactsContract.CommonDataKinds.Email.DATA);
+
+                        // let's just get the first email
+                        if (cursor.moveToFirst())
+                        {
+                            email = cursor.getString(emailIdx);
+                            Log.v("DEBUG_TAG", "Got email: " + email);
+                        } else
+                        {
+                            Log.w("DEBUG_TAG", "No results");
+                        }
+                    }
+                    catch (Exception e)
+                    {
+                        Log.e("DEBUG_TAG", "Failed to get email data", e);
+                    }
+                    finally
+                    {
+                        if (cursor != null)
+                        {
+                            cursor.close();
+                        }
+                        EditText emailEntry = (EditText) findViewById(R.id.invite_email);
+                        emailEntry.setText(email);
+                        if (email.length() == 0)
+                        {
+                            Toast.makeText(this, "No email found for contact.",
+                                    Toast.LENGTH_LONG).show();
+                        }
+                    }
+                    break;
+            }
+        }
+        else
+        {
+            Log.w("DEBUG_TAG", "Warning: activity result not ok");
+        }
+    }
 }

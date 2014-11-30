@@ -77,7 +77,7 @@ public class ListObject implements Parcelable {
             arr = obj.getJSONArray("contributors");
             for( int i=0; i<arr.length(); ++i )
             {
-                c.add(arr.getJSONObject(i).getString("email"));
+                c.add(arr.getString(i));
             }
         }
         catch (JSONException e)

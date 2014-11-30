@@ -1,78 +1,95 @@
 package com.example.nav.listget.Activities;
 
 import android.app.Activity;
-import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
-import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.TextView;
+import android.widget.Toast;
 
-import com.example.nav.listget.DBHelper;
+import com.example.nav.listget.Interfaces.MongoInterface;
+import com.example.nav.listget.Mongo;
 import com.example.nav.listget.R;
 import com.example.nav.listget.parcelable.ItemObject;
-import com.example.nav.listget.parcelable.ListObject;
 
-public class EditItemActivity extends Activity {
+public class EditItemActivity extends Activity implements MongoInterface {
 
-
-    EditText itemName;
+    EditText textName;
     EditText textMemo;
-    int selectedItem;
-    int selectedCat;
+    CheckBox checkbox;
+    TextView checkedBy;
+    String userid;
+    ItemObject selectedItem;
+    int itemPosition = -1;
+    MongoInterface m;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit_item);
+        m = this;
+
         MyOnFocusChangeListener focusChangeListener = new MyOnFocusChangeListener();
-        //itemName
-        itemName = (EditText)findViewById(R.id.item_value);
-        itemName.setOnFocusChangeListener(focusChangeListener);
+        //textName
+        textName = (EditText)findViewById(R.id.item_value);
+        textName.setOnFocusChangeListener(focusChangeListener);
         //memo
         textMemo = (EditText)findViewById(R.id.memo);
         textMemo.setOnFocusChangeListener(focusChangeListener);
+
+        checkbox = (CheckBox)findViewById(R.id.checkbox);
+        checkedBy = (TextView)findViewById(R.id.checkedBy);
+
         setButtons();
         Intent intent = getIntent();
-        selectedItem = ((ItemObject) intent.getExtras().getSerializable("item")).getItemId();
-        selectedCat = ((ListObject) intent.getExtras().getSerializable("list")).getCategoryId();
+        selectedItem = ((ItemObject) intent.getExtras().getParcelable("item"));
+        itemPosition = intent.getExtras().getInt("position");
+        userid = intent.getExtras().getString("userid");
 
-    }
+        textMemo.setText(selectedItem.getMemo());
+        textName.setText(selectedItem.getName());
+        checkbox.setOnClickListener(new CheckClickedListener());
+        if(!selectedItem.getCompleter().equals("")){
+            checkbox.setChecked(true);
+            if(selectedItem.getCompleter().equals(userid))
+                checkedBy.setText("You completed");
+            else
+                checkedBy.setText(selectedItem.getCompleter()+" completed");
+        }else {
+            checkbox.setChecked(false);
+            checkedBy.setText("Nobody completed this item");
 
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.edit_list, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-        if (id == R.id.action_settings) {
-            return true;
         }
-        return super.onOptionsItemSelected(item);
     }
 
- 
 
     @Override
-    public void onStart() {
-        // TODO Auto-generated method stub
-        super.onStart();
-        setStoredData();
+    public void processResult(String result) {
+
     }
+
+    class CheckClickedListener implements OnClickListener {
+        public void onClick(View v) {
+            if(checkbox.isChecked()){
+                checkbox.setChecked(true);
+                selectedItem.setCompleter(userid);
+                checkedBy.setText("You completed");
+
+            }else {
+                checkbox.setChecked(false);
+                selectedItem.setCompleter("");
+                checkedBy.setText("Nobody completed this item");
+            }
+
+        }
+    }
+
 
     /**
      * close soft keyboad
@@ -99,70 +116,46 @@ public class EditItemActivity extends Activity {
 
 
     /**
-     * put data to edit text
-     */
-    private void setStoredData(){
-        DBHelper helper = new DBHelper(this);
-        SQLiteDatabase db = helper.getReadableDatabase();
-        Cursor c = (Cursor)db.rawQuery("select * from items where itemId="+selectedItem+";", null);
-        if(c.moveToFirst()){
-            itemName.setText(c.getString(c.getColumnIndex("item")));
-            textMemo.setText(c.getString(c.getColumnIndex("memo")));
-        }
-        db.close();
-    }
-
-
-
-    /**
      * listener class
      */
-
     class ClickListener implements OnClickListener {
         public void onClick(View v){
-            //open database
-            DBHelper helper = new DBHelper(getBaseContext());
-            SQLiteDatabase db = helper.getReadableDatabase();
-            ContentValues cv = getDataFromFields();
+            Intent data = new Intent();
+            Bundle bundle = new Bundle();
+            bundle.putInt("position", itemPosition);
+
             switch(v.getId())
             {
                 case R.id.save:
-                    save(db, cv);
+                    String nameItem = textName.getText().toString();
+                    String memoItem = textMemo.getText().toString();
+                    if(nameItem.equals("")) {
+                        Toast.makeText(getBaseContext(), "The name of the item cannot be empty. Failed to save.", Toast.LENGTH_LONG).show();
+                    }else{
+                        selectedItem.setName(nameItem);
+                        selectedItem.setMemo(memoItem);
+                        Mongo.getMongo(m).put(Mongo.COLL_ITEMS,Mongo.KEY_ID,selectedItem.getId(),Mongo.KEY_NAME,nameItem);
+                        Mongo.getMongo(m).put(Mongo.COLL_ITEMS,Mongo.KEY_ID,selectedItem.getId(),Mongo.KEY_MEMO,memoItem);
+                        Mongo.getMongo(m).put(Mongo.COLL_ITEMS,Mongo.KEY_ID,selectedItem.getId(),Mongo.KEY_COMPLETED,selectedItem.getCompleter());
+
+                        bundle.putParcelable("item", selectedItem);
+                        data.putExtras(bundle);
+                        setResult(RESULT_OK, data);
+
+                        finish();
+                    }
                     break;
 
                 case R.id.delete:
-                    db.delete("items", "itemId = "+selectedItem, null);
+                    Mongo.getMongo(m).delete(Mongo.COLL_ITEMS,selectedItem.getId());
+                    data.putExtras(bundle);
+                    setResult(RESULT_CANCELED, data);
+                    finish();
                     break;
                 default:
                     break;
             }
-            db.close();
-            finish();
         }
     }
 
-    /**
-     * put everything to store in cv
-     * @return　cv things in imput field
-     */
-    public ContentValues getDataFromFields(){
-        ContentValues cv = new ContentValues();
-        String inputTask = (String)itemName.getText().toString();
-        String inputMemo = textMemo.getText().toString();
-
-        if(!(inputTask.equals(""))){
-            cv.put("item", inputTask );
-            cv.put("memo", inputMemo );
-        }
-        return cv;
-    }
-
-    /**
-     * save data in cv to database
-     * @param db database
-     * @param cv data
-     */
-    private void save(SQLiteDatabase db,ContentValues cv){
-        db.update("items", cv, "itemId = "+selectedItem, null);
-    }
 }

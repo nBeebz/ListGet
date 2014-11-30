@@ -1,22 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="fill_parent"
-    android:layout_height="64dip"
-    android:gravity="center_vertical" >
+    android:layout_width="match_parent"
+    android:layout_height="60dp"
+    android:padding="6dp">
 
 
     <TextView
-        android:id="@+id/text"
+        android:id="@+id/sListName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignWithParentIfMissing="true"
         android:layout_centerVertical="true"
-        android:layout_alignParentLeft="true"
         android:ellipsize="marquee"
         android:paddingLeft="9dip"
         android:paddingRight="9dip"
+        android:paddingTop="9dip"
+        android:paddingBottom="9dip"
         android:singleLine="true"
-        android:textAppearance="?android:attr/textAppearanceMedium" />
-
+        android:textAppearance="?android:attr/textAppearanceMedium"/>
 
 </RelativeLayout>

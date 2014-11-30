@@ -2,12 +2,8 @@ package com.example.nav.listget.Activities;
 
 import android.app.Activity;
 import android.app.ListActivity;
-import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
-import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.view.KeyEvent;
 import android.view.Menu;
@@ -18,40 +14,46 @@ import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.nav.listget.Adapters.ItemAdapter;
-import com.example.nav.listget.DBHelper;
-import com.example.nav.listget.DragSort.DragSortController;
-import com.example.nav.listget.DragSort.DragSortListView;
+import com.example.nav.listget.Interfaces.MongoInterface;
+import com.example.nav.listget.Mongo;
 import com.example.nav.listget.R;
 import com.example.nav.listget.parcelable.ItemObject;
 import com.example.nav.listget.parcelable.ListObject;
 
+import org.json.JSONArray;
+
 import java.util.ArrayList;
 import java.util.List;
 
+<<<<<<< HEAD
 public class ItemActivity extends ListActivity {
+=======
+
+>>>>>>> mao2
+
+public class ItemActivity extends ListActivity implements MongoInterface{
 
     static ItemAdapter adapter;
-    private DragSortController mController;
-    Bundle bundle = new Bundle();
+   // private DragSortController mController;
+   // private AccessObject datasource;
 
-    Activity act = this;
+    ListObject selectedList = null;
 
-    int listsize = 0;
-    ListObject selectedCat = null;
-
-    List<ItemObject> objects;
-    EditText inputItem = null;
+    List<ItemObject> items;
+    EditText inputEditText= null;
     TextView filterText;
+    String userid;
+    MongoInterface m = null;
 
     public ItemActivity() {
     }
 
+<<<<<<< HEAD
     private OnMoveEditListener listener = null;
 
     public interface OnMoveEditListener {
@@ -67,13 +69,16 @@ public class ItemActivity extends ListActivity {
             "unChecked",
             "Checked"
     };
+=======
+>>>>>>> mao2
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.list, menu);
+        getMenuInflater().inflate(R.menu.item, menu);
         return true;
     }
+
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item)
@@ -88,12 +93,30 @@ public class ItemActivity extends ListActivity {
                 Toast.makeText(getBaseContext(), "From Contacts", Toast.LENGTH_LONG).show();
                 return true;
 
+<<<<<<< HEAD
             case R.id.edit:
                 Intent intent = new Intent(getBaseContext(), EditListActivity.class);
                 intent.putExtra("list", selectedCat);
                 startActivity(intent);
 
                 return true;
+=======
+            case R.id.action_settings:
+                /*Intent intent = new Intent(getBaseContext(), EditListActivity.class);
+                intent.putExtra("list", selectedList);
+                startActivity(intent);*/
+
+                return true;
+
+            case R.id.item2:
+                Toast.makeText(getBaseContext(), "item2", Toast.LENGTH_LONG).show();
+                return true;
+
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+>>>>>>> mao2
 
             case R.id.item2:
                 Toast.makeText(getBaseContext(), "item2", Toast.LENGTH_LONG).show();
@@ -110,56 +133,44 @@ public class ItemActivity extends ListActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_item);
-
+        m = this;
         this.getWindow().setSoftInputMode(LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
-        ImageView setting = (ImageView)findViewById(R.id.icon_set);
-        setting.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(getBaseContext(), EditListActivity.class);
-                intent.putExtra("list", selectedCat);
-                startActivity(intent);
-            }
-        });
 
         //set edittext field
-        inputItem = (EditText) findViewById(R.id.addItem);
-        inputItem.setOnFocusChangeListener(new MyOnFocusChangeListener());
-        inputItem.setOnEditorActionListener(new MyOnEditorActionListener());
-
+        inputEditText = (EditText) findViewById(R.id.addItem);
+        inputEditText.setOnFocusChangeListener(new MyOnFocusChangeListener());
+        inputEditText.setOnEditorActionListener(new MyOnEditorActionListener());
         filterText = (TextView) findViewById(R.id.textView2);
 
-        Intent intent = getIntent();
-        selectedCat = ((ListObject) intent.getExtras().getSerializable("list"));
-        listsize = intent.getExtras().getInt("listsize");
-
         if (savedInstanceState == null) {
-            resetList();
-            DragSortListView mDslv = (DragSortListView) getListView();
-            mController = buildController(mDslv);
-            mDslv.setFloatViewManager(mController);
-            mDslv.setOnTouchListener(mController);
-            mDslv.setDragEnabled(true);
-            mDslv.setOnItemClickListener(new listViewListener());
-            mDslv.getCheckedItemPosition();
-            mDslv.setDropListener(onDrop);
-            mDslv.setRemoveListener(onRemove);
-        } else {
-            resetList();
+            ListView ls = getListView();
+            ls.setOnItemClickListener(new listViewListener());
+        }
+
+        Intent intent = getIntent();
+        selectedList = ((ListObject) intent.getExtras().getParcelable("list"));
+        userid = intent.getExtras().getString("userid");
+        if(selectedList!=null){
+            filterText.setText(selectedList.getName());
+            adapter = new ItemAdapter(this, items);
+            Mongo.getMongo(this).get(Mongo.COLL_ITEMS, Mongo.KEY_LISTID, selectedList.getId());
         }
     }
 
     public class listViewListener implements AdapterView.OnItemClickListener {
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-            DragSortListView listView = (DragSortListView) parent;
+            ListView listView = (ListView) parent;
+            storeChecked();
             ItemObject selectedItem = (ItemObject) listView.getItemAtPosition(position);
-            //listener.onMove(selectedTask, selectedCat);
             Intent intent = new Intent(getBaseContext(), EditItemActivity.class);
+            intent.putExtra("caller", getIntent().getComponent().getClassName());
             intent.putExtra("item", selectedItem);
-            intent.putExtra("list", selectedCat);
-            startActivity(intent);
-        }
+            intent.putExtra("position", position);
+            intent.putExtra("userid",userid);
+            int requestCode = 1;
+            startActivityForResult(intent, requestCode);
 
+        }
     }
 
     /**
@@ -171,7 +182,41 @@ public class ItemActivity extends ListActivity {
             if (hasFocus == false) {
                 InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
                 imm.hideSoftInputFromWindow(v.getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
-                inputItem.setText("");
+                inputEditText.setText("");
+            }
+        }
+    }
+
+    /**
+     * when edit item activity is closed, this method will be called and change list
+     * @param requestCode
+     * @param resultCode
+     * @param data
+     */
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if(data != null) {
+            Bundle bundle = data.getExtras();
+            int position = bundle.getInt("position");
+
+            switch (requestCode) {
+                case 1:
+                    if (resultCode == RESULT_OK) {
+                        ItemObject item = bundle.getParcelable("item");
+                        adapter.getItem(position).setName(item.getName());
+                        adapter.getItem(position).setMemo(item.getMemo());
+                        adapter.getItem(position).setCompleter(item.getCompleter());
+                        setListAdapter(adapter);
+
+                    } else if (resultCode == RESULT_CANCELED) {
+
+                        adapter.remove(items.get(position));
+                        setListAdapter(adapter);
+                    }
+                    break;
+
+                default:
+                    break;
             }
         }
     }
@@ -186,130 +231,28 @@ public class ItemActivity extends ListActivity {
             if (actionId == EditorInfo.IME_ACTION_DONE) {
                 InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
                 imm.hideSoftInputFromWindow(v.getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
-                if (!(inputItem.getText().toString().equals(""))) {
-                    DBHelper helper = new DBHelper(act);
-                    SQLiteDatabase db = helper.getReadableDatabase();
+                if (!(inputEditText.getText().toString().equals(""))) {
 
-                    updateItem(db);
-                    //updateNumItem(db);
+                    String id =""+ System.currentTimeMillis();
+                    ItemObject inputItem = new ItemObject(id,selectedList.getId(),inputEditText.getText().toString() ,"","");
+                    Mongo.getMongo(m).post(Mongo.COLL_ITEMS, inputItem.getJSON());
+                    if(items.size() <1){
+                        items.add(inputItem);
+                        adapter = new ItemAdapter((Activity)m,items);
+                    }else {
+                        adapter.add(inputItem);
+                    }
 
-                    saveOrder();
-                    resetList();
-
-                    db.close();
+                    setListAdapter(adapter);
                 }
-                inputItem.setText("");
+                inputEditText.setText("");
                 return true;
             }
             return false;
         }
-
-        private void updateItem(SQLiteDatabase db) {
-            ContentValues cv = new ContentValues();
-            cv.put("Item", inputItem.getText().toString());
-            cv.put("categoryId", selectedCat.getCategoryId());
-            db.insert("Items", null, cv);
-
-        }
-
-        /*private void updateNumItem(SQLiteDatabase db) {
-            ContentValues cv = new ContentValues();
-            number++;
-            cv.put("number", number);
-            db.update("SelectedCategories", cv, "categoryId = " + selectedCat.getCategoryId(), null);
-
-        }*/
     }
 
 
-    /**
-     * return the category name with number of items
-     *
-     * @return
-     */
-    public String getFilterString() {
-        String str = selectedCat.getCategory();
-        return str + " (" + listsize + ") ";
-    }
-
-    /**
-     * reset, recreate listView and filterText
-     */
-    private void resetList() {
-        DBHelper helper = new DBHelper(this);
-        SQLiteDatabase db = helper.getReadableDatabase();
-
-        objects = new ArrayList<ItemObject>();
-        listsize = 0;
-        boolean dataInside = false;
-
-        //カテゴリに合わせたquery用のstringを取得
-
-            String sql = getQueryString(1);
-            boolean notChecked = addToObjectsWithString(sql, db);
-            sql = getQueryString(2);
-            boolean checked = addToObjectsWithString(sql, db);
-            if (notChecked || checked)
-                dataInside = true;
-        if(selectedCat != null) {
-            Cursor c = (Cursor) db.rawQuery("select * from categories where categoryId == " + selectedCat.getCategoryId() + ";", null);
-            c.moveToFirst();
-            selectedCat.setCategory(c.getString(c.getColumnIndex("category")));
-        }
-        db.close();
-        adapter = new ItemAdapter(this, objects);
-        setListAdapter(adapter);
-        if (!dataInside)
-            setEmptyText("NoItems");
-        filterText.setText(getFilterString());
-    }
-
-
-    private boolean addToObjectsWithString(String sql, SQLiteDatabase db) {
-        //category
-        Cursor c = (Cursor) db.rawQuery("select * from items where importance >-100 " + sql + ";", null);
-        boolean dataInside = c.moveToFirst();
-        //if there are items inside
-        if (dataInside) {
-            // get items with importance
-            c = (Cursor) db.rawQuery("select * from items where importance >-1 " + sql + " order by importance asc;", null);
-            addToObjects(c, db);
-
-            //get items without importance
-            c = (Cursor) db.rawQuery("select * from items where importance <0 " + sql + ";", null);
-            addToObjects(c, db);
-        }
-        c.close();
-        return dataInside;
-    }
-
-
-    /**
-     * Return cuery string depends on category and filter
-     *
-     * @param filter1
-     * @return sql for query
-     */
-    public String getQueryString(int filter1) {
-        String sql = "";
-        if (selectedCat != null) {
-            if (selectedCat.getCategoryId() > -1) {
-                if (selectedCat.getCategory().equals("undefined")) {
-                    sql = " and not exists (select categoryId from categories where items.categoryId = categories.categoryId) ";
-                } else {
-                    sql = " and categoryId == " + selectedCat.getCategoryId() + " ";
-                }
-            }
-            // all task = 0, unChecked=1, checked=2
-            if (filter1 == 0) {
-            } else if (filter1 == 1) {
-                sql += " and checked != 1 ";
-            } else if (filter1 == 2) {
-                sql += " and checked == 1 ";
-            }
-        }
-        return sql;
-    }
 
     /**
      * When there is no task, show the text
@@ -319,96 +262,66 @@ public class ItemActivity extends ListActivity {
         tv.setText(text);
     }
 
-    /**
-     * put item object to item object list
-     *
-     * @param c  cursor which is already separated by category
-     * @param db
-     */
-    private void addToObjects(Cursor c, SQLiteDatabase db) {
-        Boolean isEof = c.moveToFirst();
-        while (isEof) {
-            objects.add(new ItemObject(c.getInt(c.getColumnIndex("itemId")), c.getString(c.getColumnIndex("item")), true, c.getInt(c.getColumnIndex("checked"))));
+    @Override
+    public void onBackPressed()
+    {
+        //storeChecked();
+        super.onBackPressed();
+    }
 
-            listsize++;
-            isEof = c.moveToNext();
+
+    public void storeChecked(){
+        for(int i = 0; i< adapter.getCount();i++){
+            ItemObject item = adapter.getItem(i);
+            if(item.getCompleter().equals("user"))
+                Mongo.getMongo(this).put(Mongo.COLL_ITEMS,Mongo.KEY_ID,item.getId(),Mongo.KEY_COMPLETED,userid);
+            else if(item.getCompleter().equals(""))
+                Mongo.getMongo(this).put(Mongo.COLL_ITEMS,Mongo.KEY_ID,item.getId(),Mongo.KEY_COMPLETED,item.getCompleter());
+
         }
     }
 
-
-    /**
-     * save the order
-     */
+    /*
     @Override
-    public void onPause() {
-        super.onPause();
-        //save item positions to the database
-        saveOrder();
+    protected void onResume()
+    {
+        if(selectedList!=null){
+            filterText.setText(selectedList.getName());
+            adapter = new ItemAdapter(this, items);
+            Mongo.getMongo(this).get(Mongo.COLL_ITEMS, Mongo.KEY_LISTID, selectedList.getId());
+
+        }
+        super.onResume();
     }
 
-    @Override
-    public void onStart(){
-        super.onStart();
-        resetList();
-    }
+   */
 
-    public void saveOrder() {
-        DBHelper helper = new DBHelper(this);
-        SQLiteDatabase db = helper.getReadableDatabase();
-        ListView listView = (ListView) getListView();
-        for (int position = 0; position < listsize; position++) {
-            ItemObject selectedItem = (ItemObject) listView.getItemAtPosition(position);
-            ContentValues cv = new ContentValues();
-            cv.put("importance", position);
-            if (selectedItem.getChecked() != 0) {
-                cv.put("checked", 1);
-            } else {
-                cv.put("checked", 0);
+
+
+
+
+    public void processResult( String result )
+    {
+        JSONArray arr;
+        items = new ArrayList<ItemObject>();
+        try {
+            if(result != null) {
+                arr = new JSONArray(result);
+                if (arr.length() < 1) {
+                    setEmptyText("No Items");
+                } else {
+//                   items.add( ItemObject.parseJSON( arr.getJSONObject(i) ));
+                    items = ItemObject.getItems(arr);
+                    adapter = new ItemAdapter(this, items);
+                    setListAdapter(adapter);
+                }
             }
-            db.update("Items", cv, "ItemId = " + selectedItem.getItemId(), null);
+        }
+        catch (Exception e){ e.printStackTrace();
         }
 
+        //DO SOMETHING WITH THE ITEMS
+
     }
-
-    /*drag & drop stuff*/
-    private DragSortListView.DropListener onDrop = new DragSortListView.DropListener() {
-        @Override
-        public void drop(int from, int to) {
-            DragSortListView list = (DragSortListView) getListView();
-            ItemObject item = adapter.getItem(from);
-            adapter.remove(item);
-            adapter.insert(item, to);
-            list.moveCheckState(from, to);
-        }
-    };
-
-    private DragSortListView.RemoveListener onRemove = new DragSortListView.RemoveListener() {
-        @Override
-        public void remove(int which) {
-            DragSortListView list = (DragSortListView) getListView();
-            ItemObject item = adapter.getItem(which);
-            adapter.remove(item);
-            list.removeCheckState(which);
-        }
-    };
-
-    public DragSortController getController() {
-        return mController;
-    }
-
-    private DragSortController buildController(DragSortListView dslv) {
-        DragSortController controller = new DragSortController(dslv);
-        controller.setDragHandleId(R.id.drag_handle);
-        //controller.setClickRemoveId(R.id.click_remove);
-        controller.setBackgroundColor(Color.GRAY);
-        controller.setRemoveEnabled(false);
-        controller.setSortEnabled(true);
-        controller.setDragInitMode(DragSortController.ON_DOWN);
-        controller.setRemoveMode(DragSortController.CLICK_REMOVE);
-        controller.setDragInitMode(DragSortController.ON_LONG_PRESS);
-        return controller;
-    }
-	/*drag & drop stuff done*/
-
 
 }

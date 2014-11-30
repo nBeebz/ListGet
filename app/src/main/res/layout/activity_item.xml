@@ -24,13 +24,6 @@
         android:gravity="center"
         android:orientation="horizontal" >
 
-        <ImageView
-            android:id="@+id/icon_set"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:paddingLeft="9dip"
-            android:paddingRight="0dip"
-            android:src="@drawable/icon_set" />
 
         <ImageView
             android:id="@+id/icon_cate"
@@ -49,7 +42,8 @@
             android:textSize="17sp"
             android:textColor="@color/txt_color"/>
     </LinearLayout>
-    <com.example.nav.listget.DragSort.DragSortListView
+
+    <ListView
         android:id="@android:id/list"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
@@ -59,7 +53,6 @@
         android:clickable="true"
         android:dividerHeight="2dp"
         android:padding="3dp" />
-
     <TextView
         android:id="@android:id/empty"
         android:layout_width="match_parent"

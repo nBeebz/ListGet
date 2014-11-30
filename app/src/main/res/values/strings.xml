@@ -4,6 +4,8 @@
     <string name="app_name">ListGet</string>
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
+    <string name="action_logout">Logout</string>
+
     <string name="login_user">Email/User ID</string>
     <string name="password">Password</string>
     <string name="action_login">Login</string>
@@ -34,5 +36,19 @@
     <string name="title_activity_edit_list">EditListActivity</string>
     <string name="title_activity_edit_item">EditItemActivity</string>
     <string name="title_activity_display_test">DisplayTest</string>
+    <string name="title_activity_login">Login</string>
+    <string name="login_name">User Name</string>
+    <string name="login_password">Password</string>
+    <string name="login_password_confirm">Password Confirm</string>
+    <string name="login">Login</string>
+    <string name="register">Register</string>
+    <string name="title_activity_register">Register</string>
+    <string name="clear">Clear</string>
+    <string name="email">e-mail</string>
+    <string name="list_owned">My Lists</string>
+    <string name="list_shared">Shared Lists</string>
+    <string name="title_section1">Section 1</string>
+    <string name="title_section2">Section 2</string>
+    <string name="title_section3">Section 3</string>
 
 </resources>

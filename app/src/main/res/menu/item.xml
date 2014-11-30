@@ -1,9 +1,10 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context="com.example.nav.listget.Activities.ItemActivity" >
-    <item android:id="@+id/action_settings"
-        android:title="@string/action_settings"
+    tools:context="com.example.nav.listget.Activities.ItemActivity">
+    <item
+        android:id="@+id/action_settings"
         android:orderInCategory="100"
+<<<<<<< HEAD
         android:showAsAction="never" />
     <item android:id="@+id/share"
         android:title="Share"
@@ -25,3 +26,26 @@
         android:orderInCategory="3"
         android:showAsAction="collapseActionView"/>
 </menu>
+=======
+        android:showAsAction="never"
+        android:title="@string/action_settings" />
+    <item
+        android:id="@+id/share"
+        android:orderInCategory="2"
+        android:showAsAction="collapseActionView"
+        android:title="Share">
+        <menu>
+            <item
+                android:id="@+id/from_contacts"
+                android:orderInCategory="1"
+                android:showAsAction="collapseActionView"
+                android:title="Select from Contacts" />
+            <item
+                android:id="@+id/item2"
+                android:orderInCategory="2"
+                android:showAsAction="collapseActionView"
+                android:title="Favorites" />
+        </menu>
+    </item>
+</menu>
+>>>>>>> mao2

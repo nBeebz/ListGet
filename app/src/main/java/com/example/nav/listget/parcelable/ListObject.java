@@ -130,4 +130,9 @@ public class ListObject implements Parcelable {
 
         return obj;
     }
+
+    public void addContributor( String email )
+    {
+        contributors.add( email );
+    }
 }

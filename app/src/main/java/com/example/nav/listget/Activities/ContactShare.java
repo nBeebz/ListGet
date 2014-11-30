@@ -1,4 +1,4 @@
-package com.example.nav.listget;
+package com.example.nav.listget.Activities;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -14,13 +14,12 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.example.nav.listget.Interfaces.MongoInterface;
+import com.example.nav.listget.R;
 
 public class ContactShare extends Activity implements MongoInterface
 {
     private static final int CONTACT_PICKER_RESULT = 1001;
     private static EditText toEmail = null;
-    private static EditText emailSubject = null;
-    private static EditText emailBody = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -29,8 +28,6 @@ public class ContactShare extends Activity implements MongoInterface
         setContentView(R.layout.activity_contact_share);
 
         toEmail = (EditText) findViewById(R.id.invite_email);
-        emailSubject = (EditText) findViewById(R.id.subject);
-        emailBody = (EditText) findViewById(R.id.emailBody);
     }
 
     public void doLaunchContactPicker(View view)
@@ -124,21 +121,15 @@ public class ContactShare extends Activity implements MongoInterface
             case R.id.menu_clear:
 
                 toEmail.setText("");
-                emailBody.setText("");
-                emailSubject.setText("");
                 break;
 
             case R.id.menu_send:
 
                 String to = toEmail.getText().toString();
-                String subject = emailSubject.getText().toString();
-                String message = emailBody.getText().toString();
 
                 Intent email = new Intent(Intent.ACTION_SEND);
 
                 email.putExtra(Intent.EXTRA_EMAIL, new String[]{to});
-                email.putExtra(Intent.EXTRA_SUBJECT, subject);
-                email.putExtra(Intent.EXTRA_TEXT, message);
 
                 email.setType("message/rfc822");
 

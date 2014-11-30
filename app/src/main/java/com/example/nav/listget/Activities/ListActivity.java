@@ -316,7 +316,7 @@ public class ListActivity extends Activity implements ActionBar.TabListener {
                                  Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
             View view = inflater.inflate(R.layout.fragment_shared_lists, container, false);
-            Mongo.getMongo(this).getListByContributor(email);
+            Mongo.getMongo(this).get( Mongo.COLL_LISTS, Mongo.KEY_CONTRIBUTORS, email );
             inf = inflater;
             swipeLayout = new ListFragmentSwipeRefreshLayout( container.getContext(), this );
             swipeLayout.addView( view );
@@ -353,7 +353,7 @@ public class ListActivity extends Activity implements ActionBar.TabListener {
         public void onRefresh() {
             Mongo m = Mongo.getMongo( activity );
             if( key.equals(Mongo.KEY_CONTRIBUTORS) )
-                m.getListByContributor( email );
+                m.get( Mongo.COLL_LISTS, Mongo.KEY_CONTRIBUTORS, email );
             else
                 m.get( Mongo.COLL_LISTS, Mongo.KEY_OWNER, email );
             layout.setRefreshing( true );

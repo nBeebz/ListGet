@@ -5,6 +5,7 @@ import android.app.ListActivity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
@@ -19,10 +20,10 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.example.nav.listget.Adapters.ItemAdapter;
-import com.example.nav.listget.ContactShare;
 import com.example.nav.listget.Interfaces.MongoInterface;
 import com.example.nav.listget.Mongo;
 import com.example.nav.listget.R;
+import com.example.nav.listget.ShareDialog;
 import com.example.nav.listget.parcelable.ItemObject;
 import com.example.nav.listget.parcelable.ListObject;
 
@@ -36,6 +37,7 @@ public class ItemActivity extends ListActivity implements MongoInterface{
     static ItemAdapter adapter = null;
 
     ListObject selectedList = null;
+    SwipeRefreshLayout swipeContainer = null;
 
     List<ItemObject> items = null;
     EditText inputEditText= null;
@@ -90,6 +92,8 @@ public class ItemActivity extends ListActivity implements MongoInterface{
         m = this;
         this.getWindow().setSoftInputMode(LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
 
+        swipeContainer = (SwipeRefreshLayout)findViewById(R.id.swipe_container);
+
         //set edittext field
         inputEditText = (EditText) findViewById(R.id.addItem);
         inputEditText.setOnFocusChangeListener(new MyOnFocusChangeListener());
@@ -108,6 +112,31 @@ public class ItemActivity extends ListActivity implements MongoInterface{
             filterText.setText(selectedList.getName());
             adapter = new ItemAdapter(this, items);
             Mongo.getMongo(this).get(Mongo.COLL_ITEMS, Mongo.KEY_LISTID, selectedList.getId());
+        }
+
+
+        swipeContainer.setRefreshing( true );
+        swipeContainer.setColorSchemeResources(R.color.bg_color, R.color.grey, R.color.txt_color, R.color.btn_blue);
+        swipeContainer.setOnRefreshListener(new ItemRefreshListener(this, selectedList.getId(), swipeContainer));
+        swipeContainer.setRefreshing( true );
+    }
+
+    private static class ItemRefreshListener implements SwipeRefreshLayout.OnRefreshListener
+    {
+        private MongoInterface activity;
+        SwipeRefreshLayout layout;
+        private String value;
+
+        ItemRefreshListener( MongoInterface a, String id, SwipeRefreshLayout l )
+        {
+            activity = a;
+            value = id;
+            layout = l;
+        }
+        @Override
+        public void onRefresh() {
+            Mongo.getMongo( activity ).get(Mongo.COLL_ITEMS, Mongo.KEY_LISTID, value);
+            layout.setRefreshing( true );
         }
     }
 
@@ -278,11 +307,19 @@ public class ItemActivity extends ListActivity implements MongoInterface{
                 }
             }
         }
-        catch (Exception e){ e.printStackTrace();
+        catch (Exception e){ e.printStackTrace(); }
+        finally {
+            swipeContainer.setRefreshing(false);
         }
-
         //DO SOMETHING WITH THE ITEMS
 
+    }
+
+    public void shareList( View v )
+    {
+        ShareDialog dialog = new ShareDialog();
+        dialog.setList( selectedList );
+        dialog.show( getFragmentManager(), "");
     }
 
 }

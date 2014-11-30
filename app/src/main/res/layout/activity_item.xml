@@ -35,24 +35,44 @@
 
         <TextView
             android:id="@+id/textView2"
-            android:layout_width="fill_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:paddingLeft="9dip"
             android:paddingRight="0dip"
             android:textSize="17sp"
             android:textColor="@color/txt_color"/>
+
+        <Button
+            android:id="@+id/share"
+            android:layout_width="wrap_content"
+            android:layout_height="50dip"
+            android:layout_marginLeft="20dp"
+            android:gravity="center"
+            android:paddingLeft="9dip"
+            android:paddingRight="9dip"
+            android:singleLine="true"
+            android:text="Share List"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:onClick="shareList" />
     </LinearLayout>
 
-    <ListView
-        android:id="@android:id/list"
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
-        android:layout_margin="3dp"
-        android:layout_weight="1"
-        android:choiceMode="multipleChoice"
-        android:clickable="true"
-        android:dividerHeight="2dp"
-        android:padding="3dp" />
+    <android.support.v4.widget.SwipeRefreshLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/swipe_container"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+        <ListView
+            android:id="@android:id/list"
+            android:layout_width="fill_parent"
+            android:layout_height="0dp"
+            android:layout_margin="3dp"
+            android:layout_weight="1"
+            android:choiceMode="multipleChoice"
+            android:clickable="true"
+            android:dividerHeight="2dp"
+            android:padding="3dp" />
+    </android.support.v4.widget.SwipeRefreshLayout>
+
     <TextView
         android:id="@android:id/empty"
         android:layout_width="match_parent"
@@ -60,5 +80,6 @@
         android:layout_weight="1"
         android:gravity="center"
         android:textAppearance="?android:attr/textAppearanceLarge" />
+
 
 </LinearLayout>

@@ -56,7 +56,7 @@
             android:value="@integer/google_play_services_version" />
 
         <activity
-            android:name=".ContactShare"
+            android:name=".Activities.ContactShare"
             android:label="@string/title_activity_contact_share" >
         </activity>
         <activity

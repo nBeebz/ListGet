@@ -1,11 +1,12 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
     android:layout_height="match_parent" android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:orientation="vertical"
     android:paddingTop="@dimen/activity_vertical_margin"
     android:paddingBottom="@dimen/activity_vertical_margin"
-    tools:context="com.example.nav.listget.ContactShare">
+    tools:context="com.example.nav.listget.Activities.ContactShare"
+    android:baselineAligned="false">
 
     <EditText
         android:layout_height="wrap_content"
@@ -21,36 +22,18 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/do_email_picker"
-        android:text="BROWSE"
-        android:onClick="doLaunchContactPicker">
+        android:text="Browse Contacts"
+        android:onClick="doLaunchContactPicker"
+        android:layout_alignTop="@+id/invite_email"
+        android:layout_centerHorizontal="true">
     </Button>
 
-    <TextView
+    <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Subject:"
-        android:textAppearance="?android:attr/textAppearanceLarge" />
+        android:text="Share"
+        android:id="@+id/button2"
+        android:layout_toEndOf="@+id/do_email_picker"
+        android:layout_alignParentTop="true" />
 
-    <EditText
-        android:id="@+id/subject"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:hint="Enter Subject" >
-    </EditText>
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Message:"
-        android:textAppearance="?android:attr/textAppearanceLarge" />
-
-    <EditText
-        android:id="@+id/emailBody"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:gravity="top"
-        android:hint="Enter mail body"
-        android:inputType="textMultiLine"
-        android:lines="5" />
-
-</LinearLayout>
+</RelativeLayout>

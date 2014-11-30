@@ -29,6 +29,7 @@ public class Login extends Activity implements MongoInterface {
             Intent myIntent = new Intent( this, ListActivity.class );
             myIntent.putExtra( "email", id);
             startActivity( myIntent );
+            finish();
         }
         setContentView(R.layout.activity_login);
     }
@@ -37,6 +38,12 @@ public class Login extends Activity implements MongoInterface {
     public void onPause() {
         datasource.close();
         super.onPause();
+    }
+
+    @Override
+    public void onResume(){
+        datasource.open();
+        super.onResume();
     }
 
 

@@ -38,7 +38,6 @@ public class ItemActivity extends ListActivity implements MongoInterface{
    // private DragSortController mController;
    // private AccessObject datasource;
 
-
     ListObject selectedList = null;
 
     List<ItemObject> items;
@@ -117,7 +116,6 @@ public class ItemActivity extends ListActivity implements MongoInterface{
             filterText.setText(selectedList.getName());
             adapter = new ItemAdapter(this, items);
             Mongo.getMongo(this).get(Mongo.COLL_ITEMS, Mongo.KEY_LISTID, selectedList.getId());
-
         }
     }
 

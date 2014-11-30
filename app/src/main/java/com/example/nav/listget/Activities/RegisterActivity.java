@@ -49,6 +49,8 @@ public class RegisterActivity extends Activity implements MongoInterface {
         if(password.equals(passwordC)){
             User u = new User( email, password );
             Mongo.getMongo(this).post( Mongo.COLL_USERS, u.getJSON() );
+            Toast.makeText(getBaseContext(),"You are registered!!",Toast.LENGTH_LONG).show();
+            finish();
 
         }else{
             Toast.makeText(getBaseContext(),"password and password confirm don't match.",Toast.LENGTH_LONG).show();

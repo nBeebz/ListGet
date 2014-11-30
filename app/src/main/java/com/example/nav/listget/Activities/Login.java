@@ -28,6 +28,7 @@ public class Login extends Activity implements MongoInterface {
         if(id != null){
             Intent myIntent = new Intent( this, ListActivity.class );
             myIntent.putExtra( "email", id);
+            myIntent.setFlags( Intent.FLAG_ACTIVITY_CLEAR_TOP |Intent.FLAG_ACTIVITY_CLEAR_TOP);
             startActivity( myIntent );
             finish();
         }
@@ -75,7 +76,9 @@ public class Login extends Activity implements MongoInterface {
                     email = arr.getJSONObject(0).getString( Mongo.KEY_ID );
                     myIntent.putExtra( "email", email );
                     datasource.saveId(email);
+                    myIntent.setFlags( Intent.FLAG_ACTIVITY_CLEAR_TOP |Intent.FLAG_ACTIVITY_CLEAR_TOP);
                     startActivity( myIntent );
+                    finish();
                 }else{
                     Toast.makeText(getBaseContext(),"email and password don't match",Toast.LENGTH_LONG).show();
                 }

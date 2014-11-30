@@ -72,6 +72,8 @@ public class MyDialogFragment extends DialogFragment implements MongoInterface {
 			public void onClick(View v) {
 				if(!(editText.getText().toString().equals(""))){
                     selectedList.setName(editText.getText().toString());
+                    String id =""+ System.currentTimeMillis();
+                    selectedList.setId(id);
                     Mongo.getMongo(m).post( Mongo.COLL_LISTS, selectedList.getJSON() );
                     listener.onSave(selectedList);
 					dismiss();
@@ -90,7 +92,7 @@ public class MyDialogFragment extends DialogFragment implements MongoInterface {
 			public void onClick(View v) {
 				if(!(editText.getText().toString().equals(""))){
                     selectedList.setName(editText.getText().toString());
-                    Mongo.getMongo(m).putById(Mongo.COLL_LISTS, selectedList.getId(), Mongo.KEY_NAME, selectedList.getName());
+                    Mongo.getMongo(m).put(Mongo.COLL_LISTS,Mongo.KEY_ID, selectedList.getId(), Mongo.KEY_NAME, selectedList.getName());
 
 					dismiss();
 				}

@@ -70,7 +70,7 @@ public class ListObject implements Parcelable {
         ArrayList<String> c = new ArrayList<String>();
         JSONArray arr = null;
         try{
-            d = obj.getJSONObject("_id").getString("$oid");
+            d = obj.getString("_id");
             n = obj.getString("name");
             o = obj.getString("owner");
             arr = obj.getJSONArray("contributors");
@@ -87,6 +87,7 @@ public class ListObject implements Parcelable {
     }
 
     public void setName(String name){this.name = name;}
+    public void setId(String id){this.id = id;}
     public String getId(){ return id; }
     public String getName(){ return name; }
     public String getOwner(){ return owner; }
@@ -120,6 +121,7 @@ public class ListObject implements Parcelable {
         JSONObject obj = null;
         try{
             obj = new JSONObject();
+            obj.put(Mongo.KEY_ID, id );
             obj.put(Mongo.KEY_OWNER, owner );
             obj.put(Mongo.KEY_NAME, name  );
             obj.put(Mongo.KEY_CONTRIBUTORS, new JSONArray( contributors ) );

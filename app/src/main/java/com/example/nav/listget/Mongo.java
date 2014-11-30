@@ -119,17 +119,6 @@ public class Mongo {
         }catch (Exception e){ e.printStackTrace(); }
     }
 
-    public void putById( String coll, String id, String newKey, String newValue )
-    {
-        try {
-            String update = "{\"$set\":{\"" + newKey + "\":\"" + newValue + "\"}}";
-            String query = "{ \"_id\" : { \"$oid\" :\"" + id + "\"}}";
-            String url = BASE_URL + coll + "?" + API_KEY + "&q=" + URLEncoder.encode(query, "UTF-8");
-            new PutTask( activity ).execute( url, update );
-        }catch (Exception e){ e.printStackTrace(); }
-    }
-
-
     public void delete( String coll, String id )
     {
         try {

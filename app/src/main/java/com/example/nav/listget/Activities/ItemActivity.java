@@ -227,7 +227,7 @@ public class ItemActivity extends ListActivity implements MongoInterface{
     @Override
     public void onBackPressed()
     {
-        storeChecked();
+        //storeChecked();
         super.onBackPressed();
     }
 

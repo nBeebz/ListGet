@@ -5,6 +5,7 @@ import android.app.ListActivity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -37,7 +38,6 @@ public class ItemActivity extends ListActivity implements MongoInterface{
     static ItemAdapter adapter;
    // private DragSortController mController;
    // private AccessObject datasource;
-
 
     ListObject selectedList = null;
 
@@ -117,7 +117,7 @@ public class ItemActivity extends ListActivity implements MongoInterface{
             filterText.setText(selectedList.getName());
             adapter = new ItemAdapter(this, items);
             Mongo.getMongo(this).get(Mongo.COLL_ITEMS, Mongo.KEY_LISTID, selectedList.getId());
-
+            swipeLayout.setRefreshing( true );
         }
     }
 

@@ -13,6 +13,7 @@ import android.widget.ArrayAdapter;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.example.nav.listget.AccessObject;
 import com.example.nav.listget.Activities.CheckableLinearLayout;
 import com.example.nav.listget.R;
 import com.example.nav.listget.parcelable.ItemObject;
@@ -21,11 +22,17 @@ import java.util.List;
 
 public class ItemAdapter extends ArrayAdapter<ItemObject> {
     private LayoutInflater layoutInflater_;
+    private String id;
+
 
 
     public ItemAdapter(Context context, List<ItemObject> objects) {
         super(context, R.layout.adapter_item, objects);
         layoutInflater_ = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        AccessObject datasource = new AccessObject(getContext());
+        datasource.open();
+        id = datasource.getId();
+        datasource.close();
 
     }
 
@@ -83,7 +90,7 @@ public class ItemAdapter extends ArrayAdapter<ItemObject> {
             ItemObject item = (ItemObject) getItem(position);
             if (checkbox.isChecked()) {
                 Log.d("ItemAdapter","setting user");
-                item.setCompleter("user");
+                item.setCompleter(id);
                 setStyleNotDone(checkbox, textView, paint, row, item);
             } else {
                 item.setCompleter("");

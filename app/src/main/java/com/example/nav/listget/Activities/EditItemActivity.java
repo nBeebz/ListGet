@@ -123,6 +123,7 @@ public class EditItemActivity extends Activity implements MongoInterface {
             Intent data = new Intent();
             Bundle bundle = new Bundle();
             bundle.putInt("position", itemPosition);
+            bundle.putParcelable("item", selectedItem);
 
             switch(v.getId())
             {
@@ -137,8 +138,6 @@ public class EditItemActivity extends Activity implements MongoInterface {
                         Mongo.getMongo(m).put(Mongo.COLL_ITEMS,Mongo.KEY_ID,selectedItem.getId(),Mongo.KEY_NAME,nameItem);
                         Mongo.getMongo(m).put(Mongo.COLL_ITEMS,Mongo.KEY_ID,selectedItem.getId(),Mongo.KEY_MEMO,memoItem);
                         Mongo.getMongo(m).put(Mongo.COLL_ITEMS,Mongo.KEY_ID,selectedItem.getId(),Mongo.KEY_COMPLETED,selectedItem.getCompleter());
-
-                        bundle.putParcelable("item", selectedItem);
                         data.putExtras(bundle);
                         setResult(RESULT_OK, data);
 

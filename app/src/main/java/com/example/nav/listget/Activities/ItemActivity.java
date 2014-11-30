@@ -5,6 +5,7 @@ import android.app.ListActivity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -34,13 +35,13 @@ import java.util.List;
 
 public class ItemActivity extends ListActivity implements MongoInterface{
 
-    static ItemAdapter adapter;
+    static ItemAdapter adapter = null;
    // private DragSortController mController;
    // private AccessObject datasource;
 
     ListObject selectedList = null;
 
-    List<ItemObject> items;
+    List<ItemObject> items = null;
     EditText inputEditText= null;
     TextView filterText;
     String userid;
@@ -122,7 +123,6 @@ public class ItemActivity extends ListActivity implements MongoInterface{
     public class listViewListener implements AdapterView.OnItemClickListener {
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
             ListView listView = (ListView) parent;
-            storeChecked();
             ItemObject selectedItem = (ItemObject) listView.getItemAtPosition(position);
             Intent intent = new Intent(getBaseContext(), EditItemActivity.class);
             intent.putExtra("caller", getIntent().getComponent().getClassName());
@@ -160,20 +160,21 @@ public class ItemActivity extends ListActivity implements MongoInterface{
         if(data != null) {
             Bundle bundle = data.getExtras();
             int position = bundle.getInt("position");
+            ItemObject item = bundle.getParcelable("item");
 
             switch (requestCode) {
                 case 1:
                     if (resultCode == RESULT_OK) {
-                        ItemObject item = bundle.getParcelable("item");
                         adapter.getItem(position).setName(item.getName());
                         adapter.getItem(position).setMemo(item.getMemo());
                         adapter.getItem(position).setCompleter(item.getCompleter());
                         setListAdapter(adapter);
 
                     } else if (resultCode == RESULT_CANCELED) {
-
-                        adapter.remove(items.get(position));
-                        setListAdapter(adapter);
+                        //if(items!=null && items.size()>0) {
+                            adapter.remove(adapter.getItem(position));
+                            setListAdapter(adapter);
+                        //}
                     }
                     break;
 
@@ -225,21 +226,26 @@ public class ItemActivity extends ListActivity implements MongoInterface{
     }
 
     @Override
-    public void onBackPressed()
+    public void onPause()
     {
         //storeChecked();
-        super.onBackPressed();
+        super.onPause();
     }
 
 
     public void storeChecked(){
+        if(adapter != null){
         for(int i = 0; i< adapter.getCount();i++){
             ItemObject item = adapter.getItem(i);
-            if(item.getCompleter().equals("user"))
-                Mongo.getMongo(this).put(Mongo.COLL_ITEMS,Mongo.KEY_ID,item.getId(),Mongo.KEY_COMPLETED,userid);
-            else if(item.getCompleter().equals(""))
-                Mongo.getMongo(this).put(Mongo.COLL_ITEMS,Mongo.KEY_ID,item.getId(),Mongo.KEY_COMPLETED,item.getCompleter());
+            if(item.getCompleter().equals(userid)) {
+                Log.d("user", "itemActivity storeChecked");
+                Mongo.getMongo(this).put(Mongo.COLL_ITEMS, Mongo.KEY_ID, item.getId(), Mongo.KEY_COMPLETED, userid);
+            }else if(item.getCompleter().equals("")) {
+                Log.d("user", "itemActivity storeChecked");
+                Mongo.getMongo(this).put(Mongo.COLL_ITEMS, Mongo.KEY_ID, item.getId(), Mongo.KEY_COMPLETED, item.getCompleter());
+            }
 
+        }
         }
     }
 

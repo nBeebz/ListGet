@@ -27,15 +27,15 @@
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
         <activity
-            android:name="com.example.nav.listget.Activities.ItemActivity"
+            android:name=".Activities.ItemActivity"
             android:label="@string/title_activity_item" >
         </activity>
         <activity
-            android:name="com.example.nav.listget.Activities.EditItemActivity"
+            android:name=".Activities.EditItemActivity"
             android:label="@string/title_activity_edit_item" >
         </activity>
         <activity
-            android:name="com.example.nav.listget.Activities.Login"
+            android:name=".Activities.Login"
             android:label="@string/title_activity_login" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -44,11 +44,11 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="com.example.nav.listget.Activities.RegisterActivity"
+            android:name=".Activities.RegisterActivity"
             android:label="@string/title_activity_register" >
         </activity>
         <activity
-            android:name="com.example.nav.listget.Activities.ListActivity"
+            android:name=".Activities.ListActivity"
             android:label="@string/title_activity_list" >
         </activity>
 
@@ -57,8 +57,12 @@
             android:value="@integer/google_play_services_version" />
 
         <activity
-            android:name="com.example.nav.listget.ContactShare"
+            android:name=".ContactShare"
             android:label="@string/title_activity_contact_share" >
+        </activity>
+        <activity
+            android:name=".Activities.PeopleListActivity"
+            android:label="@string/title_activity_people_list" >
         </activity>
     </application>
 

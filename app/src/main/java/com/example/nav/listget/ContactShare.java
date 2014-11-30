@@ -13,7 +13,9 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
 
-public class ContactShare extends Activity
+import com.example.nav.listget.Interfaces.MongoInterface;
+
+public class ContactShare extends Activity implements MongoInterface
 {
     private static final int CONTACT_PICKER_RESULT = 1001;
     private static EditText toEmail = null;
@@ -145,5 +147,10 @@ public class ContactShare extends Activity
                 break;
         }
         return true;
+    }
+
+    @Override
+    public void processResult(String result) {
+
     }
 }

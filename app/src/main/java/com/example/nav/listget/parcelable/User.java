@@ -6,7 +6,11 @@ import android.util.Log;
 
 import com.example.nav.listget.Mongo;
 
+import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.util.ArrayList;
 
 /**
  * Created by Nav on 11/25/2014.
@@ -51,6 +55,39 @@ public class User implements Parcelable {
             return new User[size];
         }
     };
+
+    public static ArrayList<User> getUsers( JSONArray arr )
+    {
+        ArrayList<User> list = new ArrayList<User>( arr.length() );
+
+        try {
+            for (int i = 0; i < arr.length(); ++i) {
+                list.add( i, getUser( arr.getJSONObject(i) ) );
+            }
+        }
+        catch (JSONException e)
+        {
+            Log.d("getUsers", e.getLocalizedMessage());
+        }
+        return list;
+    }
+
+    public static User getUser( JSONObject obj )
+    {
+        String id  = null;
+        String pass = null;
+
+        try{
+            id = obj.getString( "_id" );
+            pass = obj.getString( "password" );
+        }
+        catch (JSONException e)
+        {
+            Log.d( "getItem", e.getLocalizedMessage() );
+        }
+        return new User( id, pass );
+    }
+
 
     public JSONObject getJSON()
     {

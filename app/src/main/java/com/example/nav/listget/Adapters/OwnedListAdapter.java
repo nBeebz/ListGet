@@ -28,7 +28,6 @@ public class OwnedListAdapter extends ArrayAdapter<ListObject> {
 
     private ArrayList<ListObject> lists;
     private Activity act = null;
-    private OwnedListsFragment frag = null;
 
     public OwnedListAdapter(Context context, int layoutResourceId, int textViewResourceId, ArrayList<ListObject> list)
     {

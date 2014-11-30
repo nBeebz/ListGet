@@ -17,9 +17,9 @@ import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.example.nav.listget.Adapters.ItemAdapter;
+import com.example.nav.listget.ContactShare;
 import com.example.nav.listget.Interfaces.MongoInterface;
 import com.example.nav.listget.Mongo;
 import com.example.nav.listget.R;
@@ -30,8 +30,6 @@ import org.json.JSONArray;
 
 import java.util.ArrayList;
 import java.util.List;
-
-
 
 public class ItemActivity extends ListActivity implements MongoInterface{
 
@@ -49,22 +47,6 @@ public class ItemActivity extends ListActivity implements MongoInterface{
     }
 
 
-    private OnMoveEditListener listener = null;
-
-    public interface OnMoveEditListener {
-        public void onMove(ItemObject selectedItem, ListObject selectedCat);
-    }
-
-    public void setOnMoveListener(OnMoveEditListener listener) {
-        this.listener = listener;
-    }
-
-    private String[] filterTitles = {
-            "All",
-            "unChecked",
-            "Checked"
-    };
-
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -78,27 +60,18 @@ public class ItemActivity extends ListActivity implements MongoInterface{
     {
         switch (item.getItemId())
         {
-            case R.id.share:
-                Toast.makeText(getBaseContext(), "Share", Toast.LENGTH_LONG).show();
-                return true;
+
 
             case R.id.from_contacts:
-                Toast.makeText(getBaseContext(), "From Contacts", Toast.LENGTH_LONG).show();
+                Intent contact_select = new Intent(getBaseContext(), ContactShare.class);
+                startActivity(contact_select);
                 return true;
 
-
-            case R.id.edit:
-                Intent intent = new Intent(getBaseContext(), EditListActivity.class);
-                intent.putExtra("list", selectedCat);
-                startActivity(intent);
-
-                return true;
-
-            case R.id.action_settings:
-                /*Intent intent = new Intent(getBaseContext(), EditListActivity.class);
-                intent.putExtra("list", selectedList);
-                startActivity(intent);*/
-
+            case R.id.sharing_with:
+                Intent userList = new Intent(getBaseContext(), PeopleListActivity.class);
+                userList.putExtra("list",selectedList);
+                userList.putExtra("id",userid);
+                startActivity(userList);
                 return true;
 
             default:
@@ -107,14 +80,6 @@ public class ItemActivity extends ListActivity implements MongoInterface{
     }
 
 
-            case R.id.item2:
-                Toast.makeText(getBaseContext(), "item2", Toast.LENGTH_LONG).show();
-                return true;
-
-            default:
-                return super.onOptionsItemSelected(item);
-        }
-    }
     /**
      * Set EditTextField and Category textview field, set Selectedcategory
      */
@@ -254,24 +219,26 @@ public class ItemActivity extends ListActivity implements MongoInterface{
     @Override
     public void onPause()
     {
-        //storeChecked();
+        storeChecked();
         super.onPause();
     }
 
 
     public void storeChecked(){
         if(adapter != null){
-        for(int i = 0; i< adapter.getCount();i++){
-            ItemObject item = adapter.getItem(i);
-            if(item.getCompleter().equals(userid)) {
-                Log.d("user", "itemActivity storeChecked");
-                Mongo.getMongo(this).put(Mongo.COLL_ITEMS, Mongo.KEY_ID, item.getId(), Mongo.KEY_COMPLETED, userid);
-            }else if(item.getCompleter().equals("")) {
-                Log.d("user", "itemActivity storeChecked");
-                Mongo.getMongo(this).put(Mongo.COLL_ITEMS, Mongo.KEY_ID, item.getId(), Mongo.KEY_COMPLETED, item.getCompleter());
-            }
+            if(items.size()>0) {
+                for (int i = 0; i < adapter.getCount(); i++) {
+                    ItemObject item = adapter.getItem(i);
+                    if (item.getCompleter().equals(userid)) {
+                        Log.d("user", "itemActivity storeChecked");
+                        Mongo.getMongo(this).put(Mongo.COLL_ITEMS, Mongo.KEY_ID, item.getId(), Mongo.KEY_COMPLETED, userid);
+                    } else if (item.getCompleter().equals("")) {
+                        Log.d("user", "itemActivity storeChecked");
+                        Mongo.getMongo(this).put(Mongo.COLL_ITEMS, Mongo.KEY_ID, item.getId(), Mongo.KEY_COMPLETED, item.getCompleter());
+                    }
 
-        }
+                }
+            }
         }
     }
 

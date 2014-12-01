@@ -5,9 +5,12 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.view.WindowManager;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import com.example.nav.listget.Adapters.UserAdapter;
 import com.example.nav.listget.Interfaces.MongoInterface;
@@ -38,7 +41,6 @@ public class PeopleListActivity extends ListActivity implements MongoInterface {
         if (savedInstanceState == null) {
             ListView ls = getListView();
         }
-
         Intent intent = getIntent();
         selectedList = intent.getParcelableExtra("list");
         userid = intent.getStringExtra("userid");
@@ -47,13 +49,34 @@ public class PeopleListActivity extends ListActivity implements MongoInterface {
             userAdapter = new UserAdapter(this,users);
             setListAdapter( userAdapter );
         }else{
-            setListAdapter(new ArrayAdapter<String>(this,android.R.layout.simple_list_item_1,selectedList.getContributors()));
+            ArrayList<String> contributers = selectedList.getContributors();
+            for(int i = 0; i<contributers.size();i++) {
+                if(contributers.get(i).equals(userid))
+                   contributers.remove(i);
+            }
+            setListAdapter(new ArrayAdapter<String>(this,android.R.layout.simple_list_item_1,contributers));
         }
+
+        TextView tx = (TextView)findViewById(R.id.ownerName);
+        tx.setText(selectedList.getOwner());
+        Button bt = (Button)findViewById(R.id.leave);
+        if(selectedList.getOwner().equals(userid)){
+            bt.setVisibility(View.GONE);
+        }
+
     }
+
+    public void onLeaveClick(View v){
+        selectedList.removeContributor( userid );
+        Mongo.getMongo( this ).post(Mongo.COLL_LISTS, selectedList.getJSON());
+        Intent intent = new Intent(this, ListActivity.class);
+
+    }
+
 
     public void deleteUserFromAdapter(User user){
         selectedList.removeContributor( user.getEmail() );
-        Mongo.getMongo( this ).post( Mongo.COLL_LISTS, selectedList.getJSON() );
+        Mongo.getMongo( this ).post(Mongo.COLL_LISTS, selectedList.getJSON());
         if(userAdapter!=null) {
             userAdapter.remove(user);
             userAdapter.notifyDataSetChanged();
@@ -63,7 +86,8 @@ public class PeopleListActivity extends ListActivity implements MongoInterface {
 
     public void setContributersToUsers(ArrayList<String> contributers){
         for(int i = 0; i<contributers.size();i++) {
-            users.add(new User(contributers.get(i),""));
+            if(!contributers.get(i).equals(userid))
+                users.add(new User(contributers.get(i),""));
         }
     }
 

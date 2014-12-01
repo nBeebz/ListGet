@@ -12,6 +12,8 @@
         android:id="@+id/icon_star"
         android:layout_alignParentLeft="true"
         android:layout_alignParentTop="true"
+        android:padding="3dp"
+        android:layout_margin="3dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content">
         <ImageView
@@ -25,6 +27,11 @@
             android:id="@+id/ownerName"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
+            android:paddingLeft="9dip"
+            android:paddingRight="9dip"
+            android:paddingTop="9dip"
+            android:paddingBottom="9dip"
+            android:textSize="20sp"
             android:layout_centerVertical="true"/>
     </LinearLayout>
 
@@ -48,7 +55,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:text="Leave from this list"/>
+        android:text="Leave from this list"
+        android:onClick="onLeaveClick"/>
 
 
 </RelativeLayout>

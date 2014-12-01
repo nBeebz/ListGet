@@ -57,7 +57,11 @@ public class PeopleListActivity extends ListActivity implements MongoInterface {
         }
 
         TextView tx = (TextView)findViewById(R.id.ownerName);
-        tx.setText(selectedList.getOwner());
+        if(selectedList.getOwner().equals(userid)){
+            tx.setText("You are the owner");
+        }else {
+            tx.setText(selectedList.getOwner());
+        }
         Button bt = (Button)findViewById(R.id.leave);
         if(selectedList.getOwner().equals(userid)){
             bt.setVisibility(View.GONE);

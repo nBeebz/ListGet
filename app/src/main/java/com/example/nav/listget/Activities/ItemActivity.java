@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -323,12 +324,13 @@ public class ItemActivity extends ListActivity implements MongoInterface{
     public void storeChecked(){
         if(adapter != null){
             if(items != null) {
+                Log.d("storeChecked","checking");
                 for (int i = 0; i < adapter.getCount(); i++) {
                     ItemObject item = adapter.getItem(i);
-                    if (item.getCompleter().equals(userid)) {
+                    if (item.getCompleter().equals(ItemAdapter.CHECKED)) {
                         Mongo.getMongo(this).put(Mongo.COLL_ITEMS, Mongo.KEY_ID, item.getId(), Mongo.KEY_COMPLETED, userid);
-                    } else if (item.getCompleter().equals("")) {
-                        Mongo.getMongo(this).put(Mongo.COLL_ITEMS, Mongo.KEY_ID, item.getId(), Mongo.KEY_COMPLETED, item.getCompleter());
+                    } else if (item.getCompleter().equals(ItemAdapter.UNCHECKED)) {
+                        Mongo.getMongo(this).put(Mongo.COLL_ITEMS, Mongo.KEY_ID, item.getId(), Mongo.KEY_COMPLETED, "");
                     }
 
                 }

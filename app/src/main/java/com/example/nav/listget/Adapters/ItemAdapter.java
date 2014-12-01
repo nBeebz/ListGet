@@ -57,7 +57,7 @@ public class ItemAdapter extends ArrayAdapter<ItemObject> {
             holder = (ViewHolder) row.getTag();
         }
 
-       if (item.getCompleter().equals("")|| item.getCompleter().equals(CHECKED))
+       if (item.getCompleter().equals("")|| item.getCompleter().equals(UNCHECKED))
         {
             setStyleNotDone(holder.checkbox, holder.textView, holder.paint, row, item);
 

@@ -13,6 +13,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.nav.listget.Adapters.ItemAdapter;
 import com.example.nav.listget.Interfaces.MongoInterface;
 import com.example.nav.listget.Mongo;
 import com.example.nav.listget.R;
@@ -55,6 +56,11 @@ public class EditItemActivity extends Activity implements MongoInterface {
         textMemo.setText(selectedItem.getMemo());
         textName.setText(selectedItem.getName());
         checkbox.setOnClickListener(new CheckClickedListener());
+        if(selectedItem.getCompleter().equals(ItemAdapter.UNCHECKED)){
+            selectedItem.setCompleter("");
+        }else if(selectedItem.getCompleter().equals(ItemAdapter.CHECKED)){
+            selectedItem.setCompleter(userid);
+        }
         if(!selectedItem.getCompleter().equals("")){
             checkbox.setChecked(true);
             if(selectedItem.getCompleter().equals(userid))

@@ -8,7 +8,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -39,21 +38,22 @@ public class UserAdapter extends ArrayAdapter<User> {
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         View row = convertView;
-        ViewHolder holder;
-        User user = (User) getItem(position);
-        if (row == null) {
-            row = layoutInflater_.inflate(R.layout.adapter_item, parent, false);
-            holder = new ViewHolder();
-            holder.delete_button = (LinearLayout) row.findViewById(R.id.delete_button);
-            holder.username = (TextView) row.findViewById(R.id.username);
-            holder.icon_star.setOnClickListener(new onDeleteClicked(user));
+        LinearLayout delete;
+        TextView username = null;
 
-            row.setTag(holder);
-        } else {
-            holder = (ViewHolder) row.getTag();
+
+        User user = getItem(position);
+
+        if (row == null) {
+            row = layoutInflater_.inflate(R.layout.adapter_user, parent, false);
+            delete = (LinearLayout) row.findViewById(R.id.delete_button);
+            username = (TextView)row.findViewById(R.id.username);
+            delete.setOnClickListener(new onDeleteClicked(user));
         }
-        holder.username.setText(user.getEmail());
-        //holder.textPos.setText("" + position);
+
+        if( username != null && user != null )
+            username.setText( user.getEmail() );
+
 
         return (row);
     }
@@ -92,12 +92,6 @@ public class UserAdapter extends ArrayAdapter<User> {
 
 
 
-
-    public static class ViewHolder {
-        LinearLayout delete_button;
-        ImageView icon_star;
-        TextView username;
-    }
 
 
 }

@@ -20,7 +20,6 @@ import java.util.ArrayList;
 
 public class PeopleListActivity extends ListActivity implements MongoInterface {
 
-    MongoInterface m = null;
     ListObject selectedList = null;
     String userid = null;
     ArrayList<User> users = new ArrayList<User>();
@@ -34,7 +33,6 @@ public class PeopleListActivity extends ListActivity implements MongoInterface {
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_people_list);
-        m = this;
         this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
 
         if (savedInstanceState == null) {
@@ -42,24 +40,23 @@ public class PeopleListActivity extends ListActivity implements MongoInterface {
         }
 
         Intent intent = getIntent();
-        selectedList = ((ListObject) intent.getExtras().getParcelable("list"));
-        userid = intent.getExtras().getString("userid");
+        selectedList = intent.getParcelableExtra("list");
+        userid = intent.getStringExtra("userid");
         if(userid.equals(selectedList.getOwner())){
             setContributersToUsers(selectedList.getContributors());
             userAdapter = new UserAdapter(this,users);
-            setListAdapter(userAdapter);
+            setListAdapter( userAdapter );
         }else{
-            adapter = new ArrayAdapter<String>(this,android.R.layout.simple_list_item_1,selectedList.getContributors());
-            setListAdapter(adapter);
-
+            setListAdapter(new ArrayAdapter<String>(this,android.R.layout.simple_list_item_1,selectedList.getContributors()));
         }
     }
 
     public void deleteUserFromAdapter(User user){
-        Mongo.getMongo(this).delete(Mongo.COLL_USERS, user.getEmail());
+        selectedList.removeContributor( user.getEmail() );
+        Mongo.getMongo( this ).post( Mongo.COLL_LISTS, selectedList.getJSON() );
         if(userAdapter!=null) {
             userAdapter.remove(user);
-            setListAdapter(adapter);
+            userAdapter.notifyDataSetChanged();
         }
 
     }

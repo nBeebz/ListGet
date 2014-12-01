@@ -136,4 +136,9 @@ public class ListObject implements Parcelable {
         if( !contributors.contains( email ) )
             contributors.add( email );
     }
+    public void removeContributor( String email )
+    {
+        contributors.remove( email );
+    }
+
 }

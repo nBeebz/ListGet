@@ -72,7 +72,7 @@ public class ItemActivity extends ListActivity implements MongoInterface{
             case R.id.sharing_with:
                 Intent userList = new Intent(getBaseContext(), PeopleListActivity.class);
                 userList.putExtra("list",selectedList);
-                userList.putExtra("id",userid);
+                userList.putExtra("userid",userid);
                 startActivity(userList);
                 return true;
 

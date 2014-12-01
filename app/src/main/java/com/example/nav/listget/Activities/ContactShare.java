@@ -206,6 +206,7 @@ public class ContactShare extends Activity implements MongoInterface
                 shared.setVisibility(View.VISIBLE);
                 added.add(id);
                 Mongo.getMongo(this).post( Mongo.COLL_LISTS, list.getJSON() );
+                toEmail.setText("");
             }else{
                 shared.setText("");
                 shared.setText("This user is already added.");

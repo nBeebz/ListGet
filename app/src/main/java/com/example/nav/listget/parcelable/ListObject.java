@@ -131,10 +131,14 @@ public class ListObject implements Parcelable {
         return obj;
     }
 
-    public void addContributor( String email )
+    public boolean  addContributor( String email )
     {
-        if( !contributors.contains( email ) )
-            contributors.add( email );
+        if( !contributors.contains( email ) ) {
+            contributors.add(email);
+            return true;
+        }else{
+            return false;
+        }
     }
     public void removeContributor( String email )
     {

@@ -74,7 +74,7 @@ public class UserAdapter extends ArrayAdapter<User> {
             AlertDialog.Builder alert = new AlertDialog.Builder(act);
 
             alert.setTitle("Warning");
-            alert.setMessage("Are you sure to delete this user from this list?");
+            alert.setMessage("Are you sure to delete "+ selectedUser.getEmail()+" from this list?");
 
             alert.setPositiveButton("Delete", new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int whichButton) {

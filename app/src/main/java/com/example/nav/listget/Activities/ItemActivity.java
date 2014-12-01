@@ -6,7 +6,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -60,26 +59,92 @@ public class ItemActivity extends ListActivity implements MongoInterface{
     @Override
     public boolean onOptionsItemSelected(MenuItem item)
     {
+
         switch (item.getItemId())
         {
 
-
             case R.id.from_contacts:
                 Intent contact_select = new Intent(getBaseContext(), ContactShare.class);
-                startActivity(contact_select);
+                contact_select.putExtra("list",selectedList);
+                int requestCode = 2;
+                startActivityForResult(contact_select,requestCode);
                 return true;
 
             case R.id.sharing_with:
                 Intent userList = new Intent(getBaseContext(), PeopleListActivity.class);
                 userList.putExtra("list",selectedList);
                 userList.putExtra("userid",userid);
-                startActivity(userList);
+                int requestCode2 = 3;
+                startActivityForResult(userList,requestCode2);
                 return true;
 
             default:
                 return super.onOptionsItemSelected(item);
         }
     }
+
+    /**
+     * update list contributer after contact share and people list activity
+     * @param requestCode
+     * @param resultCode
+     * @param data
+     */
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        Bundle bundle;
+
+        switch (requestCode) {
+            case 1:
+                if(data != null) {
+                    bundle = data.getExtras();
+                    int position = bundle.getInt("position");
+                    ItemObject item = bundle.getParcelable("item");
+
+                if (resultCode == RESULT_OK) {
+                    adapter.getItem(position).setName(item.getName());
+                    adapter.getItem(position).setMemo(item.getMemo());
+                    adapter.getItem(position).setCompleter(item.getCompleter());
+                    setListAdapter(adapter);
+
+                } else if (resultCode == RESULT_CANCELED) {
+                    //if(items!=null && items.size()>0) {
+                    adapter.remove(adapter.getItem(position));
+                    setListAdapter(adapter);
+                    //}
+                }
+                }
+                break;
+            case 2:
+                if(data != null) {
+                    bundle = data.getExtras();
+                    if (resultCode == RESULT_OK) {
+                        ArrayList<String> added = bundle.getStringArrayList("addedList");
+                        for (int i = 0; i < added.size(); i++) {
+                            selectedList.addContributor(added.get(i));
+                        }
+                    }
+                }
+                break;
+
+            case 3:
+                if(data != null) {
+                    bundle = data.getExtras();
+                    if (resultCode == RESULT_OK) {
+                        ArrayList<String> deleted = bundle.getStringArrayList("deletedList");
+                        for (int i = 0; i < deleted.size(); i++) {
+                            selectedList.removeContributor(deleted.get(i));
+                        }
+                    }
+                }
+                break;
+
+            default:
+                break;
+        }
+
+    }
+
 
 
     /**
@@ -175,6 +240,7 @@ public class ItemActivity extends ListActivity implements MongoInterface{
      * @param resultCode
      * @param data
      */
+    /*
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if(data != null) {
@@ -202,7 +268,7 @@ public class ItemActivity extends ListActivity implements MongoInterface{
                     break;
             }
         }
-    }
+    }*/
 
     /**
      * When you type item names and tap checked, save the item.
@@ -255,14 +321,12 @@ public class ItemActivity extends ListActivity implements MongoInterface{
 
     public void storeChecked(){
         if(adapter != null){
-            if(items.size()>0) {
+            if(items != null ||items.size()>0) {
                 for (int i = 0; i < adapter.getCount(); i++) {
                     ItemObject item = adapter.getItem(i);
                     if (item.getCompleter().equals(userid)) {
-                        Log.d("user", "itemActivity storeChecked");
                         Mongo.getMongo(this).put(Mongo.COLL_ITEMS, Mongo.KEY_ID, item.getId(), Mongo.KEY_COMPLETED, userid);
                     } else if (item.getCompleter().equals("")) {
-                        Log.d("user", "itemActivity storeChecked");
                         Mongo.getMongo(this).put(Mongo.COLL_ITEMS, Mongo.KEY_ID, item.getId(), Mongo.KEY_COMPLETED, item.getCompleter());
                     }
 
@@ -321,5 +385,6 @@ public class ItemActivity extends ListActivity implements MongoInterface{
         dialog.setList( selectedList );
         dialog.show( getFragmentManager(), "");
     }
+
 
 }

@@ -8,32 +8,71 @@
     tools:context="com.example.nav.listget.Activities.ContactShare"
     android:baselineAligned="false">
 
-    <EditText
+    <LinearLayout
+        android:id="@+id/first"
+        android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:hint="email"
-        android:id="@+id/invite_email"
-        android:inputType="textEmailAddress"
-        android:layout_width="wrap_content"
-        android:layout_toLeftOf="@+id/do_email_picker"
-        android:layout_alignParentLeft="true">
-    </EditText>
+        android:orientation="horizontal">
 
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/do_email_picker"
-        android:text="Browse Contacts"
-        android:onClick="doLaunchContactPicker"
-        android:layout_alignTop="@+id/invite_email"
-        android:layout_centerHorizontal="true">
-    </Button>
+        <EditText
+            android:layout_height="wrap_content"
+            android:hint="email"
+            android:id="@+id/invite_email"
+            android:inputType="textEmailAddress"
+            android:layout_weight="1"
+            android:layout_width="fill_parent">
+        </EditText>
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/do_email_picker"
+            android:text="Browse"
+            android:onClick="doLaunchContactPicker">
+        </Button>
+    </LinearLayout>
+
 
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Share"
-        android:id="@+id/button2"
-        android:layout_toEndOf="@+id/do_email_picker"
-        android:layout_alignParentTop="true" />
+        android:id="@+id/share"
+        android:layout_below="@+id/first"
+        android:onClick="shareButton"
+        />
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="20sp"
+        android:id="@+id/sharedText"
+        android:layout_alignBaseline="@+id/share"
+        android:layout_below="@+id/first"
+        android:layout_toRightOf="@+id/share"
+        android:text="Shared!"/>
+
+    <LinearLayout
+        android:id="@+id/second"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+
+        android:layout_below="@+id/first"
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_height="wrap_content"
+            android:layout_width="fill_parent"
+            android:textSize="20sp"
+            android:text="We could not find the user.\n To send an invitation, tap button below.">
+        </TextView>
+
+        <Button
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/send_invitation"
+            android:text="Send Invitation"
+            android:onClick="sendEmail">
+        </Button>
+    </LinearLayout>
 
 </RelativeLayout>

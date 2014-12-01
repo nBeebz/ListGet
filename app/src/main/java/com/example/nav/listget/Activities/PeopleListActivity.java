@@ -3,8 +3,6 @@ package com.example.nav.listget.Activities;
 import android.app.ListActivity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.ArrayAdapter;
@@ -27,6 +25,8 @@ public class PeopleListActivity extends ListActivity implements MongoInterface {
     String userid = null;
     ArrayList<User> users = new ArrayList<User>();
     ArrayList<String> usersWithString = new ArrayList<String>();
+    ArrayList<String> deleted = new ArrayList<String>();
+
 
     UserAdapter userAdapter = null;
     ArrayAdapter<String> adapter = null;
@@ -37,7 +37,6 @@ public class PeopleListActivity extends ListActivity implements MongoInterface {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_people_list);
         this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
-
         if (savedInstanceState == null) {
             ListView ls = getListView();
         }
@@ -69,7 +68,9 @@ public class PeopleListActivity extends ListActivity implements MongoInterface {
     public void onLeaveClick(View v){
         selectedList.removeContributor( userid );
         Mongo.getMongo( this ).post(Mongo.COLL_LISTS, selectedList.getJSON());
-        Intent intent = new Intent(this, ListActivity.class);
+        Intent intent = new Intent(this, com.example.nav.listget.Activities.ListActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        startActivity(intent);
 
     }
 
@@ -80,6 +81,7 @@ public class PeopleListActivity extends ListActivity implements MongoInterface {
         if(userAdapter!=null) {
             userAdapter.remove(user);
             userAdapter.notifyDataSetChanged();
+            deleted.add(user.getEmail());
         }
 
     }
@@ -92,48 +94,29 @@ public class PeopleListActivity extends ListActivity implements MongoInterface {
     }
 
 
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.people_list, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-        if (id == R.id.action_settings) {
-            return true;
-        }
-        return super.onOptionsItemSelected(item);
-    }
-
-
     @Override
     public void processResult(String result) {
 
-        /*
-        JSONArray arr;
-        users = new ArrayList<User>();
-        try {
-            if(result != null) {
-                arr = new JSONArray(result);
-                if (arr.length() >= 1) {
-                    users = User.getUsers(arr);
-                    adapter = new UserAdapter(this, users);
-                    setListAdapter(adapter);
-                }
-            }
+
+    }
+
+    private void toFinish(){
+        Intent data = new Intent();
+        if(deleted.size()>0){
+            Bundle bundle = new Bundle();
+            bundle.putStringArrayList("deletedList", deleted);
+            data.putExtras(bundle);
+            setResult(RESULT_OK, data);
+
+        }else{
+            setResult(RESULT_CANCELED, data);
+
         }
-        catch (Exception e){ e.printStackTrace();
-        }*/
+        finish();
+    }
 
-        //DO SOMETHING WITH THE ITEMS
-
-
+    @Override
+    public void onBackPressed() {
+        toFinish();
     }
 }

@@ -7,10 +7,10 @@
         android:id="@+id/from_contacts"
         android:orderInCategory="1"
         appcompat:showAsAction="never"
-        android:title="Select from contacts" />
+        android:title="Add Contributor" />
     <item
         android:id="@+id/sharing_with"
         android:orderInCategory="1"
         appcompat:showAsAction="never"
-        android:title="Sharing with" />
+        android:title="Contributors" />
 </menu>

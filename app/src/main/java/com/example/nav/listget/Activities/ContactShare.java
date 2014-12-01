@@ -10,23 +10,43 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.nav.listget.Interfaces.MongoInterface;
+import com.example.nav.listget.Mongo;
 import com.example.nav.listget.R;
+import com.example.nav.listget.parcelable.ListObject;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+import java.util.ArrayList;
 
 public class ContactShare extends Activity implements MongoInterface
 {
     private static final int CONTACT_PICKER_RESULT = 1001;
     private static EditText toEmail = null;
+    ListObject list = null;
+    LinearLayout second = null;
+    TextView shared = null;
+    ArrayList<String> added = new ArrayList<String>();
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_contact_share);
 
+        list = getIntent().getExtras().getParcelable("list");
+        setContentView(R.layout.activity_contact_share);
+        shared = (TextView)findViewById(R.id.sharedText);
+        shared.setVisibility(View.GONE);
+        second = (LinearLayout)findViewById(R.id.second);;
+        second.setVisibility(View.GONE);
         toEmail = (EditText) findViewById(R.id.invite_email);
     }
 
@@ -104,7 +124,7 @@ public class ContactShare extends Activity implements MongoInterface
     public boolean onCreateOptionsMenu(Menu menu)
     {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_contact_share, menu);
+        //getMenuInflater().inflate(R.menu.menu_contact_share, menu);
         return true;
     }
 
@@ -114,7 +134,7 @@ public class ContactShare extends Activity implements MongoInterface
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
+/*        int id = item.getItemId();
 
         switch(item.getItemId())
         {
@@ -136,12 +156,93 @@ public class ContactShare extends Activity implements MongoInterface
                 startActivity(Intent.createChooser(email, "Choose"));
 
                 break;
-        }
+        }*/
         return true;
+    }
+
+
+    /*public void shareButton(View view){
+        Button share = (Button) findViewById(R.id.share);
+        final String email = toEmail.getText().toString();
+        share.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                get();
+            }
+        });
+    }*/
+
+    public void shareButton(View view)
+    {
+        final String email = toEmail.getText().toString();
+        if(!email.equals(""))
+             Mongo.getMongo(this).get( Mongo.COLL_USERS, Mongo.KEY_ID, email);
+    }
+    public void sendEmail(View v){
+
+        String to = toEmail.getText().toString();
+
+        Intent email = new Intent(Intent.ACTION_SEND);
+
+        email.putExtra(Intent.EXTRA_EMAIL, new String[]{to});
+
+        email.setType("message/rfc822");
+
+        startActivity(Intent.createChooser(email, "Choose"));
+        toFinish();
+
     }
 
     @Override
     public void processResult(String result) {
+        try {
+            JSONArray arr = new JSONArray( result );
+            JSONObject obj = arr.getJSONObject(0);
+            String id = obj.getString(Mongo.KEY_ID);
+            if(list.addContributor(id)){
+                shared.setText("");
+                TextView shared = (TextView)findViewById(R.id.sharedText);
+                shared.setText("Shared!!");
+                shared.setVisibility(View.VISIBLE);
+                added.add(id);
+                Mongo.getMongo(this).post( Mongo.COLL_LISTS, list.getJSON() );
+            }else{
+                shared.setText("");
+                shared.setText("This user is already added.");
+                shared.setVisibility(View.VISIBLE);
+                toEmail.setText("");
+            }
+            //Mongo.getMongo(this).get( Mongo.COLL_ITEMS, Mongo.KEY_LISTID, list.getId() );
+        }catch (Exception e){
+            //Toast.makeText( this, "Couldn't find the user", Toast.LENGTH_SHORT).show();
+            shared.setVisibility(View.GONE);
+            Button share = (Button)findViewById(R.id.share);
+            share.setVisibility(View.INVISIBLE);
+            second.setVisibility(View.VISIBLE);
+        }/*finally {
+            Mongo.getMongo(this).post( Mongo.COLL_LISTS, list.getJSON() );
+            Mongo.getMongo(this).get( Mongo.COLL_ITEMS, Mongo.KEY_LISTID, list.getId() );
 
+        }*/
+    }
+
+    private void toFinish(){
+        Intent data = new Intent();
+        if(added.size()>0){
+            Bundle bundle = new Bundle();
+            bundle.putStringArrayList("addedList", added);
+            data.putExtras(bundle);
+            setResult(RESULT_OK, data);
+
+        }else{
+            setResult(RESULT_CANCELED, data);
+
+        }
+        finish();
+    }
+
+    @Override
+    public void onBackPressed() {
+        toFinish();
     }
 }

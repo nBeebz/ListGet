@@ -73,7 +73,7 @@ public class ListActivity extends Activity implements ActionBar.TabListener {
                 AlertDialog.Builder alert = new AlertDialog.Builder(this);
 
                 alert.setTitle("Warning");
-                alert.setMessage("Are you sure to log out?");
+                alert.setMessage("Are you sure to log out from\n"+email+"?");
 
                 alert.setPositiveButton("Logout", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int whichButton) {

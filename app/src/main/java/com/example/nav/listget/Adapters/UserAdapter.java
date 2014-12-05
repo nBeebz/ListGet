@@ -48,7 +48,7 @@ public class UserAdapter extends ArrayAdapter<User> {
             row = layoutInflater_.inflate(R.layout.adapter_user, parent, false);
             delete = (LinearLayout) row.findViewById(R.id.delete_button);
             username = (TextView)row.findViewById(R.id.username);
-            delete.setOnClickListener(new onDeleteClicked(user));
+            delete.setOnClickListener(new onDeleteClicked(user, position));
         }
 
         if( username != null && user != null )
@@ -62,9 +62,11 @@ public class UserAdapter extends ArrayAdapter<User> {
     public class onDeleteClicked implements View.OnClickListener {
 
         User selectedUser;
+        int position;
 
-        public onDeleteClicked(User selectedUser) {
+        public onDeleteClicked(User selectedUser, int position) {
             this.selectedUser = selectedUser;
+            this.position = position;
 
         }
 
@@ -78,7 +80,7 @@ public class UserAdapter extends ArrayAdapter<User> {
 
             alert.setPositiveButton("Delete", new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int whichButton) {
-                    ((PeopleListActivity)act).deleteUserFromAdapter(selectedUser);
+                    ((PeopleListActivity)act).deleteUserFromAdapter(selectedUser, position);
                 }
             });
 

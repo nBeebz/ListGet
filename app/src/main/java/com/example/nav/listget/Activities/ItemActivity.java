@@ -285,7 +285,8 @@ public class ItemActivity extends ListActivity implements MongoInterface{
                     String id =""+ System.currentTimeMillis();
                     ItemObject inputItem = new ItemObject(id,selectedList.getId(),inputEditText.getText().toString() ,"","");
                     Mongo.getMongo(m).post(Mongo.COLL_ITEMS, inputItem.getJSON());
-                    if(items.size() <1){
+                    if(items == null){
+                        items = new ArrayList<ItemObject>();
                         items.add(inputItem);
                         adapter = new ItemAdapter((Activity)m,items);
                     }else {
@@ -321,7 +322,7 @@ public class ItemActivity extends ListActivity implements MongoInterface{
 
     public void storeChecked(){
         if(adapter != null){
-            if(items != null ||items.size()>0) {
+            if(items != null) {
                 for (int i = 0; i < adapter.getCount(); i++) {
                     ItemObject item = adapter.getItem(i);
                     if (item.getCompleter().equals(userid)) {
@@ -357,13 +358,13 @@ public class ItemActivity extends ListActivity implements MongoInterface{
     public void processResult( String result )
     {
         JSONArray arr;
-        items = new ArrayList<ItemObject>();
         try {
             if(result != null) {
                 arr = new JSONArray(result);
                 if (arr.length() < 1) {
                     setEmptyText("No Items");
                 } else {
+                    items = new ArrayList<ItemObject>();
 //                   items.add( ItemObject.parseJSON( arr.getJSONObject(i) ));
                     items = ItemObject.getItems(arr);
                     adapter = new ItemAdapter(this, items);

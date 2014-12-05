@@ -69,18 +69,19 @@ public class PeopleListActivity extends ListActivity implements MongoInterface {
         selectedList.removeContributor( userid );
         Mongo.getMongo( this ).post(Mongo.COLL_LISTS, selectedList.getJSON());
         Intent intent = new Intent(this, com.example.nav.listget.Activities.ListActivity.class);
+        intent.putExtra("email",userid);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         startActivity(intent);
 
     }
 
 
-    public void deleteUserFromAdapter(User user){
+    public void deleteUserFromAdapter(User user, int position){
         selectedList.removeContributor( user.getEmail() );
         Mongo.getMongo( this ).post(Mongo.COLL_LISTS, selectedList.getJSON());
         if(userAdapter!=null) {
-            userAdapter.remove(user);
-            userAdapter.notifyDataSetChanged();
+            userAdapter.remove(userAdapter.getItem(position));
+            setListAdapter(userAdapter);
             deleted.add(user.getEmail());
         }
 
